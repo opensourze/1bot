@@ -1,8 +1,10 @@
 import discord
 import os
 import json
+import dotenv
 from discord.ext import commands
 from discord.ext.commands.help import MinimalHelpCommand
+dotenv.load_dotenv()
 
 
 def get_prefix(client, message):
@@ -69,12 +71,12 @@ async def on_guild_remove(guild):
         json.dump(prefixes, f, indent=4)
 
 
-@client.command(help="Tests the bot's latency and displays it in miliseconds", brief="Tests the bot's latency")
+@client.command(help="Tests the bot's latency and displays it in miliseconds")
 async def ping(ctx):
-    await ctx.send(f"Pong! Latency = `{round(client.latency * 1000)}ms`")
+    await ctx.send(f"Pong! The bot's latency is `{round(client.latency * 1000)}ms`")
 
 
-@client.command(help="Change the bot's prefix", brief="Change the prefix", aliases=["prefix"])
+@client.command(help="Change the bot's prefix", aliases=["prefix"])
 @commands.has_permissions(manage_guild=True)
 async def changeprefix(ctx, prefix):
     async with ctx.typing():
@@ -102,6 +104,11 @@ async def unload(ctx, extension):
     client.unload_extension(f"cogs.{extension}")
     async with ctx.typing():
         await ctx.send(f"Unloaded {extension}")
+
+
+@client.command(help="Get a link to the bot's source code on GitHub", aliases=["source", "sourcecode"])
+async def github(ctx):
+    await ctx.send("https://github.com/objectopensource/i-do-stuff-bot\nIf you want to run your own instance of the bot, clone the repository or download it as a .zip and run `main.py.` Feel free to fork the repository.")
 
 # Loop through all files in cogs directory and load them
 for filename in os.listdir("./cogs"):
