@@ -26,17 +26,23 @@ async def on_ready():
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.BotMissingPermissions):
-        await ctx.send("Command failed - I don't have enough permissions to run this command!")
+        async with ctx.typing():
+            await ctx.send("Command failed - I don't have enough permissions to run this command!")
     elif isinstance(error, commands.MissingPermissions):
-        await ctx.send("You don't have enough permissions to use this command.")
+        async with ctx.typing():
+            await ctx.send("You don't have enough permissions to use this command.")
     elif isinstance(error, commands.NotOwner):
-        await ctx.send("Only the owner of the bot can use this command.")
+        async with ctx.typing():
+            await ctx.send("Only the owner of the bot can use this command.")
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("You've missed one or more required arguments. Check the command's help for what arguments you should provide.")
+        async with ctx.typing():
+            await ctx.send("You've missed one or more required arguments. Check the command's help for what arguments you should provide.")
     elif isinstance(error, commands.BadArgument):
-        await ctx.send("Bad Argument error - make sure you've typed your arguments correctly.")
+        async with ctx.typing():
+            await ctx.send("Bad Argument error - make sure you've typed your arguments correctly.")
     elif isinstance(error, commands.ChannelNotFound):
-        await ctx.send("I don't think that channel exists!")
+        async with ctx.typing():
+            await ctx.send("I don't think that channel exists!")
     elif isinstance(error, commands.CommandNotFound) == False:
         print(error)
 
