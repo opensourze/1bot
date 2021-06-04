@@ -1,20 +1,11 @@
 import discord
 import os
-import json
 # import dotenv
 from discord.ext import commands
 from discord.ext.commands.help import MinimalHelpCommand
 # dotenv.load_dotenv()
 
-
-def get_prefix(client, message):
-    with open("prefixes.json", "r") as f:
-        prefixes = json.load(f)
-
-    return prefixes[str(message.guild.id)]
-
-
-client = commands.Bot(command_prefix=get_prefix,
+client = commands.Bot(command_prefix="_",
                       case_insensitive=True,
                       activity=discord.Game("_help"),
                       help_command=MinimalHelpCommand())
@@ -47,45 +38,9 @@ async def on_command_error(ctx, error):  # Error handlers
             await ctx.send("I don't think that channel exists!")
 
 
-@client.event
-async def on_guild_join(guild):
-    with open("prefixes.json", "r") as f:
-        prefixes = json.load(f)
-
-    prefixes[str(guild.id)] = "_"
-
-    with open("prefixes.json", "w") as f:
-        json.dump(prefixes, f, indent=4)
-
-
-@client.event
-async def on_guild_remove(guild):
-    with open("prefixes.json", "r") as f:
-        prefixes = json.load(f)
-
-    prefixes.pop(str(guild.id))
-
-    with open("prefixes.json", "w") as f:
-        json.dump(prefixes, f, indent=4)
-
-
 @client.command(help="Tests the bot's latency and displays it in miliseconds")
 async def ping(ctx):
     await ctx.send(f"Pong! The bot's latency is `{round(client.latency * 1000)}ms`")
-
-
-@client.command(help="Change the bot's prefix", aliases=["prefix"])
-@commands.has_permissions(manage_guild=True)
-async def changeprefix(ctx, prefix):
-    async with ctx.typing():
-        with open("prefixes.json", "r") as f:
-            prefixes = json.load(f)
-
-        prefixes[str(ctx.guild.id)] = prefix
-
-        with open("prefixes.json", "w") as f:
-            json.dump(prefixes, f, indent=4)
-    await ctx.send(f"✅ Prefix for this server is set to {prefix}")
 
 
 @client.command(hidden=True)
@@ -107,6 +62,7 @@ async def unload(ctx, extension):
 @client.command(help="Get a link to the bot's source code on GitHub", aliases=["source", "sourcecode"])
 async def github(ctx):
     await ctx.send("https://github.com/objectopensource/i-do-stuff-bot\nIf you want to run your own instance of the bot, clone the repository or download it as a .zip and run `main.py.` Feel free to fork the repository.")
+
 
 # Loop through all files in cogs directory and load them
 for filename in os.listdir("./cogs"):
