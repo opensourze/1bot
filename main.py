@@ -1,10 +1,10 @@
 import discord
 import os
 import json
-import dotenv
+# import dotenv
 from discord.ext import commands
 from discord.ext.commands.help import MinimalHelpCommand
-dotenv.load_dotenv()
+# dotenv.load_dotenv()
 
 
 def get_prefix(client, message):
