@@ -29,6 +29,30 @@ class Fun(commands.Cog):
                 "https://official-joke-api.appspot.com/jokes/programming/random").json()[0]
         await ctx.send(f"**{r['setup']}**\n\n{r['punchline']}")
 
+    @commands.command(
+        help="Get a random meme from Reddit (optionally provide any subreddit)",
+        brief="Get a random meme from Reddit",
+        aliases=["reddit"]
+    )
+    @commands.bot_has_permissions(embed_links=True)
+    async def meme(self, ctx, subreddit=None):
+        async with ctx.typing():
+            if subreddit is not None:
+                r = requests.get(
+                    f"https://meme-api.herokuapp.com/gimme/{subreddit}").json()
+            else:
+                r = requests.get(
+                    f"https://meme-api.herokuapp.com/gimme").json()
+        try:
+            if r["code"]:
+                await ctx.send(r["message"])
+        except KeyError:
+            if r["nsfw"] == False:
+                await ctx.send(r["postLink"])
+
+        if r["nsfw"]:
+            await ctx.send(f"Warning: NSFW post!\n\n<{r['postLink']}>")
+
 
 def setup(client):
     client.add_cog(Fun(client))

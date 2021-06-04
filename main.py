@@ -26,7 +26,7 @@ async def on_ready():
 
 
 @client.event
-async def on_command_error(ctx, error):
+async def on_command_error(ctx, error):  # Error handlers
     if isinstance(error, commands.BotMissingPermissions):
         async with ctx.typing():
             await ctx.send("Command failed - I don't have enough permissions to run this command!")
@@ -45,8 +45,6 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.ChannelNotFound):
         async with ctx.typing():
             await ctx.send("I don't think that channel exists!")
-    elif isinstance(error, commands.CommandNotFound) == False:
-        print(error)
 
 
 @client.event
