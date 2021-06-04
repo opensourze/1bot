@@ -64,8 +64,8 @@ async def on_guild_remove(guild):
 
 
 @client.command(help="Tests the bot's latency and displays it in miliseconds", brief="Tests the bot's latency")
-async def ping(self, ctx):
-    await ctx.send(f"Pong! Latency = `{round(self.client.latency * 1000)}ms`")
+async def ping(ctx):
+    await ctx.send(f"Pong! Latency = `{round(client.latency * 1000)}ms`")
 
 
 @client.command(help="Change the bot's prefix", brief="Change the prefix", aliases=["prefix"])
