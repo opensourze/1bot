@@ -15,7 +15,7 @@ def get_prefix(client, message):
 client = commands.Bot(command_prefix=get_prefix,
                       case_insensitive=True,
                       activity=discord.Game("_help"),
-                      help_command=MinimalHelpCommand)
+                      help_command=MinimalHelpCommand())
 
 
 @client.event
@@ -102,4 +102,4 @@ for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
         client.load_extension(f"cogs.{filename[:-3]}")
 
-client.run(os.getenv(["TOKEN"]))
+client.run(os.environ["TOKEN"])
