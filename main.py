@@ -7,7 +7,7 @@ dotenv.load_dotenv()
 
 client = commands.Bot(command_prefix="_",
                       case_insensitive=True,
-                      activity=discord.Game("Slash commands are here! You'll need to kick the bot and add it back with the new link at dsc.gg/i-do-stuff"))
+                      activity=discord.Game("Slash commands are here! If the commands don't show up, kick the bot and add it back with the new link at dsc.gg/i-do-stuff"))
 slash = SlashCommand(client, sync_commands=True)
 
 
@@ -65,7 +65,7 @@ async def ping_slash(ctx: SlashContext):
     await ping(ctx)
 
 
-@slash.slash(description="View the bot's source code on GitHub")
+@slash.slash(name="github", description="View the bot's source code on GitHub")
 async def github_slash(ctx: SlashContext):
     await github(ctx)
 
