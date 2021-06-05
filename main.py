@@ -7,7 +7,7 @@ dotenv.load_dotenv()
 
 client = commands.Bot(command_prefix="_",
                       case_insensitive=True,
-                      activity=discord.Game("_help"))
+                      activity=discord.Game("Slash commands are here! You'll need to kick the bot and add it back with the new link at dsc.gg/i-do-stuff"))
 slash = SlashCommand(client, sync_commands=True)
 
 

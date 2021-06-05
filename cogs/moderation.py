@@ -38,17 +38,8 @@ class Moderation(commands.Cog):
     # Unban command
     @commands.command(help="Unban a member by ID/tag", brief="Unban a member")
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, *, member):
-        banned_users = await ctx.guild.bans()
-        member_name, member_discriminator = member.split("#")
-
-        for ban_entry in banned_users:
-            user = ban_entry.user
-
-            if (user.name, user.discriminator) == (member_name, member_discriminator):
-                await ctx.guild.unban(user)
-                await ctx.send(f"Unbanned {user.mention}")
-                return
+    async def unban(self, ctx, *, user: discord.User):
+        await ctx.unban(user)
 
     # Lockdown command
     @commands.command(
@@ -84,6 +75,7 @@ class Moderation(commands.Cog):
             )
         ]
     )
+    @commands.has_permissions(manage_messages=True)
     async def clear_slash(self, ctx: SlashContext, amount: int = 5):
         await self.clear(ctx, amount=amount)
         await ctx.send(f"I have cleared {amount} messages", delete_after=2)
@@ -106,6 +98,7 @@ class Moderation(commands.Cog):
             )
         ]
     )
+    @commands.has_permissions(kick_members=True)
     async def kick_slash(self, ctx: SlashContext, member, reason=None):
         await self.kick(ctx, member, reason=reason)
 
@@ -127,6 +120,7 @@ class Moderation(commands.Cog):
             )
         ]
     )
+    @commands.has_permissions(ban_members=True)
     async def ban_slash(self, ctx: SlashContext, member, reason=None):
         await self.ban(ctx, member, reason=reason)
 
@@ -142,8 +136,9 @@ class Moderation(commands.Cog):
             )
         ]
     )
+    @commands.has_permissions(ban_members=True)
     async def unban_slash(self, ctx: SlashContext, user: commands.MemberConverter):
-        await self.unban(ctx, member=user)
+        await self.unban(ctx, user=user)
 
     @cog_ext.cog_slash(
         name="lockdown",
@@ -157,6 +152,7 @@ class Moderation(commands.Cog):
             )
         ]
     )
+    @commands.has_permissions(manage_channels=True)
     async def lockdown_slash(self, ctx: SlashContext, channel: discord.TextChannel = None):
         await self.lockdown(ctx, channel=channel)
 
@@ -172,6 +168,7 @@ class Moderation(commands.Cog):
             )
         ]
     )
+    @commands.has_permissions(manage_channels=True)
     async def unlock_slash(self, ctx: SlashContext, channel: discord.TextChannel = None):
         await self.unlock(ctx, channel=channel)
 
