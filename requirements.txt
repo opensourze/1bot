@@ -1,4 +1,4 @@
 discord
 requests
-discord_slash
+discord-py-slash-command
 python-dotenv
