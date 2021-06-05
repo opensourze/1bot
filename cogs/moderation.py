@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+from discord_slash import cog_ext, SlashContext
+from discord_slash.utils.manage_commands import create_option
 
 
 class Moderation(commands.Cog):
@@ -23,16 +25,14 @@ class Moderation(commands.Cog):
     @commands.command(help="Kick a member by mention/ID/username/nickname, optional reason", brief="Kick a member")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: commands.MemberConverter, *, reason=None):
-        async with ctx.typing():
-            await ctx.guild.kick(member, reason=reason)
+        await ctx.guild.kick(member, reason=reason)
         await ctx.send(f"Kicked {member.mention}")
 
     # Ban command
     @commands.command(help="Ban a member by mention/ID/username/nickname, optional reason", brief="Ban a member")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: commands.MemberConverter, *, reason=None):
-        async with ctx.typing():
-            await ctx.guild.ban(member, reason=reason)
+        await ctx.guild.ban(member, reason=reason)
         await ctx.send(f"Banned {member.mention}")
 
     # Unban command
@@ -42,15 +42,13 @@ class Moderation(commands.Cog):
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split("#")
 
-        async with ctx.typing():
+        for ban_entry in banned_users:
+            user = ban_entry.user
 
-            for ban_entry in banned_users:
-                user = ban_entry.user
-
-                if (user.name, user.discriminator) == (member_name, member_discriminator):
-                    await ctx.guild.unban(user)
-                    await ctx.send(f"Unbanned {user.mention}")
-                    return
+            if (user.name, user.discriminator) == (member_name, member_discriminator):
+                await ctx.guild.unban(user)
+                await ctx.send(f"Unbanned {user.mention}")
+                return
 
     # Lockdown command
     @commands.command(
@@ -61,8 +59,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     async def lockdown(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
-        async with ctx.typing():
-            await channel.set_permissions(ctx.guild.default_role, send_messages=False)
+        await channel.set_permissions(ctx.guild.default_role, send_messages=False)
         await ctx.send(f"I have locked down {channel.mention}.")
 
     # Lockdown Unlock command
@@ -70,9 +67,113 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
-        async with ctx.typing():
-            await channel.set_permissions(ctx.guild.default_role, send_messages=True)
+        await channel.set_permissions(ctx.guild.default_role, send_messages=True)
         await ctx.send(f"I have unlocked {channel.mention}.")
+
+    # Slash commands
+
+    @cog_ext.cog_slash(
+        name="clear",
+        description="Clear multiple messages at once",
+        options=[
+            create_option(
+                name="amount",
+                description="Number of messages to delete (default = 5)",
+                required=False,
+                option_type=4
+            )
+        ]
+    )
+    async def clear_slash(self, ctx: SlashContext, amount: int = 5):
+        await self.clear(ctx, amount=amount)
+        await ctx.send(f"I have cleared {amount} messages", delete_after=2)
+
+    @cog_ext.cog_slash(
+        name="kick",
+        description="Kick a member from the server",
+        options=[
+            create_option(
+                name="member",
+                description="The user to kick",
+                required=True,
+                option_type=6
+            ),
+            create_option(
+                name="reason",
+                description="Why do you want to kick this user? (Optional)",
+                required=False,
+                option_type=3
+            )
+        ]
+    )
+    async def kick_slash(self, ctx: SlashContext, member, reason=None):
+        await self.kick(ctx, member, reason=reason)
+
+    @cog_ext.cog_slash(
+        name="ban",
+        description="Ban a member from the server",
+        options=[
+            create_option(
+                name="member",
+                description="The user to ban",
+                required=True,
+                option_type=6
+            ),
+            create_option(
+                name="reason",
+                description="Why do you want to ban this user? (Optional)",
+                required=False,
+                option_type=3
+            )
+        ]
+    )
+    async def ban_slash(self, ctx: SlashContext, member, reason=None):
+        await self.ban(ctx, member, reason=reason)
+
+    @cog_ext.cog_slash(
+        name="unban",
+        description="Unban a user from the server",
+        options=[
+            create_option(
+                name="user",
+                description="The user to unban (provide the user's full tag, it's case sensitive!)",
+                required=True,
+                option_type=3
+            )
+        ]
+    )
+    async def unban_slash(self, ctx: SlashContext, user: commands.MemberConverter):
+        await self.unban(ctx, member=user)
+
+    @cog_ext.cog_slash(
+        name="lockdown",
+        description="Remove permissions for users to send messages to the specified channel",
+        options=[
+            create_option(
+                name="channel",
+                description="The channel to lock down (optional, defaults to the channel you are in)",
+                required=False,
+                option_type=7
+            )
+        ]
+    )
+    async def lockdown_slash(self, ctx: SlashContext, channel: discord.TextChannel = None):
+        await self.lockdown(ctx, channel=channel)
+
+    @cog_ext.cog_slash(
+        name="unlock",
+        description="Remove a channel from lockdown",
+        options=[
+            create_option(
+                name="channel",
+                description="The channel to unlock (optional, defaults to the channel you are in)",
+                required=False,
+                option_type=7
+            )
+        ]
+    )
+    async def unlock_slash(self, ctx: SlashContext, channel: discord.TextChannel = None):
+        await self.unlock(ctx, channel=channel)
 
 
 def setup(client):
