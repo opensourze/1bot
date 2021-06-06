@@ -11,7 +11,7 @@ class Fun(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("Fun cog is ready")
+        print(f"{self.__class__.__name__} cog is ready")
 
     @commands.command(help="Get a random dad joke", brief="Get a random dad joke")
     async def dadjoke(self, ctx):

@@ -10,7 +10,7 @@ class Moderation(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("Moderation cog is ready")
+        print(f"{self.__class__.__name__} cog is ready")
 
     # Purge/Clear command
     @commands.command(

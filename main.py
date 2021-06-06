@@ -8,7 +8,8 @@ dotenv.load_dotenv()
 client = commands.Bot(command_prefix=commands.when_mentioned_or("_"),
                       case_insensitive=True,
                       activity=discord.Game("Slash commands are here! If the commands don't show up, kick the bot and add it back with the new link at dsc.gg/i-do-stuff"))
-slash = SlashCommand(client, sync_commands=True)
+slash = SlashCommand(client, sync_commands=True,
+                     delete_from_unused_guilds=True)
 
 
 @client.event
