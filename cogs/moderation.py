@@ -35,12 +35,6 @@ class Moderation(commands.Cog):
         await ctx.guild.ban(member, reason=reason)
         await ctx.send(f"Banned {member.mention}")
 
-    # Unban command
-    @commands.command(help="Unban a member by ID/tag", brief="Unban a member")
-    @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, *, user: discord.User):
-        await ctx.unban(user)
-
     # Lockdown command
     @commands.command(
         help="Remove permissions for members to send messages in a channel. Optional: provide a channel to lock (defaults to the channel you are inside)",
@@ -123,22 +117,6 @@ class Moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def ban_slash(self, ctx: SlashContext, member, reason=None):
         await self.ban(ctx, member, reason=reason)
-
-    @cog_ext.cog_slash(
-        name="unban",
-        description="Unban a user from the server",
-        options=[
-            create_option(
-                name="user",
-                description="The user to unban (provide the user's full tag, it's case sensitive!)",
-                required=True,
-                option_type=3
-            )
-        ]
-    )
-    @commands.has_permissions(ban_members=True)
-    async def unban_slash(self, ctx: SlashContext, user: commands.MemberConverter):
-        await self.unban(ctx, user=user)
 
     @cog_ext.cog_slash(
         name="lockdown",

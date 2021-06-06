@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
 dotenv.load_dotenv()
 
-client = commands.Bot(command_prefix="_",
+client = commands.Bot(command_prefix=commands.when_mentioned_or("_"),
                       case_insensitive=True,
                       activity=discord.Game("Slash commands are here! If the commands don't show up, kick the bot and add it back with the new link at dsc.gg/i-do-stuff"))
 slash = SlashCommand(client, sync_commands=True)
@@ -71,8 +71,8 @@ async def github_slash(ctx: SlashContext):
 
 
 # Loop through all files in cogs directory and load them
-for filename in os.listdir("./cogs"):
-    if filename.endswith(".py"):
-        client.load_extension(f"cogs.{filename[:-3]}")
+for file in os.listdir("./cogs"):
+    if file.endswith(".py"):
+        client.load_extension(f"cogs.{file[:-3]}")
 
 client.run(os.environ["TOKEN"])
