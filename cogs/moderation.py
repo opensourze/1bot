@@ -71,7 +71,7 @@ class Moderation(commands.Cog):
     )
     @commands.has_permissions(manage_messages=True)
     async def clear_slash(self, ctx: SlashContext, amount: int = 5):
-        await self.clear(ctx, amount=amount)
+        await self.clear(ctx, amount=amount-1)
         await ctx.send(f"I have cleared {amount} messages", delete_after=2)
 
     @cog_ext.cog_slash(

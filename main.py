@@ -5,9 +5,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
 dotenv.load_dotenv()
 
-client = commands.Bot(command_prefix=commands.when_mentioned_or("_"),
-                      case_insensitive=True,
-                      activity=discord.Game("Slash commands are here! If the commands don't show up, kick the bot and add it back with the new link at dsc.gg/i-do-stuff"))
+client = commands.Bot(command_prefix=commands.when_mentioned_or("_"), case_insensitive=True)
 slash = SlashCommand(client, sync_commands=True,
                      delete_from_unused_guilds=True)
 
@@ -34,7 +32,7 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send("I don't think that channel exists!")
 
 
-@client.command(help="Tests the bot's latency and displays it in miliseconds")
+@client.command(help="Tests the bot's latency and displays it in milliseconds")
 async def ping(ctx):
     await ctx.send(f"Pong! The bot's latency is `{round(client.latency * 1000)}ms`")
 
