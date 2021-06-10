@@ -90,7 +90,7 @@ async def ping_slash(ctx: SlashContext):
     await ping(ctx)
 
 
-@slash.slash(name="info", description="View the bot's information", guild_ids=[841226150789120000])
+@slash.slash(name="info", description="View the bot's information")
 async def info_slash(ctx: SlashContext):
     await info(ctx)
 
