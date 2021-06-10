@@ -5,7 +5,8 @@ from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
 dotenv.load_dotenv()
 
-client = commands.Bot(command_prefix=commands.when_mentioned_or("_"), case_insensitive=True)
+client = commands.Bot(
+    command_prefix=commands.when_mentioned_or("_"), case_insensitive=True)
 slash = SlashCommand(client, sync_commands=True,
                      delete_from_unused_guilds=True)
 
@@ -30,11 +31,41 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send("Bad Argument error - make sure you've typed your arguments correctly.")
     elif isinstance(error, commands.ChannelNotFound):
         await ctx.send("I don't think that channel exists!")
+    else:
+        print(error)
 
 
-@client.command(help="Tests the bot's latency and displays it in milliseconds")
+@client.command(help="Tests the bot's latency and displays it in milliseconds", brief="Tests the bot's latency")
 async def ping(ctx):
     await ctx.send(f"Pong! The bot's latency is `{round(client.latency * 1000)}ms`")
+
+
+@client.command(help="View the bot's information", brief="View information", aliases=["information"])
+async def info(ctx):
+    info_embed = discord.Embed(
+        title="`I Do Stuff` information", color=0xFF6600)
+    info_embed.add_field(
+        name="Source code",
+        value="View the bot's source code on [GitHub](https://github.com/opensourze/i-do-stuff)",
+        inline=False)
+    info_embed.add_field(
+        name="Creator",
+        value="[OpenSourze#0414](https://github.com/opensourze)",
+        inline=False
+    )
+    info_embed.add_field(
+        name="Version",
+        value="`0.5` :_)",
+        inline=False
+    )
+    info_embed.add_field(
+        name="Invite link",
+        value="[dsc.gg/i-do-stuff](https://dsc.gg/i-do-stuff)",
+        inline=False
+    )
+    info_embed.set_thumbnail(
+        url="https://cdn.discordapp.com/avatars/848936530617434142/548866771e35e12361e4822b3807e717.png?size=512")
+    await ctx.send(embed=info_embed)
 
 
 @client.command(hidden=True)
@@ -51,22 +82,17 @@ async def unload(ctx, extension):
     await ctx.send(f"Unloaded {extension}")
 
 
-@client.command(help="Get a link to the bot's source code on GitHub", aliases=["source", "sourcecode"])
-async def github(ctx):
-    await ctx.send("https://github.com/objectopensource/i-do-stuff-bot\nIf you want to run your own instance of the bot, clone the repository or download it as a .zip and run `main.py.` Feel free to fork the repository.\nThere is a `requirements.txt` file too, so you can install the requirements with `pip install -r requirements.txt`")
-
-
 # Slash commands
 
 
-@slash.slash(description="Test the bot's latency", name="ping")
+@slash.slash(name="ping", description="Test the bot's latency")
 async def ping_slash(ctx: SlashContext):
     await ping(ctx)
 
 
-@slash.slash(name="github", description="View the bot's source code on GitHub")
-async def github_slash(ctx: SlashContext):
-    await github(ctx)
+@slash.slash(name="info", description="View the bot's information", guild_ids=[841226150789120000])
+async def info_slash(ctx: SlashContext):
+    await info(ctx)
 
 
 # Loop through all files in cogs directory and load them

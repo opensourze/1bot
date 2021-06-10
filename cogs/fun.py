@@ -13,12 +13,14 @@ class Fun(commands.Cog):
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
 
+    # Dad joke command
     @commands.command(help="Get a random dad joke", brief="Get a random dad joke")
     async def dadjoke(self, ctx):
         r = requests.get(
             "https://official-joke-api.appspot.com/jokes/general/random").json()[0]
         await ctx.send(f"**{r['setup']}**\n\n{r['punchline']}")
 
+    # Programming joke command
     @commands.command(
         help="Get a random programming-related joke",
         brief="Get a programming joke",
@@ -29,6 +31,7 @@ class Fun(commands.Cog):
             "https://official-joke-api.appspot.com/jokes/programming/random").json()[0]
         await ctx.send(f"**{r['setup']}**\n\n{r['punchline']}")
 
+    # Reddit/meme command
     @commands.command(
         help="Get a random meme from Reddit (optionally provide any subreddit)",
         brief="Get a random meme from Reddit",
