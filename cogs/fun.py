@@ -16,9 +16,9 @@ class Fun(commands.Cog):
     # Dad joke command
     @commands.command(help="Get a random dad joke", brief="Get a random dad joke")
     async def dadjoke(self, ctx):
-        r = requests.get(
+        json = requests.get(
             "https://official-joke-api.appspot.com/jokes/general/random").json()[0]
-        await ctx.send(f"**{r['setup']}**\n\n{r['punchline']}")
+        await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
 
     # Programming joke command
     @commands.command(
@@ -27,9 +27,9 @@ class Fun(commands.Cog):
         aliases=["codingjoke", "codingdadjoke", "programmingdadjoke"]
     )
     async def programmingjoke(self, ctx):
-        r = requests.get(
+        json = requests.get(
             "https://official-joke-api.appspot.com/jokes/programming/random").json()[0]
-        await ctx.send(f"**{r['setup']}**\n\n{r['punchline']}")
+        await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
 
     # Reddit/meme command
     @commands.command(
@@ -40,19 +40,19 @@ class Fun(commands.Cog):
     @commands.bot_has_permissions(embed_links=True)
     async def meme(self, ctx, subreddit=None):
         if subreddit is not None:
-            r = requests.get(
+            json = requests.get(
                 f"https://meme-api.herokuapp.com/gimme/{subreddit}").json()
         else:
-            r = requests.get(f"https://meme-api.herokuapp.com/gimme").json()
+            json = requests.get(f"https://meme-api.herokuapp.com/gimme").json()
         try:
-            if r["code"]:
-                await ctx.send(r["message"])
+            if json["code"]:
+                await ctx.send(json["message"])
         except KeyError:
-            if r["nsfw"] == False:
-                await ctx.send(r["postLink"])
+            if json["nsfw"] == False:
+                await ctx.send(json["postLink"])
 
-        if r["nsfw"]:
-            await ctx.send(f"Warning: NSFW post!\n\n<{r['postLink']}>")
+        if json["nsfw"]:
+            await ctx.send(f"Warning: NSFW post!\n\n<{json['postLink']}>")
 
     # Slash commands
 
