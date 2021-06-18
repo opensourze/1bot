@@ -27,12 +27,8 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send("Only the owner of the bot can use this command.")
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("You've missed one or more required arguments. Check the command's help for what arguments you should provide.")
-    elif isinstance(error, commands.BadArgument):
-        await ctx.send("Bad Argument error - make sure you've typed your arguments correctly.")
     elif isinstance(error, commands.ChannelNotFound):
         await ctx.send("I don't think that channel exists!")
-    else:
-        print(error)
 
 
 @client.command(help="Tests the bot's latency and displays it in milliseconds", brief="Tests the bot's latency")
@@ -55,7 +51,7 @@ async def info(ctx):
     )
     info_embed.add_field(
         name="Version",
-        value="`0.5` :_)",
+        value="`0.7` :_)",
         inline=False
     )
     info_embed.add_field(

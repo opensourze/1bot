@@ -44,12 +44,16 @@ class Fun(commands.Cog):
                 f"https://meme-api.herokuapp.com/gimme/{subreddit}").json()
         else:
             json = requests.get(f"https://meme-api.herokuapp.com/gimme").json()
+
         try:
             if json["code"]:
                 await ctx.send(json["message"])
         except KeyError:
             if json["nsfw"] == False:
-                await ctx.send(json["postLink"])
+                meme_embed = discord.Embed(
+                    title=json["title"], color=0xFF6600, url=json["postLink"], description=f"r/{json['subreddit']}")
+                meme_embed.set_image(url=json["url"])
+                await ctx.send(embed=meme_embed)
 
         if json["nsfw"]:
             await ctx.send(f"Warning: NSFW post!\n\n<{json['postLink']}>")
