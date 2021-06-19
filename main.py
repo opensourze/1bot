@@ -46,7 +46,7 @@ async def info(ctx):
         inline=False)
     info_embed.add_field(
         name="Creator",
-        value="[OpenSourze#0414](https://github.com/opensourze)",
+        value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False
     )
     info_embed.add_field(

@@ -39,7 +39,7 @@ class Moderation(commands.Cog):
     @commands.command(
         help="Remove permissions for members to send messages in a channel. Optional: provide a channel to lock (defaults to the channel you are inside)",
         brief="Make a channel read-only",
-        aliases=["readonly"]
+        aliases=["readonly", "lock"]
     )
     @commands.has_permissions(manage_channels=True)
     async def lockdown(self, ctx, channel: discord.TextChannel = None):

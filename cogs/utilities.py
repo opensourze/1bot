@@ -27,10 +27,14 @@ class Utilities(commands.Cog):
     # GIF command
     @commands.command(help="Search for GIFs (filtered) on Tenor", brief="Search for GIFs on Tenor", aliases=["tenor"])
     async def gif(self, ctx, *, query):
+
         json = requests.get(
             f"https://g.tenor.com/v1/search?q={query}&key={os.getenv('TENORKEY')}&contentfilter=medium").json()
 
-        await ctx.send(json['results'][0]['url'])
+        if json.code == 200:
+            await ctx.send(json['results'][0]['url'])
+        else:
+            ctx.send(f"Something went wrong - error code {json.code}")
 
     # Slash commands
     @cog_ext.cog_slash(
