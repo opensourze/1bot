@@ -14,22 +14,29 @@ class Moderation(commands.Cog):
 
     # Purge/Clear command
     @commands.command(
-        help="Clear multiple messages at once (deletes 5 messages by default)", brief="Clear many messages at once",
-        aliases=["purge"]
+        help="Clear multiple messages at once (deletes 5 messages by default)",
+        brief="Clear many messages at once",
+        aliases=["purge"],
     )
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, amount=5):
-        await ctx.channel.purge(limit=amount+1)
+        await ctx.channel.purge(limit=amount + 1)
 
     # Kick command
-    @commands.command(help="Kick a member by mention/ID/username/nickname, optional reason", brief="Kick a member")
+    @commands.command(
+        help="Kick a member by mention/ID/username/nickname, optional reason",
+        brief="Kick a member",
+    )
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: commands.MemberConverter, *, reason=None):
         await ctx.guild.kick(member, reason=reason)
         await ctx.send(f"Kicked {member.mention}")
 
     # Ban command
-    @commands.command(help="Ban a member by mention/ID/username/nickname, optional reason", brief="Ban a member")
+    @commands.command(
+        help="Ban a member by mention/ID/username/nickname, optional reason",
+        brief="Ban a member",
+    )
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: commands.MemberConverter, *, reason=None):
         await ctx.guild.ban(member, reason=reason)
@@ -39,16 +46,19 @@ class Moderation(commands.Cog):
     @commands.command(
         help="Remove permissions for members to send messages in a channel. Optional: provide a channel to lock (defaults to the channel you are inside)",
         brief="Make a channel read-only",
-        aliases=["readonly", "lock"]
+        aliases=["readonly", "lock"],
     )
     @commands.has_permissions(manage_channels=True)
     async def lockdown(self, ctx, channel: discord.TextChannel = None):
+        # If channel is None, fall back to the channel where the command is being invoked
         channel = channel or ctx.channel
         await channel.set_permissions(ctx.guild.default_role, send_messages=False)
         await ctx.send(f"I have locked down {channel.mention}.")
 
     # Lockdown Unlock command
-    @commands.command(help="Remove a channel from lockdown", brief="Remove a channel from lockdown")
+    @commands.command(
+        help="Remove a channel from lockdown", brief="Remove a channel from lockdown"
+    )
     @commands.has_permissions(manage_channels=True)
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
@@ -65,13 +75,13 @@ class Moderation(commands.Cog):
                 name="amount",
                 description="Number of messages to delete (default = 5)",
                 required=False,
-                option_type=4
+                option_type=4,
             )
-        ]
+        ],
     )
     @commands.has_permissions(manage_messages=True)
     async def clear_slash(self, ctx: SlashContext, amount: int = 5):
-        await self.clear(ctx, amount=amount-1)
+        await self.clear(ctx, amount=amount - 1)
         await ctx.send(f"I have cleared {amount} messages", delete_after=2)
 
     @cog_ext.cog_slash(
@@ -82,15 +92,15 @@ class Moderation(commands.Cog):
                 name="member",
                 description="The user to kick",
                 required=True,
-                option_type=6
+                option_type=6,
             ),
             create_option(
                 name="reason",
                 description="Why do you want to kick this user? (Optional)",
                 required=False,
-                option_type=3
-            )
-        ]
+                option_type=3,
+            ),
+        ],
     )
     @commands.has_permissions(kick_members=True)
     async def kick_slash(self, ctx: SlashContext, member, reason=None):
@@ -104,15 +114,15 @@ class Moderation(commands.Cog):
                 name="member",
                 description="The user to ban",
                 required=True,
-                option_type=6
+                option_type=6,
             ),
             create_option(
                 name="reason",
                 description="Why do you want to ban this user? (Optional)",
                 required=False,
-                option_type=3
-            )
-        ]
+                option_type=3,
+            ),
+        ],
     )
     @commands.has_permissions(ban_members=True)
     async def ban_slash(self, ctx: SlashContext, member, reason=None):
@@ -126,12 +136,14 @@ class Moderation(commands.Cog):
                 name="channel",
                 description="The channel to lock down (optional, defaults to the channel you are in)",
                 required=False,
-                option_type=7
+                option_type=7,
             )
-        ]
+        ],
     )
     @commands.has_permissions(manage_channels=True)
-    async def lockdown_slash(self, ctx: SlashContext, channel: discord.TextChannel = None):
+    async def lockdown_slash(
+        self, ctx: SlashContext, channel: discord.TextChannel = None
+    ):
         await self.lockdown(ctx, channel=channel)
 
     @cog_ext.cog_slash(
@@ -142,14 +154,17 @@ class Moderation(commands.Cog):
                 name="channel",
                 description="The channel to unlock (optional, defaults to the channel you are in)",
                 required=False,
-                option_type=7
+                option_type=7,
             )
-        ]
+        ],
     )
     @commands.has_permissions(manage_channels=True)
-    async def unlock_slash(self, ctx: SlashContext, channel: discord.TextChannel = None):
+    async def unlock_slash(
+        self, ctx: SlashContext, channel: discord.TextChannel = None
+    ):
         await self.unlock(ctx, channel=channel)
 
 
+# Add cog
 def setup(client):
     client.add_cog(Moderation(client))

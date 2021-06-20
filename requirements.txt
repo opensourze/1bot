@@ -2,3 +2,4 @@ discord
 requests
 discord-py-slash-command
 python-dotenv
+temperature_converter_py

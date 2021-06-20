@@ -17,41 +17,48 @@ class Fun(commands.Cog):
     @commands.command(help="Get a random dad joke", brief="Get a random dad joke")
     async def dadjoke(self, ctx):
         json = requests.get(
-            "https://official-joke-api.appspot.com/jokes/general/random").json()[0]
+            "https://official-joke-api.appspot.com/jokes/general/random"
+        ).json()[0]
         await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
 
     # Programming joke command
     @commands.command(
         help="Get a random programming-related joke",
         brief="Get a programming joke",
-        aliases=["codingjoke", "codingdadjoke", "programmingdadjoke"]
+        aliases=["codingjoke", "codingdadjoke", "programmingdadjoke"],
     )
     async def programmingjoke(self, ctx):
         json = requests.get(
-            "https://official-joke-api.appspot.com/jokes/programming/random").json()[0]
+            "https://official-joke-api.appspot.com/jokes/programming/random"
+        ).json()[0]
         await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
 
     # Reddit/meme command
     @commands.command(
         help="Get a random meme from Reddit (optionally provide any subreddit)",
         brief="Get a random meme from Reddit",
-        aliases=["reddit"]
+        aliases=["reddit"],
     )
     @commands.bot_has_permissions(embed_links=True)
     async def meme(self, ctx, subreddit=None):
         if subreddit is not None:
             json = requests.get(
-                f"https://meme-api.herokuapp.com/gimme/{subreddit}").json()
+                f"https://meme-api.herokuapp.com/gimme/{subreddit}"
+            ).json()
         else:
             json = requests.get(f"https://meme-api.herokuapp.com/gimme").json()
 
         try:
-            if json["code"]:
-                await ctx.send(json["message"])
+            if json["code"]:  # If there is an error code...
+                await ctx.send(json["message"])  # Send the error message
         except KeyError:
             if json["nsfw"] == False:
                 meme_embed = discord.Embed(
-                    title=json["title"], color=0xFF6600, url=json["postLink"], description=f"r/{json['subreddit']}")
+                    title=json["title"],
+                    color=0xFF6600,
+                    url=json["postLink"],
+                    description=f"r/{json['subreddit']}",
+                )
                 meme_embed.set_image(url=json["url"])
                 await ctx.send(embed=meme_embed)
 
@@ -64,7 +71,9 @@ class Fun(commands.Cog):
     async def dadjoke_slash(self, ctx: SlashContext):
         await self.dadjoke(ctx)
 
-    @cog_ext.cog_slash(name="programmingjoke", description="Get a programming-related joke")
+    @cog_ext.cog_slash(
+        name="programmingjoke", description="Get a programming-related joke"
+    )
     async def programmingjoke_slash(self, ctx: SlashContext):
         await self.programmingjoke(ctx)
 
@@ -76,13 +85,14 @@ class Fun(commands.Cog):
                 name="subreddit",
                 description="Subreddit to get a post from (optional)",
                 required=False,
-                option_type=3
+                option_type=3,
             )
-        ]
+        ],
     )
     async def reddit_slash(self, ctx: SlashContext, subreddit: str = None):
         await self.meme(ctx, subreddit=subreddit)
 
 
+# Add cog
 def setup(client):
     client.add_cog(Fun(client))
