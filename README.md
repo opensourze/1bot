@@ -1,7 +1,5 @@
 # I Do Stuff - Discord bot
 
-### A discord.py bot that does stuff - basic moderation, dad jokes and programming jokes
+### A discord.py bot that does stuff - basic moderation, dad jokes and more
 
-[Click here to add the bot to a server](https://discord.com/api/oauth2/authorize?client_id=848936530617434142&permissions=201714806&scope=bot)
-
-###### \* _Since the bot is hosted on Heroku, it will go offline for a few days each month._
+[Click here to add the bot to a server](https://dsc.gg/i-do-stuff)
