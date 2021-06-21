@@ -60,7 +60,7 @@ async def info(ctx):
         value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False,
     )
-    info_embed.add_field(name="Version", value="`0.7` :_)", inline=False)
+    info_embed.add_field(name="Version", value="`1.0.0`", inline=False)
     info_embed.add_field(
         name="Invite link",
         value="[dsc.gg/i-do-stuff](https://dsc.gg/i-do-stuff)",

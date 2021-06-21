@@ -121,8 +121,8 @@ class Utilities(commands.Cog):
             )
         ],
     )
-    async def weather_slash(self, ctx: SlashContext, *, query):
-        await self.weather(ctx, query=query)
+    async def weather_slash(self, ctx: SlashContext, city):
+        await self.weather(ctx, query=city)
 
 
 # Add cog
