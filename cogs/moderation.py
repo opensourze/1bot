@@ -22,6 +22,37 @@ class Moderation(commands.Cog):
     async def clear(self, ctx, amount=5):
         await ctx.channel.purge(limit=amount + 1)
 
+    # Mute command
+    @commands.command(
+        help="Remove the permission for a member to send messages or speaking on voice",
+        brief="Disallow a member from sending messages or speaking",
+    )
+    @commands.has_permissions(manage_messages=True)
+    async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
+        muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+
+        if not muted_role:
+            muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
+
+            for (
+                channel
+            ) in ctx.guild.channels:  # Loop through channels and remove permissions
+                await channel.set_permissions(
+                    muted_role, send_messages=False, speak=False
+                )
+            await ctx.send("New Muted role created. Now muting member...")
+
+        await member.add_roles(muted_role, reason=reason)
+        await ctx.send(f"{member.mention} has been muted. Reason: {reason}")
+
+    # Unmute command
+    @commands.command(help="Unmute a member")
+    @commands.has_permissions(manage_messages=True)
+    async def unmute(self, ctx, member: commands.MemberConverter):
+        muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+        await member.remove_roles(muted_role)
+        await ctx.send(f"{member.mention} has been unmuted")
+
     # Kick command
     @commands.command(
         help="Kick a member by mention/ID/username/nickname, optional reason",
@@ -29,8 +60,9 @@ class Moderation(commands.Cog):
     )
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: commands.MemberConverter, *, reason=None):
+        await member.send(f"You were kicked from {ctx.guild.name}. Reason: {reason}")
         await ctx.guild.kick(member, reason=reason)
-        await ctx.send(f"Kicked {member.mention}")
+        await ctx.send(f"Kicked {member.mention}. Reason: {reason}")
 
     # Ban command
     @commands.command(
@@ -38,9 +70,15 @@ class Moderation(commands.Cog):
         brief="Ban a member",
     )
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: commands.MemberConverter, *, reason=None):
+    async def ban(self, ctx, member: commands.UserConverter, *, reason=None):
+        try:
+            await member.send(
+                f"You were banned from {ctx.guild.name}! Reason: {reason}"
+            )
+        except discord.Forbidden:
+            pass
         await ctx.guild.ban(member, reason=reason)
-        await ctx.send(f"Banned {member.mention}")
+        await ctx.send(f"Banned {member.mention}. Reason: {reason}")
 
     # Lockdown command
     @commands.command(
@@ -83,6 +121,38 @@ class Moderation(commands.Cog):
     async def clear_slash(self, ctx: SlashContext, amount: int = 5):
         await self.clear(ctx, amount=amount - 1)
         await ctx.send(f"I have cleared {amount} messages", delete_after=2)
+
+    @cog_ext.cog_slash(
+        name="mute",
+        description="Disallow a member from sending messages or speaking",
+        options=[
+            create_option(
+                name="member",
+                description="The member to mute",
+                required=True,
+                option_type=6,
+            )
+        ],
+    )
+    @commands.has_permissions(manage_messages=True)
+    async def mute_slash(self, ctx: SlashContext, member, reason=None):
+        await self.mute(ctx, member, reason=reason)
+
+    @cog_ext.cog_slash(
+        name="unmute",
+        description="Unmute a member",
+        options=[
+            create_option(
+                name="member",
+                description="The member to unmute",
+                required=True,
+                option_type=6,
+            )
+        ],
+    )
+    @commands.has_permissions(manage_messages=True)
+    async def unmute_slash(self, ctx: SlashContext, member):
+        await self.unmute(ctx, member)
 
     @cog_ext.cog_slash(
         name="kick",

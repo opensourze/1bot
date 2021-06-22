@@ -1,12 +1,15 @@
+print("Bot written by OpenSourze#1111")
+
 import discord
 import os
 import dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
+import platform
 
 dotenv.load_dotenv()
 
-client = commands.Bot(
+client = commands.AutoShardedBot(
     command_prefix=commands.when_mentioned_or("_"), case_insensitive=True
 )
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
@@ -14,7 +17,7 @@ slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 
 @client.event
 async def on_ready():
-    print("Main script is running")
+    print("-----\nThe bot is now online\n-----")
 
 
 @client.event
@@ -35,6 +38,8 @@ async def on_command_error(ctx, error):  # Error handlers
         )
     elif isinstance(error, commands.ChannelNotFound):
         await ctx.send("I don't think that channel exists!")
+    else:
+        print(error)
 
 
 @client.command(
@@ -60,11 +65,22 @@ async def info(ctx):
         value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False,
     )
+    info_embed.add_field(
+        name="Upvote",
+        value="[Upvote me on DiscordBotList](https://discordbotlist.com/bots/i-do-stuff/upvote)",
+    )
     info_embed.add_field(name="Version", value="`1.0.0`", inline=False)
     info_embed.add_field(
         name="Invite link",
         value="[dsc.gg/i-do-stuff](https://dsc.gg/i-do-stuff)",
         inline=False,
+    )
+    info_embed.add_field(name="Servers", value=len(client.guilds))
+    info_embed.add_field(
+        name="Discord.py version", value=discord.__version__, inline=False
+    )
+    info_embed.add_field(
+        name="Python version", value=platform.python_version(), inline=False
     )
     info_embed.set_thumbnail(
         url="https://cdn.discordapp.com/avatars/848936530617434142/548866771e35e12361e4822b3807e717.png?size=512"
@@ -84,6 +100,14 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     client.unload_extension(f"cogs.{extension}")
     await ctx.send(f"Unloaded {extension} cog")
+
+
+@client.command(hidden=True, aliases=["stop"])
+@commands.is_owner()
+async def logout(ctx, extension):
+    await ctx.send("Logging out")
+    print("\nLogged out")
+    client.logout()
 
 
 # Slash commands
