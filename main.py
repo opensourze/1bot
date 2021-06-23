@@ -33,8 +33,8 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send("Only the owner of the bot can use this command.")
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(
-            "You've missed one or more required arguments. \
-            Check the command's help for what arguments you should provide."
+            "You've missed one or more required arguments.\n"
+            + "Check the command's help for what arguments you should provide."
         )
     elif isinstance(error, commands.ChannelNotFound):
         await ctx.send("I don't think that channel exists!")
@@ -88,6 +88,13 @@ async def info(ctx):
     await ctx.send(embed=info_embed)
 
 
+@client.command(help="Create a suggestion for the bot")
+async def suggest(ctx, *, suggestion):
+    me = await client.fetch_user(748791790798372964)
+    await me.send("SUGGESTION:\n" + suggestion)
+    await ctx.send("Your suggestion has been submitted to the owner of the bot.")
+
+
 @client.command(hidden=True)
 @commands.is_owner()
 async def load(ctx, extension):
@@ -104,7 +111,7 @@ async def unload(ctx, extension):
 
 @client.command(hidden=True, aliases=["stop"])
 @commands.is_owner()
-async def logout(ctx, extension):
+async def logout(ctx):
     await ctx.send("Logging out")
     print("\nLogged out")
     client.logout()
@@ -121,6 +128,11 @@ async def ping_slash(ctx: SlashContext):
 @slash.slash(name="info", description="View the bot's information")
 async def info_slash(ctx: SlashContext):
     await info(ctx)
+
+
+@slash.slash(name="suggest", description="Create a suggestion for the bot")
+async def suggest(ctx: SlashContext, suggestion):
+    await suggest(ctx, suggestion=suggestion)
 
 
 # Loop through all files in cogs directory and load them
