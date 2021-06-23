@@ -38,6 +38,10 @@ async def on_command_error(ctx, error):  # Error handlers
         )
     elif isinstance(error, commands.ChannelNotFound):
         await ctx.send("I don't think that channel exists!")
+    elif isinstance(error, commands.CommandOnCooldown):
+        await ctx.send(
+            f"Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
+        )
     else:
         print(error)
 
@@ -89,6 +93,7 @@ async def info(ctx):
 
 
 @client.command(help="Create a suggestion for the bot")
+@commands.cooldown(1, 5, commands.BucketType.user)
 async def suggest(ctx, *, suggestion):
     me = await client.fetch_user(748791790798372964)
     await me.send("SUGGESTION:\n" + suggestion)
@@ -131,7 +136,7 @@ async def info_slash(ctx: SlashContext):
 
 
 @slash.slash(name="suggest", description="Create a suggestion for the bot")
-async def suggest(ctx: SlashContext, suggestion):
+async def suggest_slash(ctx: SlashContext, suggestion):
     await suggest(ctx, suggestion=suggestion)
 
 
