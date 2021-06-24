@@ -25,7 +25,7 @@ class Moderation(commands.Cog):
     # Mute command
     @commands.command(
         help="Remove the permission for a member to send messages or speaking on voice",
-        brief="Disallow a member from sending messages or speaking",
+        brief="Mute a member",
     )
     @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
@@ -48,7 +48,7 @@ class Moderation(commands.Cog):
     # Unmute command
     @commands.command(help="Unmute a member")
     @commands.has_permissions(manage_messages=True)
-    async def unmute(self, ctx, member: commands.MemberConverter):
+    async def unmute(self, ctx, *, member: commands.MemberConverter):
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
         await member.remove_roles(muted_role)
         await ctx.send(f"{member.mention} has been unmuted")
@@ -152,7 +152,7 @@ class Moderation(commands.Cog):
     )
     @commands.has_permissions(manage_messages=True)
     async def unmute_slash(self, ctx: SlashContext, member):
-        await self.unmute(ctx, member)
+        await self.unmute(ctx, member=member)
 
     @cog_ext.cog_slash(
         name="kick",

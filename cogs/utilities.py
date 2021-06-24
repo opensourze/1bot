@@ -74,6 +74,7 @@ class Utilities(commands.Cog):
                 title=f"Weather in {json['name']}",  # "Weather in <city name>"
                 description=weather_description,
                 color=0xFF6600,
+                timestamp=ctx.message.created_at,
             )
             weather_embed.set_thumbnail(url=icon_url)
 
@@ -94,8 +95,59 @@ class Utilities(commands.Cog):
             weather_embed.add_field(
                 name="Wind direction", value=f"{json['wind']['deg']}°"
             )
+            weather_embed.set_footer(f"Weather requested by {ctx.author.name}")
 
             await ctx.send(embed=weather_embed)
+
+    # Avatar command
+    @commands.command(
+        help="Get your/any user's avatar", brief="Get a user's avatar", aliases=["av"]
+    )
+    async def avatar(self, ctx, *, user: commands.MemberConverter = None):
+        user = user or ctx.author  # Set to author if user is None
+        avatar_embed = discord.Embed(color=0xFF6600, title=f"{user.name}'s avatar")
+        avatar_embed.set_image(url=f"{user.avatar_url}")
+        await ctx.send(embed=avatar_embed)
+
+    # Server Info command
+    @commands.command(
+        help="View information about the current server",
+        brief="View server info",
+        aliases=["server"],
+    )
+    async def serverinfo(self, ctx):
+        owner = await self.client.fetch_user(ctx.guild.owner_id)
+
+        embed = discord.Embed(title=f"{ctx.guild.name} information", color=0xFF6600)
+        embed.set_thumbnail(url=ctx.guild.icon_url)
+        embed.add_field(name="Owner", value=f"{owner.name}#{owner.discriminator}")
+        embed.add_field(name="Created on", value=str(ctx.guild.created_at)[:10])
+        embed.add_field(name="Region", value=str(ctx.guild.region).capitalize())
+        embed.add_field(name="Member count", value=ctx.guild.member_count)
+        embed.add_field(name="Emojis", value=f"{len(ctx.guild.emojis)} emojis")
+        embed.add_field(name="Boost level", value=f"Level {ctx.guild.premium_tier}")
+
+        await ctx.send(embed=embed)
+
+    # User Info command
+    @commands.command(help="View a member's information", aliases=["whois"])
+    async def userinfo(self, ctx, *, member: commands.MemberConverter = None):
+        member = member or ctx.author
+
+        roles = [role for role in member.roles]
+
+        embed = discord.Embed(name=member.name, color=member.color)
+        embed.set_thumbnail(url=member.avatar_url)
+        embed.add_field(name="Account creation date", value=str(member.created_at)[:10])
+        embed.add_field(name="Joined this server on", value=str(member.joined_at)[:10])
+        embed.add_field(
+            name=f"Roles ({len(roles)})",
+            value=" ".join([role.mention for role in roles]),
+            inline=False,
+        )
+        embed.add_field(name="Is this user a bot?", value=member.bot)
+
+        await ctx.send(embed=embed)
 
     # Slash commands
 
@@ -123,6 +175,42 @@ class Utilities(commands.Cog):
     )
     async def weather_slash(self, ctx: SlashContext, city):
         await self.weather(ctx, query=city)
+
+    @cog_ext.cog_slash(
+        name="avatar",
+        description="Get a user's avatar",
+        options=[
+            create_option(
+                name="user",
+                description="Which user's avatar do you want to see?",
+                required=True,
+                option_type=6,
+            )
+        ],
+    )
+    async def avatar_slash(self, ctx: SlashContext, *, user):
+        await self.avatar(ctx, user=user)
+
+    @cog_ext.cog_slash(
+        name="serverinfo", description="View information about the current server"
+    )
+    async def serverinfo_slash(self, ctx: SlashContext):
+        await self.serverinfo(ctx)
+
+    @cog_ext.cog_slash(
+        name="userinfo",
+        description="View information about a user",
+        options=[
+            create_option(
+                name="user",
+                description="Which user's information do you want to see?",
+                type=6,
+                required=True,
+            )
+        ],
+    )
+    async def userinfo_slash(self, ctx: SlashContext, member):
+        await self.userinfo(ctx, member=member)
 
 
 # Add cog

@@ -42,10 +42,11 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send(
             f"Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
         )
-    else:
-        print(error)
+    # else:
+    #     print(error)
 
 
+# Ping command
 @client.command(
     help="Tests the bot's latency and displays it in milliseconds",
     brief="Tests the bot's latency",
@@ -54,6 +55,7 @@ async def ping(ctx):
     await ctx.send(f"Pong! The bot's latency is `{round(client.latency * 1000)}ms`")
 
 
+# Info command
 @client.command(
     help="View the bot's information", brief="View information", aliases=["information"]
 )
@@ -92,26 +94,21 @@ async def info(ctx):
     await ctx.send(embed=info_embed)
 
 
+# Upvote command
+@client.command(help="Upvote me on DiscordBotList")
+async def upvote(ctx):
+    await ctx.send(
+        "If you like this bot, upvote it on DiscordBotList to help it grow!\n\nhttps://discordbotlist.com/bots/i-do-stuff/upvote/"
+    )
+
+
+# Suggest command
 @client.command(help="Create a suggestion for the bot")
 @commands.cooldown(1, 5, commands.BucketType.user)
 async def suggest(ctx, *, suggestion):
     me = await client.fetch_user(748791790798372964)
     await me.send("SUGGESTION:\n" + suggestion)
     await ctx.send("Your suggestion has been submitted to the owner of the bot.")
-
-
-@client.command(hidden=True)
-@commands.is_owner()
-async def load(ctx, extension):
-    client.load_extension(f"cogs.{extension}")
-    await ctx.send(f"Loaded {extension} cog")
-
-
-@client.command(hidden=True)
-@commands.is_owner()
-async def unload(ctx, extension):
-    client.unload_extension(f"cogs.{extension}")
-    await ctx.send(f"Unloaded {extension} cog")
 
 
 @client.command(hidden=True, aliases=["stop"])
