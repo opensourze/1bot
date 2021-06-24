@@ -204,7 +204,7 @@ class Utilities(commands.Cog):
             create_option(
                 name="user",
                 description="Which user's information do you want to see?",
-                type=6,
+                option_type=6,
                 required=True,
             )
         ],
