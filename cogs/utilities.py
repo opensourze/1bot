@@ -74,7 +74,6 @@ class Utilities(commands.Cog):
                 title=f"Weather in {json['name']}",  # "Weather in <city name>"
                 description=weather_description,
                 color=0xFF6600,
-                timestamp=ctx.message.created_at,
             )
             weather_embed.set_thumbnail(url=icon_url)
 

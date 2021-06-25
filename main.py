@@ -9,8 +9,21 @@ import platform
 
 dotenv.load_dotenv()
 
+
+class CustomHelpCommand(commands.MinimalHelpCommand):
+    async def send_pages(self):
+        destination = self.get_destination()
+        for page in self.paginator.pages:
+            embed = discord.Embed(title="Commands", description=page, color=0xFF6600)
+            embed.set_author(name="I Do Stuff", icon_url=client.user.avatar_url)
+
+            await destination.send(embed=embed)
+
+
 client = commands.AutoShardedBot(
-    command_prefix=commands.when_mentioned_or("_"), case_insensitive=True
+    command_prefix=commands.when_mentioned_or("_"),
+    case_insensitive=True,
+    help_command=CustomHelpCommand(),
 )
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 
@@ -42,8 +55,8 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send(
             f"Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
         )
-    # else:
-    #     print(error)
+    else:
+        print(error)
 
 
 # Ping command
@@ -75,7 +88,7 @@ async def info(ctx):
         name="Upvote",
         value="[Upvote me on DiscordBotList](https://discordbotlist.com/bots/i-do-stuff/upvote)",
     )
-    info_embed.add_field(name="Version", value="`1.0.0`", inline=False)
+    info_embed.add_field(name="Version", value="`1.0.1`", inline=False)
     info_embed.add_field(
         name="Invite link",
         value="[dsc.gg/i-do-stuff](https://dsc.gg/i-do-stuff)",
