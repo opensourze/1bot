@@ -55,8 +55,14 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send(
             f"Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
         )
-    else:
-        print(error)
+    # else:
+    #     print(error)
+
+
+@client.event
+async def on_slash_command_error(ctx, error):
+    # Send slash command errors to ext.commands error handler
+    await on_command_error(ctx, error)
 
 
 # Ping command
@@ -88,7 +94,7 @@ async def info(ctx):
         name="Upvote",
         value="[Upvote me on DiscordBotList](https://discordbotlist.com/bots/i-do-stuff/upvote)",
     )
-    info_embed.add_field(name="Version", value="`1.0.2`", inline=False)
+    info_embed.add_field(name="Version", value="`1.0.3`", inline=False)
     info_embed.add_field(
         name="Invite link",
         value="[dsc.gg/i-do-stuff](https://dsc.gg/i-do-stuff)",
@@ -111,7 +117,9 @@ async def info(ctx):
 @client.command(help="Upvote me on DiscordBotList")
 async def upvote(ctx):
     await ctx.send(
-        "If you like this bot, upvote it on DiscordBotList to help it grow!\n\nhttps://discordbotlist.com/bots/i-do-stuff/upvote/"
+        "If you like this bot, upvote it on DiscordBotList to help it grow!\n\
+        You can upvote every 12 hours.\n\n\
+        https://discordbotlist.com/bots/i-do-stuff/upvote/"
     )
 
 
@@ -120,7 +128,12 @@ async def upvote(ctx):
 @commands.cooldown(1, 5, commands.BucketType.user)
 async def suggest(ctx, *, suggestion):
     me = await client.fetch_user(748791790798372964)
-    await me.send("SUGGESTION:\n" + suggestion)
+
+    embed = discord.Embed(title="Suggestion", description=suggestion, color=0xFF6600)
+    embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+    embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
+
+    await me.send(embed=embed)
     await ctx.send("Your suggestion has been submitted to the owner of the bot.")
 
 
@@ -146,6 +159,7 @@ async def info_slash(ctx: SlashContext):
 
 
 @slash.slash(name="suggest", description="Create a suggestion for the bot")
+@commands.cooldown(1, 5, commands.BucketType.user)
 async def suggest_slash(ctx: SlashContext, suggestion):
     await suggest(ctx, suggestion=suggestion)
 
