@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option
 import requests
+from random import choice
 
 
 class Fun(commands.Cog):
@@ -65,6 +66,40 @@ class Fun(commands.Cog):
         if json["nsfw"]:
             await ctx.send(f"Warning: NSFW post!\n\n<{json['postLink']}>")
 
+    # 8ball command
+    @commands.command(help="Ask the magic 8-ball a question", aliases=["8ball"])
+    async def eightball(self, ctx, *, question):
+        responses = [
+            # Affirmative
+            "It is certain.",
+            "It is decidedly so.",
+            "Without a doubt.",
+            "Yes, definitely.",
+            "You may rely on it.",
+            "As I see it, yes.",
+            "Most likely.",
+            "Outlook good.",
+            "Yes.",
+            "Signs point to yes.",
+            # Non-committal
+            "Reply hazy, try again.",
+            "Ask again later.",
+            "Better not to tell you now.",
+            "Cannot predict now.",
+            "Concentrate and ask again.",
+            # Negative
+            "Don't count on it.",
+            "My reply is no.",
+            "My sources say no.",
+            "Outlook not so good.",
+            "Very doubtful.",
+        ]
+
+        random_response = choice(responses)
+        await ctx.send(
+            f'Your question was: "{question}"\n\n*The magic 8-ball says...*\n\n{random_response}'
+        )
+
     # Slash commands
 
     @cog_ext.cog_slash(name="dadjoke", description="Get a random dad joke")
@@ -91,6 +126,21 @@ class Fun(commands.Cog):
     )
     async def reddit_slash(self, ctx: SlashContext, subreddit: str = None):
         await self.meme(ctx, subreddit=subreddit)
+
+    @cog_ext.cog_slash(
+        name="8ball",
+        description="Ask the magic 8-ball a question",
+        options=[
+            create_option(
+                name="question",
+                description="What do you want to ask?",
+                required=True,
+                option_type=3
+            )
+        ]
+    )
+    async def eightball_slashes(self, ctx: SlashContext, question):
+        await self.eightball(ctx, question=question)
 
 
 # Add cog

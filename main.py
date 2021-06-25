@@ -88,7 +88,7 @@ async def info(ctx):
         name="Upvote",
         value="[Upvote me on DiscordBotList](https://discordbotlist.com/bots/i-do-stuff/upvote)",
     )
-    info_embed.add_field(name="Version", value="`1.0.1`", inline=False)
+    info_embed.add_field(name="Version", value="`1.0.2`", inline=False)
     info_embed.add_field(
         name="Invite link",
         value="[dsc.gg/i-do-stuff](https://dsc.gg/i-do-stuff)",
