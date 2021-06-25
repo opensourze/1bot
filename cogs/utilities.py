@@ -94,7 +94,6 @@ class Utilities(commands.Cog):
             weather_embed.add_field(
                 name="Wind direction", value=f"{json['wind']['deg']}°"
             )
-            weather_embed.set_footer(f"Weather requested by {ctx.author.name}")
 
             await ctx.send(embed=weather_embed)
 
