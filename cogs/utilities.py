@@ -99,7 +99,9 @@ class Utilities(commands.Cog):
 
     # Avatar command
     @commands.command(
-        help="Get your/any user's avatar", brief="Get a user's avatar", aliases=["av"]
+        help="Get your/any user's avatar",
+        brief="Get a user's avatar",
+        aliases=["av", "pfp"],
     )
     async def avatar(self, ctx, *, user: commands.MemberConverter = None):
         user = user or ctx.author  # Set to author if user is None
@@ -128,19 +130,23 @@ class Utilities(commands.Cog):
         await ctx.send(embed=embed)
 
     # User Info command
-    @commands.command(help="View a member's information", aliases=["whois"])
+    @commands.command(help="View a member's information", aliases=["whois", "user"])
     async def userinfo(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
 
-        roles = [role for role in member.roles]
+        roles = [role.mention for role in member.roles][::-1][:-1] or ["None"]
+        if roles[0] == "None":
+            role_length = 0
+        else:
+            role_length = len(roles)
 
-        embed = discord.Embed(name=member.name, color=member.color)
+        embed = discord.Embed(title=member.name, color=member.color)
         embed.set_thumbnail(url=member.avatar_url)
         embed.add_field(name="Account creation date", value=str(member.created_at)[:10])
         embed.add_field(name="Joined this server on", value=str(member.joined_at)[:10])
         embed.add_field(
-            name=f"Roles ({len(roles)})",
-            value=" ".join([role.mention for role in roles]),
+            name=f"Roles ({role_length})",
+            value=" ".join(roles),
             inline=False,
         )
         embed.add_field(name="Is this user a bot?", value=member.bot)

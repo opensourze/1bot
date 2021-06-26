@@ -90,16 +90,6 @@ async def info(ctx):
         value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False,
     )
-    info_embed.add_field(
-        name="Upvote",
-        value="[Upvote me on DiscordBotList](https://discordbotlist.com/bots/i-do-stuff/upvote)",
-    )
-    info_embed.add_field(name="Version", value="`1.0.3`", inline=False)
-    info_embed.add_field(
-        name="Invite link",
-        value="[dsc.gg/i-do-stuff](https://dsc.gg/i-do-stuff)",
-        inline=False,
-    )
     info_embed.add_field(name="Servers", value=len(client.guilds))
     info_embed.add_field(
         name="Discord.py version", value=discord.__version__, inline=False
@@ -109,6 +99,11 @@ async def info(ctx):
     )
     info_embed.set_thumbnail(
         url="https://cdn.discordapp.com/avatars/848936530617434142/548866771e35e12361e4822b3807e717.png?size=512"
+    )
+    info_embed.add_field(
+        name="Links",
+        value="[Invite](https://dsc.gg/i-do-stuff) | [Upvote](https://discordbotlist.com/bots/i-do-stuff/upvote)",
+        inline=False,
     )
     await ctx.send(embed=info_embed)
 
@@ -125,7 +120,7 @@ async def upvote(ctx):
 
 # Suggest command
 @client.command(help="Create a suggestion for the bot")
-@commands.cooldown(1, 5, commands.BucketType.user)
+@commands.cooldown(1, 10, commands.BucketType.user)
 async def suggest(ctx, *, suggestion):
     me = await client.fetch_user(748791790798372964)
 
@@ -159,7 +154,7 @@ async def info_slash(ctx: SlashContext):
 
 
 @slash.slash(name="suggest", description="Create a suggestion for the bot")
-@commands.cooldown(1, 5, commands.BucketType.user)
+@commands.cooldown(1, 10, commands.BucketType.user)
 async def suggest_slash(ctx: SlashContext, suggestion):
     await suggest(ctx, suggestion=suggestion)
 

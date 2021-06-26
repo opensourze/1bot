@@ -4,6 +4,7 @@ from discord_slash import cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option
 import requests
 from random import choice
+from asyncio import sleep
 
 
 class Fun(commands.Cog):
@@ -67,7 +68,9 @@ class Fun(commands.Cog):
             await ctx.send(f"Warning: NSFW post!\n\n<{json['postLink']}>")
 
     # 8ball command
-    @commands.command(help="Ask the magic 8-ball a question", aliases=["8ball"])
+    @commands.command(
+        help="Ask the magic 8-ball a question", name="8ball", aliases=["eightball"]
+    )
     async def eightball(self, ctx, *, question):
         responses = [
             # Affirmative
@@ -96,8 +99,13 @@ class Fun(commands.Cog):
         ]
 
         random_response = choice(responses)
-        await ctx.send(
-            f'Your question was: "{question}"\n\n*The magic 8-ball says...*\n\n{random_response}'
+
+        message = await ctx.send(
+            f'Your question was: "{question}"\n\n*The magic 8-ball says...*'
+        )
+        await sleep(2)
+        await message.edit(
+            content=f'Your question was: "{question}"\n\n*The magic 8-ball says...*\n**{random_response}**'
         )
 
     # Slash commands
@@ -135,9 +143,9 @@ class Fun(commands.Cog):
                 name="question",
                 description="What do you want to ask?",
                 required=True,
-                option_type=3
+                option_type=3,
             )
-        ]
+        ],
     )
     async def eightball_slashes(self, ctx: SlashContext, question):
         await self.eightball(ctx, question=question)
