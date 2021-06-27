@@ -1,11 +1,13 @@
 print("Bot written by OpenSourze#1111")
 
 import discord
-import os
-import dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
+import os
+import dotenv
 import platform
+from asyncio import sleep
+from itertools import cycle
 
 dotenv.load_dotenv()
 
@@ -30,7 +32,26 @@ slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 
 @client.event
 async def on_ready():
-    print("-----\nThe bot is now online\n-----")
+    print("-----\nThe bot is now online")
+    print(f"{len(client.guilds)} servers\n-----")
+
+
+async def change_status():
+    statuses = cycle(
+        [
+            "you can run my commands in DMs too!",
+            "_help",
+            "I want that verified checkmark.",
+        ]
+    )
+
+    while not client.is_closed():
+        # status = random.choice(statuses)
+        await client.change_presence(activity=discord.Game(name=next(statuses)))
+        await sleep(6)
+
+
+client.loop.create_task(change_status())
 
 
 @client.event
@@ -136,8 +157,7 @@ async def suggest(ctx, *, suggestion):
 @commands.is_owner()
 async def logout(ctx):
     await ctx.send("Logging out")
-    print("\nLogged out")
-    client.logout()
+    await client.close()
 
 
 # Slash commands
