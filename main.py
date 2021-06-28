@@ -46,7 +46,6 @@ async def change_status():
     )
 
     while not client.is_closed():
-        # status = random.choice(statuses)
         await client.change_presence(activity=discord.Game(name=next(statuses)))
         await sleep(6)
 
@@ -111,7 +110,6 @@ async def info(ctx):
         value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False,
     )
-    info_embed.add_field(name="Servers", value=len(client.guilds))
     info_embed.add_field(
         name="Discord.py version", value=discord.__version__, inline=False
     )
@@ -177,6 +175,11 @@ async def info_slash(ctx: SlashContext):
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def suggest_slash(ctx: SlashContext, suggestion):
     await suggest(ctx, suggestion=suggestion)
+
+
+@slash.slash(name="upvote", description="Upvote me on DiscordBotList")
+async def upvote_slash(ctx: SlashContext):
+    await upvote(ctx)
 
 
 # Loop through all files in cogs directory and load them
