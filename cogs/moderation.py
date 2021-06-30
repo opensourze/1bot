@@ -29,21 +29,32 @@ class Moderation(commands.Cog):
     )
     @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
-        muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+        if member.id == self.client.user.id:
+            await ctx.send("Come on. I can't mute myself like that.")
+        else:
+            muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-        if not muted_role:
-            muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
+            if not muted_role:
+                muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
 
-            for (
-                channel
-            ) in ctx.guild.channels:  # Loop through channels and remove permissions
-                await channel.set_permissions(
-                    muted_role, send_messages=False, speak=False
-                )
-            await ctx.send("New Muted role created. Now muting member...")
+                for (
+                    channel
+                ) in ctx.guild.channels:  # Loop through channels and remove permissions
+                    await channel.set_permissions(
+                        muted_role, send_messages=False, speak=False
+                    )
+                await ctx.send("New Muted role created. Now muting member...")
 
-        await member.add_roles(muted_role, reason=reason)
-        await ctx.send(f"{member.mention} has been muted. Reason: {reason}")
+            await member.add_roles(muted_role, reason=reason)
+            await ctx.send(f"{member.mention} has been muted. Reason: {reason}")
+
+    @mute.error
+    async def mute_error(self, ctx, error):
+        if isinstance(error, discord.Forbidden):
+            await ctx.send(
+                "Error! Is my role higher than the Muted role?\n"
+                + "Please move it above the Muted role if it isn't!"
+            )
 
     # Unmute command
     @commands.command(help="Unmute a member")

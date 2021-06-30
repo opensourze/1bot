@@ -120,7 +120,7 @@ class Utilities(commands.Cog):
 
         embed = discord.Embed(title=f"{ctx.guild.name} information", color=0xFF6600)
         embed.set_thumbnail(url=ctx.guild.icon_url)
-        embed.add_field(name="Owner", value=f"{owner.name}#{owner.discriminator}")
+        embed.add_field(name="Owner", value=str(owner))
         embed.add_field(name="Created on", value=str(ctx.guild.created_at)[:10])
         embed.add_field(name="Region", value=str(ctx.guild.region).capitalize())
         embed.add_field(name="Member count", value=ctx.guild.member_count)
@@ -134,7 +134,7 @@ class Utilities(commands.Cog):
     async def userinfo(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
 
-        roles = [role.mention for role in member.roles][::-1][:-1] or ["None"]
+        roles = [role.mention for role in member.roles][1::-1] or ["None"]
         if roles[0] == "None":
             role_length = 0
         else:

@@ -131,9 +131,9 @@ async def info(ctx):
 @client.command(help="Upvote me on DiscordBotList")
 async def upvote(ctx):
     await ctx.send(
-        "If you like this bot, upvote it on DiscordBotList to help it grow!\n\
-        You can upvote every 12 hours.\n\n\
-        https://discordbotlist.com/bots/i-do-stuff/upvote/"
+        "If you like this bot, upvote it on DiscordBotList to help it grow!\n"
+        + "You can upvote every 12 hours.\n\n"
+        + "https://discordbotlist.com/bots/i-do-stuff/upvote/"
     )
 
 
@@ -151,7 +151,7 @@ async def suggest(ctx, *, suggestion):
     await ctx.send("Your suggestion has been submitted to the owner of the bot.")
 
 
-@client.command(hidden=True, aliases=["stop"])
+@client.command(hidden=True, aliases=["stop", "close"])
 @commands.is_owner()
 async def logout(ctx):
     await ctx.send("Logging out")
