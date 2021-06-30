@@ -147,7 +147,7 @@ class Fun(commands.Cog):
             )
         ],
     )
-    async def eightball_slashes(self, ctx: SlashContext, question):
+    async def eightball_slash(self, ctx: SlashContext, question):
         await self.eightball(ctx, question=question)
 
 

@@ -23,7 +23,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
 
 
 client = commands.AutoShardedBot(
-    command_prefix=commands.when_mentioned_or("-"),
+    command_prefix=commands.when_mentioned_or("_"),
     case_insensitive=True,
     help_command=CustomHelpCommand(),
 )
@@ -51,10 +51,16 @@ client.loop.create_task(change_status())
 async def on_command_error(ctx, error):  # Error handlers
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.send(
-            ":x: Command failed - I don't have enough permissions to run this command!"
+            ":x: I don't have enough permissions to run this command!\n"
+            + "Missing permissions: "
+            + f"`{', '.join(error.missing_perms)}`"
         )
     elif isinstance(error, commands.MissingPermissions):
-        await ctx.send(":x: You don't have enough permissions to use this command.")
+        await ctx.send(
+            ":x: You don't have enough permissions to use this command.\n"
+            + "Missing permissions: "
+            + f"`{', '.join(error.missing_perms)}`"
+        )
     elif isinstance(error, commands.NotOwner):
         await ctx.send(":x: Only the owner of the bot can use this command.")
     elif isinstance(error, commands.MissingRequiredArgument):
@@ -76,6 +82,15 @@ async def on_command_error(ctx, error):  # Error handlers
 async def on_slash_command_error(ctx, error):
     # Send slash command errors to normal commands error handler
     await on_command_error(ctx, error)
+
+
+@client.event
+async def on_message(message):
+    if (
+        message.content == f"<@!{client.user.id}>"
+        or message.content == f"<@{client.user.id}>"
+    ):
+        await message.channel.send("My prefix is `_` (underscore)")
 
 
 # Ping command
@@ -109,13 +124,13 @@ async def info(ctx):
     info_embed.add_field(
         name="Python version", value=platform.python_version(), inline=False
     )
-    info_embed.set_thumbnail(
-        url="https://cdn.discordapp.com/avatars/848936530617434142/548866771e35e12361e4822b3807e717.png?size=512"
-    )
     info_embed.add_field(
         name="Links",
         value="[Invite](https://dsc.gg/i-do-stuff) | [Upvote](https://discordbotlist.com/bots/i-do-stuff/upvote)",
         inline=False,
+    )
+    info_embed.set_thumbnail(
+        url="https://cdn.discordapp.com/avatars/848936530617434142/548866771e35e12361e4822b3807e717.png?size=512"
     )
     await ctx.send(embed=info_embed)
 

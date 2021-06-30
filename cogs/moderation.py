@@ -44,12 +44,6 @@ class Moderation(commands.Cog):
 
         bot = ctx.guild.get_member(self.client.user.id)
         bot_role = bot.top_role
-        if member.top_role >= ctx.author.top_role:
-            await ctx.send(
-                ":x: The user has a higher role or the same role as your top role.\n"
-                + "I can't mute them!"
-            )
-            return
 
         if bot_role <= member.top_role:
             await ctx.send(
@@ -58,23 +52,22 @@ class Moderation(commands.Cog):
             )
             return
 
-        if bot_role <= muted_role:
-            await ctx.send(
-                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
-            )
-            return
-
         if not muted_role:
+            await ctx.send(
+                ":information_source: Couldn't find a Muted role in this server. Creating a new one..."
+            )
             muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
 
             for channel in ctx.guild.channels:
                 await channel.set_permissions(
                     muted_role, send_messages=False, speak=False
                 )
-                await ctx.send(
-                    ":information: New Muted role created. Now muting member..."
-                )
-                break
+
+        if bot_role <= muted_role:
+            await ctx.send(
+                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
+            )
+            return
 
         await member.add_roles(muted_role, reason=reason)
         await ctx.send(
