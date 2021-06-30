@@ -18,6 +18,7 @@ class Moderation(commands.Cog):
         brief="Clear many messages at once",
         aliases=["purge"],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, amount=5):
         await ctx.channel.purge(limit=amount + 1)
@@ -27,69 +28,101 @@ class Moderation(commands.Cog):
         help="Remove the permission for a member to send messages or speaking on voice",
         brief="Mute a member",
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
-        if member.id == self.client.user.id:
-            await ctx.send("Come on. I can't mute myself like that.")
-        else:
-            muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+        muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-            if not muted_role:
-                muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
+        if member == ctx.author:
+            await ctx.send(":x: You can't mute yourself!")
+            return
 
-                for (
-                    channel
-                ) in ctx.guild.channels:  # Loop through channels and remove permissions
-                    await channel.set_permissions(
-                        muted_role, send_messages=False, speak=False
-                    )
-                await ctx.send("New Muted role created. Now muting member...")
+        if member == self.client.user:
+            await ctx.send(":x: I can't mute myself!")
+            return
 
-            await member.add_roles(muted_role, reason=reason)
-            await ctx.send(f"{member.mention} has been muted. Reason: {reason}")
-
-    @mute.error
-    async def mute_error(self, ctx, error):
-        if isinstance(error, discord.Forbidden):
+        bot = ctx.guild.get_member(self.client.user.id)
+        bot_role = bot.top_role
+        if member.top_role >= ctx.author.top_role:
             await ctx.send(
-                "Error! Is my role higher than the Muted role?\n"
-                + "Please move it above the Muted role if it isn't!"
+                ":x: The user has a higher role or the same role as your top role.\n"
+                + "I can't mute them!"
             )
+            return
+
+        if bot_role <= member.top_role:
+            await ctx.send(
+                ":x: The user has a higher role or the same top role as mine.\n"
+                + "Please move my role higher!"
+            )
+            return
+
+        if bot_role <= muted_role:
+            await ctx.send(
+                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
+            )
+            return
+
+        if not muted_role:
+            muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
+
+            for channel in ctx.guild.channels:
+                await channel.set_permissions(
+                    muted_role, send_messages=False, speak=False
+                )
+                await ctx.send(
+                    ":information: New Muted role created. Now muting member..."
+                )
+                break
+
+        await member.add_roles(muted_role, reason=reason)
+        await ctx.send(
+            f":white_check_mark: {member.mention} has been muted with the reason: {reason}."
+        )
 
     # Unmute command
     @commands.command(help="Unmute a member")
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def unmute(self, ctx, *, member: commands.MemberConverter):
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
         await member.remove_roles(muted_role)
-        await ctx.send(f"{member.mention} has been unmuted")
+        await ctx.send(f":white_check_mark: {member.mention} has been unmuted")
 
     # Kick command
     @commands.command(
         help="Kick a member by mention/ID/username/nickname, optional reason",
         brief="Kick a member",
     )
+    @commands.guild_only()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: commands.MemberConverter, *, reason=None):
-        await member.send(f"You were kicked from {ctx.guild.name}. Reason: {reason}")
+        try:
+            await member.send(
+                f":exclamation: You were kicked from {ctx.guild.name}. Reason: {reason}"
+            )
+        except discord.Forbidden:
+            pass
         await ctx.guild.kick(member, reason=reason)
-        await ctx.send(f"Kicked {member.mention}. Reason: {reason}")
+        await ctx.send(f":white_check_mark: Kicked {member.mention}. Reason: {reason}")
 
     # Ban command
     @commands.command(
         help="Ban a member by mention/ID/username/nickname, optional reason",
         brief="Ban a member",
     )
+    @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: commands.UserConverter, *, reason=None):
         try:
             await member.send(
-                f"You were banned from {ctx.guild.name}! Reason: {reason}"
+                f":exclamation: You were banned from {ctx.guild.name}! Reason: {reason}"
             )
         except discord.Forbidden:
             pass
         await ctx.guild.ban(member, reason=reason)
-        await ctx.send(f"Banned {member.mention}. Reason: {reason}")
+        await ctx.send(f":white_check_mark: Banned {member.mention}. Reason: {reason}")
 
     # Lockdown command
     @commands.command(
@@ -97,22 +130,24 @@ class Moderation(commands.Cog):
         brief="Make a channel read-only",
         aliases=["readonly", "lock"],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     async def lockdown(self, ctx, channel: discord.TextChannel = None):
         # If channel is None, fall back to the channel where the command is being invoked
         channel = channel or ctx.channel
         await channel.set_permissions(ctx.guild.default_role, send_messages=False)
-        await ctx.send(f"I have locked down {channel.mention}.")
+        await ctx.send(f":white_check_mark: I have locked down {channel.mention}.")
 
     # Lockdown Unlock command
     @commands.command(
         help="Remove a channel from lockdown", brief="Remove a channel from lockdown"
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
         await channel.set_permissions(ctx.guild.default_role, send_messages=True)
-        await ctx.send(f"I have unlocked {channel.mention}.")
+        await ctx.send(f":white_check_mark: I have unlocked {channel.mention}.")
 
     # Slash commands
 
@@ -131,7 +166,9 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def clear_slash(self, ctx: SlashContext, amount: int = 5):
         await self.clear(ctx, amount=amount - 1)
-        await ctx.send(f"I have cleared {amount} messages", delete_after=2)
+        await ctx.send(
+            f":white_check_mark: I have cleared {amount} messages", delete_after=2
+        )
 
     @cog_ext.cog_slash(
         name="mute",

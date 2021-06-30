@@ -65,7 +65,7 @@ class Fun(commands.Cog):
                 await ctx.send(embed=meme_embed)
 
         if json["nsfw"]:
-            await ctx.send(f"Warning: NSFW post!\n\n<{json['postLink']}>")
+            await ctx.send(f":exclamation: Warning: NSFW post!\n\n<{json['postLink']}>")
 
     # 8ball command
     @commands.command(
@@ -105,7 +105,7 @@ class Fun(commands.Cog):
         )
         await sleep(2)
         await message.edit(
-            content=f'Your question was: "{question}"\n\n*The magic 8-ball says...*\n**{random_response}**'
+            content=f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*\n**{random_response}**'
         )
 
     # Slash commands

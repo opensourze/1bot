@@ -23,7 +23,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
 
 
 client = commands.AutoShardedBot(
-    command_prefix=commands.when_mentioned_or("_"),
+    command_prefix=commands.when_mentioned_or("-"),
     case_insensitive=True,
     help_command=CustomHelpCommand(),
 )
@@ -37,13 +37,7 @@ async def on_ready():
 
 
 async def change_status():
-    statuses = cycle(
-        [
-            "you can run my commands in DMs too!",
-            "_help",
-            "I want that verified checkmark.",
-        ]
-    )
+    statuses = cycle(["you can run my commands in DMs too!", "_help"])
 
     while not client.is_closed():
         await client.change_presence(activity=discord.Game(name=next(statuses)))
@@ -57,23 +51,22 @@ client.loop.create_task(change_status())
 async def on_command_error(ctx, error):  # Error handlers
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.send(
-            "Command failed - I don't have enough permissions to run this command!"
+            ":x: Command failed - I don't have enough permissions to run this command!"
         )
     elif isinstance(error, commands.MissingPermissions):
-
-        await ctx.send("You don't have enough permissions to use this command.")
+        await ctx.send(":x: You don't have enough permissions to use this command.")
     elif isinstance(error, commands.NotOwner):
-        await ctx.send("Only the owner of the bot can use this command.")
+        await ctx.send(":x: Only the owner of the bot can use this command.")
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(
-            "You've missed one or more required arguments.\n"
+            ":x: You've missed one or more required arguments.\n"
             + "Check the command's help for what arguments you should provide."
         )
     elif isinstance(error, commands.ChannelNotFound):
-        await ctx.send("I don't think that channel exists!")
+        await ctx.send(":x: I don't think that channel exists!")
     elif isinstance(error, commands.CommandOnCooldown):
         await ctx.send(
-            f"Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
+            f":x: Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
         )
     # else:
     #     print(error)
@@ -81,7 +74,7 @@ async def on_command_error(ctx, error):  # Error handlers
 
 @client.event
 async def on_slash_command_error(ctx, error):
-    # Send slash command errors to ext.commands error handler
+    # Send slash command errors to normal commands error handler
     await on_command_error(ctx, error)
 
 
@@ -148,13 +141,15 @@ async def suggest(ctx, *, suggestion):
     embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
 
     await me.send(embed=embed)
-    await ctx.send("Your suggestion has been submitted to the owner of the bot.")
+    await ctx.send(
+        ":white_check_mark: Your suggestion has been submitted to the owner of the bot."
+    )
 
 
-@client.command(hidden=True, aliases=["stop", "close"])
+@client.command(hidden=True, aliases=["stop", "close", "exit"])
 @commands.is_owner()
 async def logout(ctx):
-    await ctx.send("Logging out")
+    await ctx.send(":exclamation: Logging out")
     await client.close()
 
 

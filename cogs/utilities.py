@@ -57,9 +57,11 @@ class Utilities(commands.Cog):
         ).json()
 
         # If code is 404 (not found), send an error message
-        if json["cod"] == 404:
+        if int(json["cod"]) == 404:
             await ctx.send(
-                "City not found. Provide only the city name, **or** the city name with the state code and country code separated by commas. E.g.: washington,wa,us"
+                ":x: City not found. Provide only the city name, **or:**\n"
+                + "The city name with the state code and country code separated by commas.\n"
+                + "E.g.: `washington,wa,us` or just `washington`."
             )
         else:
             weather_description = json["weather"][0]["description"].capitalize()
