@@ -17,13 +17,13 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         destination = self.get_destination()
         for page in self.paginator.pages:
             embed = discord.Embed(title="Commands", description=page, color=0xFF6600)
-            embed.set_author(name="I Do Stuff", icon_url=client.user.avatar_url)
+            embed.set_author(name="1Bot", icon_url=client.user.avatar_url)
 
             await destination.send(embed=embed)
 
 
 client = commands.AutoShardedBot(
-    command_prefix=commands.when_mentioned_or("_"),
+    command_prefix=commands.when_mentioned_or(*["1 ", "1"]),
     case_insensitive=True,
     help_command=CustomHelpCommand(),
 )
@@ -37,7 +37,7 @@ async def on_ready():
 
 
 async def change_status():
-    statuses = cycle(["you can run my commands in DMs too!", "_help"])
+    statuses = cycle(["you can run my commands in DMs too!", "1 help"])
 
     while not client.is_closed():
         await client.change_presence(activity=discord.Game(name=next(statuses)))
@@ -90,7 +90,9 @@ async def on_message(message):
         message.content == f"<@!{client.user.id}>"
         or message.content == f"<@{client.user.id}>"
     ):
-        await message.channel.send("My prefix is `_` (underscore)")
+        await message.channel.send("My prefix is `1`. Optionally add a space after it.")
+    else:
+        await client.process_commands(message)
 
 
 # Ping command
@@ -107,10 +109,10 @@ async def ping(ctx):
     help="View the bot's information", brief="View information", aliases=["information"]
 )
 async def info(ctx):
-    info_embed = discord.Embed(title="`I Do Stuff` information", color=0xFF6600)
+    info_embed = discord.Embed(title="`1Bot` information", color=0xFF6600)
     info_embed.add_field(
         name="Source code",
-        value="View the bot's source code on [GitHub](https://github.com/opensourze/i-do-stuff)",
+        value="View the bot's source code on [GitHub](https://github.com/opensourze/1bot)",
         inline=False,
     )
     info_embed.add_field(
@@ -126,7 +128,7 @@ async def info(ctx):
     )
     info_embed.add_field(
         name="Links",
-        value="[Invite](https://dsc.gg/i-do-stuff) | [Upvote](https://discordbotlist.com/bots/i-do-stuff/upvote)",
+        value="[Invite](https://dsc.gg/1bot) | [Upvote](https://discordbotlist.com/bots/1bot/upvote)",
         inline=False,
     )
     info_embed.set_thumbnail(
@@ -141,7 +143,7 @@ async def upvote(ctx):
     await ctx.send(
         "If you like this bot, upvote it on DiscordBotList to help it grow!\n"
         + "You can upvote every 12 hours.\n\n"
-        + "https://discordbotlist.com/bots/i-do-stuff/upvote/"
+        + "https://discordbotlist.com/bots/1bot/upvote/"
     )
 
 

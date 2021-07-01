@@ -48,7 +48,7 @@ class Utilities(commands.Cog):
 
     # Weather command
     @commands.command(
-        help="Get weather info for a city. E.g.: _weather imperial Washington,WA,US (unit system: imperial for fahrenheit, metric for celsius), state and country codes optional",
+        help="Get weather info for a city. E.g.: 1 weather imperial Washington,WA,US (unit system: imperial for fahrenheit, metric for celsius), state and country codes optional",
         brief="Get weather info for a city",
     )
     async def weather(self, ctx, *, query):
