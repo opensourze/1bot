@@ -138,13 +138,13 @@ async def info(ctx):
 
 
 # Upvote command
-@client.command(help="Upvote me on DiscordBotList")
-async def upvote(ctx):
-    await ctx.send(
-        "If you like this bot, upvote it on DiscordBotList to help it grow!\n"
-        + "You can upvote every 12 hours.\n\n"
-        + "https://discordbotlist.com/bots/1bot/upvote/"
-    )
+# @client.command(help="Upvote me on DiscordBotList")
+# async def upvote(ctx):
+#    await ctx.send(
+#        "If you like this bot, upvote it on Top.gg to help it grow!\n"
+#        + "You can upvote every 12 hours.\n\n"
+#        + "https://top.gg/bot/848936530617434142/vote/"
+#    )
 
 
 # Suggest command
@@ -189,9 +189,9 @@ async def suggest_slash(ctx: SlashContext, suggestion):
     await suggest(ctx, suggestion=suggestion)
 
 
-@slash.slash(name="upvote", description="Upvote me on DiscordBotList")
-async def upvote_slash(ctx: SlashContext):
-    await upvote(ctx)
+# @slash.slash(name="upvote", description="Upvote me on DiscordBotList")
+# async def upvote_slash(ctx: SlashContext):
+#     await upvote(ctx)
 
 
 # Loop through all files in cogs directory and load them

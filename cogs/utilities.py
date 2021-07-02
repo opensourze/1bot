@@ -1,10 +1,12 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands.core import check
 from discord_slash import cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option
 import requests
 from temperature_converter_py import fahrenheit_to_celsius
 import os
+import asyncio
 
 
 class Utilities(commands.Cog):
@@ -53,7 +55,7 @@ class Utilities(commands.Cog):
     )
     async def weather(self, ctx, *, query):
         json = requests.get(
-            f"https://api.openweathermap.org/data/2.5/weather?q={query}&appid={os.getenv('OWM_KEY')}&units=imperial"
+            f"https://api.openweathermap.org/data/2.5/weather?q={query}&appid={os.environ['OWM_KEY']}&units=imperial"
         ).json()
 
         # If code is 404 (not found), send an error message
@@ -136,7 +138,7 @@ class Utilities(commands.Cog):
     async def userinfo(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
 
-        roles = [role.mention for role in member.roles][1::-1] or ["None"]
+        roles = [role.mention for role in member.roles][::-1][:-1] or ["None"]
         if roles[0] == "None":
             role_length = 0
         else:
@@ -154,6 +156,82 @@ class Utilities(commands.Cog):
         embed.add_field(name="Is this user a bot?", value=member.bot)
 
         await ctx.send(embed=embed)
+
+    # Embed creator
+    @commands.command(aliases=["makeembed", "createembed"], help="Create an embed")
+    @commands.has_permissions(manage_messages=True)
+    async def embed(self, ctx):
+        voted = requests.get(
+            f"https://top.gg/api/bots/{self.client.user.id}/check?userId={ctx.author.id}",
+            headers={"Authorization": os.environ["TOPGG_TOKEN"]},
+        ).json()["voted"]
+
+        if voted == 1 or ctx.author.id == 748791790798372964:
+            await ctx.send(
+                "Embed creation process started.\n"
+                + "Please send the **title you want to use for the embed** within 60 seconds."
+            )
+        else:
+            await ctx.send(
+                ":x: You need to vote for the bot to use this command. Your vote resets every 12 hours.\n"
+                + "https://top.gg/bot/848936530617434142/vote"
+            )
+            return
+
+        try:
+            title = await self.client.wait_for(
+                "message",
+                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+                timeout=60,
+            )
+            await ctx.send(
+                f"Title of the embed will be set to '{title.content}'.\n"
+                + "Please send the text to use for the **content of the embed** within 60 seconds."
+            )
+            desc = await self.client.wait_for(
+                "message",
+                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+                timeout=60,
+            )
+            await ctx.send(
+                "Please send the text to use as a **footer**. (The footer text will be small and light and will be at the bottom of the embed.)\n"
+                + "**If you don't want a footer, say 'empty'.**"
+            )
+            footer = await self.client.wait_for(
+                "message",
+                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+                timeout=60,
+            )
+            await ctx.send(
+                "Do you want me to display you as the author of the embed?\n"
+                + "Please answer with **yes** or **no** within 60 seconds.\n"
+                + "__Send anything *other than* yes or no to cancel the embed creation.__"
+            )
+            author = await self.client.wait_for(
+                "message",
+                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+                timeout=60,
+            )
+
+            await ctx.channel.purge(limit=9)
+
+            embed = discord.Embed(
+                title=title.content, color=0xFF6600, description=desc.content
+            )
+
+            if author.content.lower() == "yes":
+                embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+            elif author.content.lower() != "no":
+                await ctx.send(":exclamation: Exiting embed creator.")
+                return
+
+            if footer.content.lower() != "empty":
+                embed.set_footer(text=footer.content)
+
+            await ctx.send(embed=embed)
+
+        except asyncio.TimeoutError:
+            await ctx.send(":x: Command has timed out. Exiting embed creator.")
 
     # Slash commands
 
