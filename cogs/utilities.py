@@ -20,7 +20,7 @@ class Utilities(commands.Cog):
     # Search repositories
     @commands.command(
         help="Search for GitHub repositories",
-        aliases=["searchrepo", "githubrepos", "githubsearch"],
+        aliases=["searchrepo", "githubsearch"],
     )
     async def github(self, ctx, *, query):
         json = requests.get(
@@ -33,20 +33,6 @@ class Utilities(commands.Cog):
             await ctx.send(
                 f"First result for '{query}':\n{json['items'][0]['html_url']}"
             )
-
-    # GIF command
-    @commands.command(
-        help="Search for GIFs (filtered) on Tenor",
-        brief="Search for GIFs on Tenor",
-        aliases=["tenor"],
-    )
-    async def gif(self, ctx, *, query):
-        json = requests.get(
-            f"https://g.tenor.com/v1/search?q={query}&key={os.getenv('TENORKEY')}&contentfilter=medium"
-        ).json()
-
-        # Send first result
-        await ctx.send(json["results"][0]["url"])
 
     # Weather command
     @commands.command(
@@ -241,10 +227,6 @@ class Utilities(commands.Cog):
     async def github_slash(self, ctx: SlashContext, *, query):
         await self.githubsearch(ctx, query=query)
 
-    @cog_ext.cog_slash(name="gif", description="Search for GIFs (filtered) on Tenor")
-    async def gif_slash(self, ctx: SlashContext, *, query):
-        await self.gif(ctx, query=query)
-
     @cog_ext.cog_slash(
         name="weather",
         description="Get weather info for a city",
@@ -295,6 +277,13 @@ class Utilities(commands.Cog):
     )
     async def userinfo_slash(self, ctx: SlashContext, member):
         await self.userinfo(ctx, member=member)
+
+    @cog_ext.cog_slash(name="make_embed", description="Create an embed")
+    async def embed_slash(self, ctx: SlashContext):
+        await ctx.send(
+            ":x: Unfortunately, this command isn't compatible with slash commands.\n"
+            + "**Please use `1embed` or `1 embed` instead."
+        )
 
 
 # Add cog

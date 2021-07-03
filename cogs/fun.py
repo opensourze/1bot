@@ -3,8 +3,9 @@ from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option
 import requests
-from random import choice
+import random
 from asyncio import sleep
+import os
 
 
 class Fun(commands.Cog):
@@ -27,7 +28,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="Get a random programming-related joke",
         brief="Get a programming joke",
-        aliases=["codingjoke", "codingdadjoke", "programmingdadjoke"],
+        aliases=["codingjoke"],
     )
     async def programmingjoke(self, ctx):
         json = requests.get(
@@ -67,6 +68,20 @@ class Fun(commands.Cog):
         if json["nsfw"]:
             await ctx.send(f":exclamation: Warning: NSFW post!\n\n<{json['postLink']}>")
 
+    # GIF command
+    @commands.command(
+        help="Search for GIFs (filtered) on Tenor",
+        brief="Search for GIFs on Tenor",
+        aliases=["tenor"],
+    )
+    async def gif(self, ctx, *, query):
+        json = requests.get(
+            f"https://g.tenor.com/v1/search?q={query}&key={os.getenv('TENORKEY')}&contentfilter=medium"
+        ).json()
+
+        # Send first result
+        await ctx.send(json["results"][0]["url"])
+
     # 8ball command
     @commands.command(
         help="Ask the magic 8-ball a question", name="8ball", aliases=["eightball"]
@@ -98,18 +113,26 @@ class Fun(commands.Cog):
             "Very doubtful.",
         ]
 
-        random_response = choice(responses)
+        random_response = random.choice(responses)
 
         message = await ctx.send(
             f'Your question was: "{question}"\n\n*The magic 8-ball says...*'
         )
         await sleep(2)
+        # Edit message and add response after two seconds
         await message.edit(
             content=f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*\n**{random_response}**'
         )
 
-    # Slash commands
+    # Coin flip command
+    @commands.command(help="Flip a coin", aliases=["coinflip", "flipcoin"])
+    async def flip(self, ctx):
+        if random.randint(1, 10) <= 5:
+            await ctx.send("I flipped a coin for you, it's **heads**!")
+        else:
+            await ctx.send("I flipped a coin for you, it's **tails**!")
 
+    # Slash commands
     @cog_ext.cog_slash(name="dadjoke", description="Get a random dad joke")
     async def dadjoke_slash(self, ctx: SlashContext):
         await self.dadjoke(ctx)
@@ -135,6 +158,10 @@ class Fun(commands.Cog):
     async def reddit_slash(self, ctx: SlashContext, subreddit: str = None):
         await self.meme(ctx, subreddit=subreddit)
 
+    @cog_ext.cog_slash(name="gif", description="Search for GIFs (filtered) on Tenor")
+    async def gif_slash(self, ctx: SlashContext, *, query):
+        await self.gif(ctx, query=query)
+
     @cog_ext.cog_slash(
         name="8ball",
         description="Ask the magic 8-ball a question",
@@ -149,6 +176,10 @@ class Fun(commands.Cog):
     )
     async def eightball_slash(self, ctx: SlashContext, question):
         await self.eightball(ctx, question=question)
+
+    @cog_ext.cog_slash(name="coinflip", description="Flip a coin")
+    async def flip_slash(self, ctx: SlashContext):
+        await self.flip(ctx)
 
 
 # Add cog

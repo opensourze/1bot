@@ -16,7 +16,12 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
     async def send_pages(self):
         destination = self.get_destination()
         for page in self.paginator.pages:
-            embed = discord.Embed(title="Commands", description=page, color=0xFF6600)
+            embed = discord.Embed(
+                title="Commands",
+                description=page,
+                color=0xFF6600,
+                url="https://1bot.netlify.app",
+            )
             embed.set_author(name="1Bot", icon_url=client.user.avatar_url)
 
             await destination.send(embed=embed)
@@ -128,7 +133,7 @@ async def info(ctx):
     )
     info_embed.add_field(
         name="Links",
-        value="[Invite](https://dsc.gg/1bot) | [Upvote](https://discordbotlist.com/bots/1bot/upvote)",
+        value="[Official website](https://1bot.netlify.app) | [Add bot](https://dsc.gg/1bot)",
         inline=False,
     )
     info_embed.set_thumbnail(
