@@ -367,6 +367,27 @@ class Utilities(commands.Cog):
             + "**Please use `1embed` or `1 embed` instead."
         )
 
+    @cog_ext.cog_slash(
+        name="poll",
+        description="Create a poll",
+        options=[
+            create_option(
+                name="question",
+                description="The title of the poll",
+                required=True,
+                option_type=3,
+            ),
+            create_option(
+                name="options",
+                description="The choices you want for the poll separated by slashes",
+                required=True,
+                option_type=3,
+            ),
+        ],
+    )
+    async def poll_slash(self, ctx, question, options):
+        await self.poll(ctx, question, options=options)
+
 
 # Add cog
 def setup(client):

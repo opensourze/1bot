@@ -80,8 +80,8 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send(
             f":x: Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
         )
-    else:
-        print(error)
+    # else:
+    #     print(error)
 
 
 @client.event
