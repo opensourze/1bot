@@ -1,12 +1,16 @@
-import discord
-from discord.ext import commands
-from discord.ext.commands.core import check
-from discord_slash import cog_ext, SlashContext
-from discord_slash.utils.manage_commands import create_option
-import requests
-from temperature_converter_py import fahrenheit_to_celsius
-import os
 import asyncio
+import contextlib
+import io
+import os
+import textwrap
+from traceback import format_exception
+
+import discord
+import requests
+from discord.ext import buttons, commands
+from discord_slash import SlashContext, cog_ext
+from discord_slash.utils.manage_commands import create_option
+from temperature_converter_py import fahrenheit_to_celsius
 
 
 class Utilities(commands.Cog):
@@ -39,6 +43,7 @@ class Utilities(commands.Cog):
         help="Get weather info for a city. E.g.: 1 weather imperial Washington,WA,US (unit system: imperial for fahrenheit, metric for celsius), state and country codes optional",
         brief="Get weather info for a city",
     )
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def weather(self, ctx, *, query):
         json = requests.get(
             f"https://api.openweathermap.org/data/2.5/weather?q={query}&appid={os.environ['OWM_KEY']}&units=imperial"
@@ -219,6 +224,82 @@ class Utilities(commands.Cog):
         except asyncio.TimeoutError:
             await ctx.send(":x: Command has timed out. Exiting embed creator.")
 
+    # Poll command
+    @commands.command(help="Create a poll")
+    async def poll(self, ctx, question, *, options):
+        numbers = ("1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟")
+
+        option_list = options.split("/")
+
+        if len(option_list) > 10:
+            await ctx.send(":x: You cannot have more than 10 choices!")
+            return
+        elif len(option_list) < 2:
+            await ctx.send(":x: You need to provide multiple options!")
+            return
+
+        embed = discord.Embed(title=question, colour=0xFF6600)
+        embed.set_footer(text=f"Poll created by {str(ctx.author.name)}")
+
+        embed.add_field(
+            name="Options",
+            value="\n".join(
+                [
+                    f"{numbers[i]} {option_list[i]}"
+                    for i, option in enumerate(option_list)
+                ]
+            ),
+            inline=False,
+        )
+
+        poll_msg = await ctx.send(embed=embed)
+
+        for emoji in numbers[: len(option_list)]:
+            await poll_msg.add_reaction(emoji)
+
+    # Eval command
+    @commands.command(name="eval", aliases=["exec"], hidden=True)
+    @commands.is_owner()
+    async def _eval(self, ctx, *, code):
+        if code.startswith("```") and code.endswith("```"):
+            code = "\n".join(code.split("\n")[1:])[:-3]
+
+        local_variables = {
+            "discord": discord,
+            "commands": commands,
+            "client": self.client,
+            "ctx": ctx,
+            "channel": ctx.channel,
+            "author": ctx.author,
+            "guild": ctx.guild,
+            "message": ctx.message,
+        }
+
+        stdout = io.StringIO()
+
+        try:
+            with contextlib.redirect_stdout(stdout):
+                exec(
+                    f"async def func():\n{textwrap.indent(code, '    ')}",
+                    local_variables,
+                )
+
+                obj = await local_variables["func"]()
+                result = f"{stdout.getvalue()}\nReturned: {obj}\n"
+        except Exception as e:
+            result = "".join(format_exception(e, e, e.__traceback__))
+
+        pager = buttons.Paginator(
+            color=0xFF6600,
+            timeout=100,
+            entries=[result[i : i + 2000] for i in range(0, len(result), 2000)],
+            length=1,
+            prefix="```py\n",
+            suffix="```",
+        )
+
+        await pager.start(ctx)
+
     # Slash commands
 
     @cog_ext.cog_slash(
@@ -239,6 +320,7 @@ class Utilities(commands.Cog):
             )
         ],
     )
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def weather_slash(self, ctx: SlashContext, city):
         await self.weather(ctx, query=city)
 

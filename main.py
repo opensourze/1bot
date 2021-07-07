@@ -1,13 +1,14 @@
 print("Bot written by OpenSourze#1111")
 
-import discord
-from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext
 import os
-import dotenv
 import platform
 from asyncio import sleep
 from itertools import cycle
+
+import discord
+import dotenv
+from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext
 
 dotenv.load_dotenv()
 
@@ -46,7 +47,7 @@ async def change_status():
 
     while not client.is_closed():
         await client.change_presence(activity=discord.Game(name=next(statuses)))
-        await sleep(6)
+        await sleep(7)
 
 
 client.loop.create_task(change_status())
@@ -79,8 +80,8 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send(
             f":x: Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
         )
-    # else:
-    #     print(error)
+    else:
+        print(error)
 
 
 @client.event
