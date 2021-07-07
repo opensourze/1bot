@@ -18,10 +18,10 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         destination = self.get_destination()
         for page in self.paginator.pages:
             embed = discord.Embed(
-                title="Commands",
+                title="1Bot Commands",
                 description=page,
                 color=0xFF6600,
-                url="https://1bot.netlify.app",
+                url="https://1bot.netlify.app/commands",
             )
             embed.set_author(name="1Bot", icon_url=client.user.avatar_url)
 
@@ -43,7 +43,9 @@ async def on_ready():
 
 
 async def change_status():
-    statuses = cycle(["you can run my commands in DMs too!", "1 help"])
+    statuses = cycle(
+        ["you can run my commands in DMs too!", "1 help | 1bot.netlify.app"]
+    )
 
     while not client.is_closed():
         await client.change_presence(activity=discord.Game(name=next(statuses)))
@@ -126,6 +128,7 @@ async def info(ctx):
         value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False,
     )
+    info_embed.add_field(name="Bot version", value=0.8, inline=False)
     info_embed.add_field(
         name="Discord.py version", value=discord.__version__, inline=False
     )
@@ -137,9 +140,7 @@ async def info(ctx):
         value="[Official website](https://1bot.netlify.app) | [Add bot](https://dsc.gg/1bot)",
         inline=False,
     )
-    info_embed.set_thumbnail(
-        url="https://cdn.discordapp.com/avatars/848936530617434142/548866771e35e12361e4822b3807e717.png?size=512"
-    )
+    info_embed.set_thumbnail(url=client.user.avatar_url)
     await ctx.send(embed=info_embed)
 
 

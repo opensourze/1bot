@@ -117,7 +117,7 @@ class Fun(commands.Cog):
         random_response = random.choice(responses)
 
         message = await ctx.send(
-            f'Your question was: "{question}"\n\n*The magic 8-ball says...*'
+            f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*'
         )
         await sleep(2)
         # Edit message and add response after two seconds

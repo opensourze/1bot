@@ -110,6 +110,7 @@ class Utilities(commands.Cog):
         brief="View server info",
         aliases=["server"],
     )
+    @commands.guild_only()
     async def serverinfo(self, ctx):
         owner = await self.client.fetch_user(ctx.guild.owner_id)
 
@@ -126,6 +127,7 @@ class Utilities(commands.Cog):
 
     # User Info command
     @commands.command(help="View a member's information", aliases=["whois", "user"])
+    @commands.guild_only()
     async def userinfo(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
 
@@ -226,6 +228,7 @@ class Utilities(commands.Cog):
 
     # Poll command
     @commands.command(help="Create a poll")
+    @commands.guild_only()
     async def poll(self, ctx, question, *, options):
         numbers = ("1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟")
 
@@ -269,10 +272,8 @@ class Utilities(commands.Cog):
             "commands": commands,
             "client": self.client,
             "ctx": ctx,
-            "channel": ctx.channel,
-            "author": ctx.author,
-            "guild": ctx.guild,
             "message": ctx.message,
+            "asyncio": asyncio,
         }
 
         stdout = io.StringIO()
@@ -290,11 +291,11 @@ class Utilities(commands.Cog):
             result = "".join(format_exception(e, e, e.__traceback__))
 
         pager = buttons.Paginator(
+            timeout=None,
             color=0xFF6600,
-            timeout=100,
             entries=[result[i : i + 2000] for i in range(0, len(result), 2000)],
             length=1,
-            prefix="```py\n",
+            prefix="```\n",
             suffix="```",
         )
 
