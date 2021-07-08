@@ -91,6 +91,23 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: commands.MemberConverter, *, reason=None):
+        if member == ctx.author:
+            await ctx.send(":x: You can't kick yourself!")
+            return
+
+        if member == self.client.user:
+            await ctx.send(":x: I can't kick myself!")
+            return
+
+        bot = ctx.guild.get_member(self.client.user.id)
+        bot_role = bot.top_role
+
+        if bot_role <= member.top_role:
+            await ctx.send(
+                ":x: The user has a higher role or the same top role as mine.\n"
+                + "Please move my role higher!"
+            )
+            return
         try:
             await member.send(
                 f":exclamation: You were kicked from {ctx.guild.name}. Reason: {reason}"
@@ -108,6 +125,23 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: commands.UserConverter, *, reason=None):
+        if member == ctx.author:
+            await ctx.send(":x: You can't ban yourself!")
+            return
+
+        if member == self.client.user:
+            await ctx.send(":x: I can't ban myself!")
+            return
+
+        bot = ctx.guild.get_member(self.client.user.id)
+        bot_role = bot.top_role
+
+        if bot_role <= member.top_role:
+            await ctx.send(
+                ":x: The user has a higher role or the same top role as mine.\n"
+                + "Please move my role higher!"
+            )
+            return
         try:
             await member.send(
                 f":exclamation: You were banned from {ctx.guild.name}! Reason: {reason}"

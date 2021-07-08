@@ -128,7 +128,7 @@ async def info(ctx):
         value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False,
     )
-    info_embed.add_field(name="Bot version", value=0.8, inline=False)
+    info_embed.add_field(name="Bot version", value=0.9, inline=False)
     info_embed.add_field(
         name="Discord.py version", value=discord.__version__, inline=False
     )
