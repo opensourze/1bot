@@ -1,5 +1,7 @@
-# 1Bot - Discord bot
+# 1Bot - One Discord bot for everything
 
-### A discord.py bot that does stuff - moderation, dad jokes, memes, weather and lots more
+### One bot for everything - 1Bot can help keep your server safe with moderation tools, help you out with utilities, or make you laugh.
 
 [Click here to add the bot to a server](https://dsc.gg/1bot)
+
+[Website (with detailed command list)](https://1bot.netlify.app)
