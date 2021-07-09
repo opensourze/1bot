@@ -187,7 +187,8 @@ class Utilities(commands.Cog):
                 timeout=60,
             )
             await ctx.send(
-                "Please send the text to use as a **footer**. (The footer text will be small and light and will be at the bottom of the embed.)\n"
+                "Please send the text to use as a **footer**.\n"
+                + "The footer text will be small and light and will be at the bottom of the embed.\n"
                 + "**If you don't want a footer, say 'empty'.**"
             )
             footer = await self.client.wait_for(
@@ -248,8 +249,8 @@ class Utilities(commands.Cog):
             name="Options",
             value="\n".join(
                 [
-                    f"{numbers[i]} {option_list[i]}"
-                    for i, option in enumerate(option_list)
+                    f"{numbers[i]} {option_list[i]}"  # number emoji + option
+                    for i in range(len(option_list))
                 ]
             ),
             inline=False,
@@ -257,8 +258,9 @@ class Utilities(commands.Cog):
 
         poll_msg = await ctx.send(embed=embed)
 
+        # loop through emojis until the end of the option list is reached
         for emoji in numbers[: len(option_list)]:
-            await poll_msg.add_reaction(emoji)
+            await poll_msg.add_reaction(emoji)  # react with the number emoji
 
     # Eval command
     @commands.command(name="eval", aliases=["exec"], hidden=True)

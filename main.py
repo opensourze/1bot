@@ -18,12 +18,16 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         destination = self.get_destination()
         for page in self.paginator.pages:
             embed = discord.Embed(
-                title="1Bot Commands",
-                description=page,
-                color=0xFF6600,
-                url="https://1bot.netlify.app/commands",
+                title="1Bot Commands", description=page, color=0xFF6600
             )
             embed.set_author(name="1Bot", icon_url=client.user.avatar_url)
+            embed.add_field(
+                name="Helpful links",
+                value="[Add bot](https://dsc.gg/1bot)"
+                + " | [Official website](https://1bot.netlify.app)"
+                + " | [Official server](https://discord.gg/4yA6XkfnwR)",
+                inline=False,
+            )
 
             await destination.send(embed=embed)
 
@@ -82,8 +86,10 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send(
             f":x: Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
         )
-    # else:
-    #     print(error)
+    elif isinstance(error, commands.BadArgument):
+        await ctx.send(":x: Invalid argument.")
+    elif not isinstance(error, commands.CommandNotFound):
+        print(error)
 
 
 @client.event
@@ -128,7 +134,7 @@ async def info(ctx):
         value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False,
     )
-    info_embed.add_field(name="Bot version", value=0.9, inline=False)
+    info_embed.add_field(name="Bot version", value="0.9.1", inline=False)
     info_embed.add_field(
         name="Discord.py version", value=discord.__version__, inline=False
     )
@@ -137,7 +143,9 @@ async def info(ctx):
     )
     info_embed.add_field(
         name="Links",
-        value="[Official website](https://1bot.netlify.app) | [Add bot](https://dsc.gg/1bot)",
+        value="[Official website](https://1bot.netlify.app)"
+        + "| [Add bot](https://dsc.gg/1bot)"
+        + "| [Official server](https://discord.gg/4yA6XkfnwR)",
         inline=False,
     )
     info_embed.set_thumbnail(url=client.user.avatar_url)
@@ -158,16 +166,17 @@ async def info(ctx):
 @client.command(help="Create a suggestion for the bot")
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def suggest(ctx, *, suggestion):
-    me = await client.fetch_user(748791790798372964)
+    channel = client.get_channel(862697260164055082)
 
     embed = discord.Embed(title="Suggestion", description=suggestion, color=0xFF6600)
     embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-    embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
 
-    await me.send(embed=embed)
+    message = await channel.send(embed=embed)
     await ctx.send(
-        ":white_check_mark: Your suggestion has been submitted to the owner of the bot."
+        ":white_check_mark: Your suggestion has been submitted to " + channel.mention
     )
+    await message.add_reaction("✅")
+    await message.add_reaction("❌")
 
 
 @client.command(hidden=True, aliases=["stop", "close", "exit"])
@@ -178,8 +187,6 @@ async def logout(ctx):
 
 
 # Slash commands
-
-
 @slash.slash(name="ping", description="Test the bot's latency")
 async def ping_slash(ctx: SlashContext):
     await ping(ctx)
