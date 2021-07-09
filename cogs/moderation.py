@@ -112,7 +112,7 @@ class Moderation(commands.Cog):
             await member.send(
                 f":exclamation: You were kicked from {ctx.guild.name}. Reason: {reason}"
             )
-        except discord.Forbidden:
+        except:
             pass
         await ctx.guild.kick(member, reason=reason)
         await ctx.send(f":white_check_mark: Kicked {member.mention}. Reason: {reason}")
@@ -146,7 +146,7 @@ class Moderation(commands.Cog):
             await member.send(
                 f":exclamation: You were banned from {ctx.guild.name}! Reason: {reason}"
             )
-        except discord.Forbidden:
+        except:
             pass
         await ctx.guild.ban(member, reason=reason)
         await ctx.send(f":white_check_mark: Banned {member.mention}. Reason: {reason}")

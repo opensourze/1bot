@@ -134,7 +134,7 @@ async def info(ctx):
         value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False,
     )
-    info_embed.add_field(name="Bot version", value="0.9.1", inline=False)
+    info_embed.add_field(name="Bot version", value="0.9.2", inline=False)
     info_embed.add_field(
         name="Discord.py version", value=discord.__version__, inline=False
     )
@@ -144,8 +144,8 @@ async def info(ctx):
     info_embed.add_field(
         name="Links",
         value="[Official website](https://1bot.netlify.app)"
-        + "| [Add bot](https://dsc.gg/1bot)"
-        + "| [Official server](https://discord.gg/4yA6XkfnwR)",
+        + " | [Add bot](https://dsc.gg/1bot)"
+        + " | [Official server](https://discord.gg/4yA6XkfnwR)",
         inline=False,
     )
     info_embed.set_thumbnail(url=client.user.avatar_url)

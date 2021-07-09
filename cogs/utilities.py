@@ -242,19 +242,17 @@ class Utilities(commands.Cog):
             await ctx.send(":x: You need to provide multiple options!")
             return
 
-        embed = discord.Embed(title=question, colour=0xFF6600)
-        embed.set_footer(text=f"Poll created by {str(ctx.author.name)}")
-
-        embed.add_field(
-            name="Options",
-            value="\n".join(
+        embed = discord.Embed(
+            title=question,
+            colour=0xFF6600,
+            description="\n\n".join(
                 [
                     f"{numbers[i]} {option_list[i]}"  # number emoji + option
                     for i in range(len(option_list))
                 ]
             ),
-            inline=False,
         )
+        embed.set_footer(text=f"Poll created by {str(ctx.author.name)}")
 
         poll_msg = await ctx.send(embed=embed)
 
