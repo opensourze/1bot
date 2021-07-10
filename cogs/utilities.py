@@ -40,7 +40,7 @@ class Utilities(commands.Cog):
 
     # Weather command
     @commands.command(
-        help="Get weather info for a city. E.g.: 1 weather imperial Washington,WA,US (unit system: imperial for fahrenheit, metric for celsius), state and country codes optional",
+        help="Get weather info for a city. The city name is required. Optionally add state and country codes separated by commas. Example: `1 weather washington,wa,us`, or `1 weather washington`",
         brief="Get weather info for a city",
     )
     @commands.cooldown(1, 5, commands.BucketType.user)

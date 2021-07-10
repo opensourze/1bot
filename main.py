@@ -134,6 +134,9 @@ async def info(ctx):
         value="[OpenSourze#1111](https://github.com/opensourze)",
         inline=False,
     )
+    info_embed.add_field(
+        name="Servers", value=f"I'm in {len(client.guilds)} servers as of now"
+    )
     info_embed.add_field(name="Bot version", value="0.9.2", inline=False)
     info_embed.add_field(
         name="Discord.py version", value=discord.__version__, inline=False
