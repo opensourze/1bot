@@ -141,11 +141,19 @@ class Utilities(commands.Cog):
         embed.set_thumbnail(url=member.avatar_url)
         embed.add_field(name="Account creation date", value=str(member.created_at)[:10])
         embed.add_field(name="Joined this server on", value=str(member.joined_at)[:10])
-        embed.add_field(
-            name=f"Roles ({role_length})",
-            value=" ".join(roles),
-            inline=False,
-        )
+        if len(" ".join(roles)) <= 1024:
+            embed.add_field(
+                name=f"Roles ({role_length})",
+                value=" ".join(roles),
+                inline=False,
+            )
+        else:
+            embed.add_field(
+                name=f"Roles ({role_length})",
+                value="**[Only showing first 5 roles, since there are too many roles to show]**\n"
+                + " ".join(roles[:5]),
+                inline=False,
+            )
         embed.add_field(name="Is this user a bot?", value=member.bot)
 
         await ctx.send(embed=embed)
