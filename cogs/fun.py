@@ -1,12 +1,14 @@
 import os
 import random
 from asyncio import sleep
+from io import BytesIO
 
 import discord
 import requests
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
+from PIL import Image
 
 
 class Fun(commands.Cog):
@@ -133,6 +135,32 @@ class Fun(commands.Cog):
         else:
             await ctx.send("I flipped a coin for you, it's **tails**!")
 
+    # AMOGUS command
+    @commands.command(
+        help="Amogus, but with a member's profile picture", aliases=["sus"]
+    )
+    async def amogus(self, ctx, *, member: commands.MemberConverter = None):
+        try:
+            await ctx.trigger_typing()
+        except:
+            pass
+
+        member = member or ctx.author
+        member_av = member.avatar_url_as(size=256)
+
+        data = BytesIO(await member_av.read())
+        av = Image.open(data).resize((187, 187))
+
+        amogus = Image.open("amogus-template.png")
+
+        # Paste the avatar onto the amogus image
+        amogus.paste(av, (698, 209))
+        amogus.save("amogus.png")
+
+        await ctx.send(
+            f"when the {member.name} is sus", file=discord.File("amogus.png")
+        )
+
     # Slash commands
     @cog_ext.cog_slash(name="dadjoke", description="Get a random dad joke")
     async def dadjoke_slash(self, ctx: SlashContext):
@@ -181,6 +209,21 @@ class Fun(commands.Cog):
     @cog_ext.cog_slash(name="coinflip", description="Flip a coin")
     async def flip_slash(self, ctx: SlashContext):
         await self.flip(ctx)
+
+    @cog_ext.cog_slash(
+        name="amogus",
+        description="Amogus, but with a member's profile picture",
+        options=[
+            create_option(
+                name="member",
+                description="The member whose profile picture you want to use",
+                required=True,
+                option_type=6,
+            )
+        ],
+    )
+    async def amogus_slash(self, ctx: SlashContext, member):
+        await self.amogus(ctx, member=member)
 
 
 # Add cog
