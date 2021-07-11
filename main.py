@@ -137,7 +137,7 @@ async def info(ctx):
     info_embed.add_field(
         name="Servers", value=f"I'm in {len(client.guilds)} servers as of now"
     )
-    info_embed.add_field(name="Bot version", value="0.9.2", inline=False)
+    info_embed.add_field(name="Bot version", value="0.10.0", inline=False)
     info_embed.add_field(
         name="Discord.py version", value=discord.__version__, inline=False
     )
@@ -182,6 +182,12 @@ async def suggest(ctx, *, suggestion):
     await message.add_reaction("❌")
 
 
+# Invite command
+@client.command(help="Add the bot to your server", aliases=["addbot"])
+async def invite(ctx):
+    await ctx.send("https://dsc.gg/1bot")
+
+
 @client.command(hidden=True, aliases=["stop", "close", "exit"])
 @commands.is_owner()
 async def logout(ctx):
@@ -204,6 +210,11 @@ async def info_slash(ctx: SlashContext):
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def suggest_slash(ctx: SlashContext, suggestion):
     await suggest(ctx, suggestion=suggestion)
+
+
+@slash.slash(name="invite", description="Add the bot to your server")
+async def invite_slash(ctx: SlashContext):
+    await ctx.send("https://dsc.gg/1bot")
 
 
 # @slash.slash(name="upvote", description="Upvote me on DiscordBotList")
