@@ -126,10 +126,10 @@ async def on_message(message):
 
 
 # Suggest command
-@commands.command(help="Create a suggestion for the bot")
+@client.command(help="Create a suggestion for the bot")
 @commands.cooldown(1, 10, commands.BucketType.user)
-async def suggest(self, ctx, *, suggestion):
-    channel = self.client.get_channel(862697260164055082)
+async def suggest(ctx, *, suggestion):
+    channel = client.get_channel(862697260164055082)
 
     embed = discord.Embed(title="Suggestion", description=suggestion, color=0xFF6600)
     embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
