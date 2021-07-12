@@ -125,10 +125,7 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: commands.UserConverter, *, reason=None):
-        try:
-            member = ctx.guild.get_member(member.id)
-        except:
-            pass
+        member = ctx.guild.get_member(member.id) or member
 
         if member == ctx.author:
             await ctx.send(":x: You can't ban yourself!")

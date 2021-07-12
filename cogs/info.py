@@ -133,6 +133,7 @@ class Info(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    # TODO: uncomment when bot is approved on top.gg
     # Upvote command
     # @client.command(help="Upvote me on Top.gg")
     # async def upvote(self, ctx):
@@ -206,6 +207,7 @@ class Info(commands.Cog):
     async def invite_slash(self, ctx: SlashContext):
         await ctx.send("https://dsc.gg/1bot")
 
+    # TODO: uncomment when bot is approved on top.gg
     # @cog_ext.cog_slash(name="upvote", description="Upvote me on Top.gg")
     # async def upvote_slash(self, ctx: SlashContext):
     #     await upvote(ctx)

@@ -95,6 +95,7 @@ class Utilities(commands.Cog):
     # Embed creator
     @commands.command(aliases=["makeembed", "createembed"], help="Create an embed")
     @commands.has_permissions(manage_messages=True)
+    @commands.is_owner()  # TODO: remove when bot is approved on top.gg
     async def embed(self, ctx):
         voted = requests.get(
             f"https://top.gg/api/bots/{self.client.user.id}/check?userId={ctx.author.id}",
@@ -102,12 +103,12 @@ class Utilities(commands.Cog):
         ).json()["voted"]
 
         if voted == 1 or ctx.author.id == 748791790798372964:
-            await ctx.send(
+            await ctx.channel.send(
                 "Embed creation process started.\n"
                 + "Please send the **title you want to use for the embed** within 60 seconds."
             )
         else:
-            await ctx.send(
+            await ctx.channel.send(
                 ":x: You need to vote for the bot to use this command. Your vote resets every 12 hours.\n"
                 + "https://top.gg/bot/848936530617434142/vote"
             )
@@ -119,7 +120,7 @@ class Utilities(commands.Cog):
                 check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
                 timeout=60,
             )
-            await ctx.send(
+            await ctx.channel.send(
                 f"Title of the embed will be set to '{title.content}'.\n"
                 + "Please send the text to use for the **content of the embed** within 60 seconds."
             )
@@ -128,7 +129,7 @@ class Utilities(commands.Cog):
                 check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
                 timeout=60,
             )
-            await ctx.send(
+            await ctx.channel.send(
                 "Please send the text to use as a **footer**.\n"
                 + "The footer text will be small and light and will be at the bottom of the embed.\n"
                 + "**If you don't want a footer, say 'empty'.**"
@@ -138,7 +139,7 @@ class Utilities(commands.Cog):
                 check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
                 timeout=60,
             )
-            await ctx.send(
+            await ctx.channel.send(
                 "Do you want me to display you as the author of the embed?\n"
                 + "Please answer with **yes** or **no** within 60 seconds.\n"
                 + "__Send anything *other than* yes or no to cancel the embed creation.__"
@@ -164,10 +165,10 @@ class Utilities(commands.Cog):
             if footer.content.lower() != "empty":
                 embed.set_footer(text=footer.content)
 
-            await ctx.send(embed=embed)
+            await ctx.channel.send(embed=embed)
 
         except asyncio.TimeoutError:
-            await ctx.send(":x: Command has timed out. Exiting embed creator.")
+            await ctx.channel.send(":x: Command has timed out. Exiting embed creator.")
 
     # Poll command
     @commands.command(help="Create a poll")
@@ -267,15 +268,11 @@ class Utilities(commands.Cog):
     async def weather_slash(self, ctx: SlashContext, city):
         await self.weather(ctx, query=city)
 
-    @cog_ext.cog_slash(name="embed", description="Create an embed")
-    async def embed_slash(self, ctx: SlashContext):
-        await ctx.send(
-            ":x: Unfortunately, this command isn't compatible with slash commands.\n"
-            + "**Please use `1embed` (or `1 embed`) instead.**"
-        )
-
-        # await ctx.defer()
-        # await self.embed(ctx)
+    # TODO: uncomment when bot is approved on top.gg
+    # @cog_ext.cog_slash(name="embed", description="Create an embed")
+    # async def embed_slash(self, ctx: SlashContext):
+    #     await ctx.defer()
+    #     await self.embed(ctx)
 
     @cog_ext.cog_slash(
         name="poll",
