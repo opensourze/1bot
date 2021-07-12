@@ -92,72 +92,6 @@ class Utilities(commands.Cog):
 
             await ctx.send(embed=weather_embed)
 
-    # Avatar command
-    @commands.command(
-        help="Get your/any user's avatar",
-        brief="Get a user's avatar",
-        aliases=["av", "pfp"],
-    )
-    async def avatar(self, ctx, *, user: commands.MemberConverter = None):
-        user = user or ctx.author  # Set to author if user is None
-        avatar_embed = discord.Embed(color=0xFF6600, title=f"{user.name}'s avatar")
-        avatar_embed.set_image(url=f"{user.avatar_url}")
-        await ctx.send(embed=avatar_embed)
-
-    # Server Info command
-    @commands.command(
-        help="View information about the current server",
-        brief="View server info",
-        aliases=["server"],
-    )
-    @commands.guild_only()
-    async def serverinfo(self, ctx):
-        owner = await self.client.fetch_user(ctx.guild.owner_id)
-
-        embed = discord.Embed(title=f"{ctx.guild.name} information", color=0xFF6600)
-        embed.set_thumbnail(url=ctx.guild.icon_url)
-        embed.add_field(name="Owner", value=str(owner))
-        embed.add_field(name="Created on", value=str(ctx.guild.created_at)[:10])
-        embed.add_field(name="Region", value=str(ctx.guild.region).capitalize())
-        embed.add_field(name="Member count", value=ctx.guild.member_count)
-        embed.add_field(name="Emojis", value=f"{len(ctx.guild.emojis)} emojis")
-        embed.add_field(name="Boost level", value=f"Level {ctx.guild.premium_tier}")
-
-        await ctx.send(embed=embed)
-
-    # User Info command
-    @commands.command(help="View a member's information", aliases=["whois", "user"])
-    @commands.guild_only()
-    async def userinfo(self, ctx, *, member: commands.MemberConverter = None):
-        member = member or ctx.author
-
-        roles = [role.mention for role in member.roles][::-1][:-1] or ["None"]
-        if roles[0] == "None":
-            role_length = 0
-        else:
-            role_length = len(roles)
-
-        embed = discord.Embed(title=member.name, color=member.color)
-        embed.set_thumbnail(url=member.avatar_url)
-        embed.add_field(name="Account creation date", value=str(member.created_at)[:10])
-        embed.add_field(name="Joined this server on", value=str(member.joined_at)[:10])
-        if len(" ".join(roles)) <= 1024:
-            embed.add_field(
-                name=f"Roles ({role_length})",
-                value=" ".join(roles),
-                inline=False,
-            )
-        else:
-            embed.add_field(
-                name=f"Roles ({role_length})",
-                value="**[Only showing first 5 roles, since there are too many roles to show]**\n"
-                + " ".join(roles[:5]),
-                inline=False,
-            )
-        embed.add_field(name="Is this user a bot?", value=member.bot)
-
-        await ctx.send(embed=embed)
-
     # Embed creator
     @commands.command(aliases=["makeembed", "createembed"], help="Create an embed")
     @commands.has_permissions(manage_messages=True)
@@ -333,48 +267,15 @@ class Utilities(commands.Cog):
     async def weather_slash(self, ctx: SlashContext, city):
         await self.weather(ctx, query=city)
 
-    @cog_ext.cog_slash(
-        name="avatar",
-        description="Get a user's avatar",
-        options=[
-            create_option(
-                name="user",
-                description="Which user's avatar do you want to see?",
-                required=True,
-                option_type=6,
-            )
-        ],
-    )
-    async def avatar_slash(self, ctx: SlashContext, *, user):
-        await self.avatar(ctx, user=user)
-
-    @cog_ext.cog_slash(
-        name="serverinfo", description="View information about the current server"
-    )
-    async def serverinfo_slash(self, ctx: SlashContext):
-        await self.serverinfo(ctx)
-
-    @cog_ext.cog_slash(
-        name="userinfo",
-        description="View information about a user",
-        options=[
-            create_option(
-                name="user",
-                description="Which user's information do you want to see?",
-                option_type=6,
-                required=True,
-            )
-        ],
-    )
-    async def userinfo_slash(self, ctx: SlashContext, member):
-        await self.userinfo(ctx, member=member)
-
-    @cog_ext.cog_slash(name="make_embed", description="Create an embed")
+    @cog_ext.cog_slash(name="embed", description="Create an embed")
     async def embed_slash(self, ctx: SlashContext):
         await ctx.send(
             ":x: Unfortunately, this command isn't compatible with slash commands.\n"
-            + "**Please use `1embed` or `1 embed` instead."
+            + "**Please use `1embed` (or `1 embed`) instead.**"
         )
+
+        # await ctx.defer()
+        # await self.embed(ctx)
 
     @cog_ext.cog_slash(
         name="poll",

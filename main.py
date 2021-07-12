@@ -1,7 +1,6 @@
 print("Bot written by OpenSourze#1111")
 
 import os
-import platform
 from asyncio import sleep
 from itertools import cycle
 
@@ -9,11 +8,35 @@ import discord
 import dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
+from discord_slash.model import ButtonStyle
+from discord_slash.utils.manage_components import create_actionrow, create_button
 
 dotenv.load_dotenv()
 
 
 class CustomHelpCommand(commands.MinimalHelpCommand):
+    info_btns = create_actionrow(
+        *[
+            create_button(
+                style=ButtonStyle.URL,
+                label="Add bot",
+                emoji="➕",
+                url="https://dsc.gg/1bot",
+            ),
+            create_button(
+                style=ButtonStyle.URL,
+                label="Command list",
+                emoji="ℹ️",
+                url="https://1bot.netlify.app/commands",
+            ),
+            create_button(
+                style=ButtonStyle.URL,
+                label="Join server",
+                url="https://discord.gg/4yA6XkfnwR",
+            ),
+        ]
+    )
+
     async def send_pages(self):
         destination = self.get_destination()
         for page in self.paginator.pages:
@@ -21,15 +44,8 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
                 title="1Bot Commands", description=page, color=0xFF6600
             )
             embed.set_author(name="1Bot", icon_url=client.user.avatar_url)
-            embed.add_field(
-                name="Helpful links",
-                value="[Add bot](https://dsc.gg/1bot)"
-                + " | [Official website](https://1bot.netlify.app)"
-                + " | [Official server](https://discord.gg/4yA6XkfnwR)",
-                inline=False,
-            )
 
-            await destination.send(embed=embed)
+            await destination.send(embed=embed, components=[self.info_btns])
 
 
 client = commands.AutoShardedBot(
@@ -109,67 +125,11 @@ async def on_message(message):
         await client.process_commands(message)
 
 
-# Ping command
-@client.command(
-    help="Tests the bot's latency and displays it in milliseconds",
-    brief="Tests the bot's latency",
-)
-async def ping(ctx):
-    await ctx.send(f"Pong! The bot's latency is `{round(client.latency * 1000)}ms`")
-
-
-# Info command
-@client.command(
-    help="View the bot's information", brief="View information", aliases=["information"]
-)
-async def info(ctx):
-    info_embed = discord.Embed(title="`1Bot` information", color=0xFF6600)
-    info_embed.add_field(
-        name="Source code",
-        value="View the bot's source code on [GitHub](https://github.com/opensourze/1bot)",
-        inline=False,
-    )
-    info_embed.add_field(
-        name="Creator",
-        value="[OpenSourze#1111](https://github.com/opensourze)",
-        inline=False,
-    )
-    info_embed.add_field(
-        name="Servers", value=f"I'm in {len(client.guilds)} servers as of now"
-    )
-    info_embed.add_field(name="Bot version", value="0.10.0", inline=False)
-    info_embed.add_field(
-        name="Discord.py version", value=discord.__version__, inline=False
-    )
-    info_embed.add_field(
-        name="Python version", value=platform.python_version(), inline=False
-    )
-    info_embed.add_field(
-        name="Links",
-        value="[Official website](https://1bot.netlify.app)"
-        + " | [Add bot](https://dsc.gg/1bot)"
-        + " | [Official server](https://discord.gg/4yA6XkfnwR)",
-        inline=False,
-    )
-    info_embed.set_thumbnail(url=client.user.avatar_url)
-    await ctx.send(embed=info_embed)
-
-
-# Upvote command
-# @client.command(help="Upvote me on DiscordBotList")
-# async def upvote(ctx):
-#    await ctx.send(
-#        "If you like this bot, upvote it on Top.gg to help it grow!\n"
-#        + "You can upvote every 12 hours.\n\n"
-#        + "https://top.gg/bot/848936530617434142/vote/"
-#    )
-
-
 # Suggest command
-@client.command(help="Create a suggestion for the bot")
+@commands.command(help="Create a suggestion for the bot")
 @commands.cooldown(1, 10, commands.BucketType.user)
-async def suggest(ctx, *, suggestion):
-    channel = client.get_channel(862697260164055082)
+async def suggest(self, ctx, *, suggestion):
+    channel = self.client.get_channel(862697260164055082)
 
     embed = discord.Embed(title="Suggestion", description=suggestion, color=0xFF6600)
     embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
@@ -182,12 +142,6 @@ async def suggest(ctx, *, suggestion):
     await message.add_reaction("❌")
 
 
-# Invite command
-@client.command(help="Add the bot to your server", aliases=["addbot"])
-async def invite(ctx):
-    await ctx.send("https://dsc.gg/1bot")
-
-
 @client.command(hidden=True, aliases=["stop", "close", "exit"])
 @commands.is_owner()
 async def logout(ctx):
@@ -195,31 +149,10 @@ async def logout(ctx):
     await client.close()
 
 
-# Slash commands
-@slash.slash(name="ping", description="Test the bot's latency")
-async def ping_slash(ctx: SlashContext):
-    await ping(ctx)
-
-
-@slash.slash(name="info", description="View the bot's information")
-async def info_slash(ctx: SlashContext):
-    await info(ctx)
-
-
 @slash.slash(name="suggest", description="Create a suggestion for the bot")
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def suggest_slash(ctx: SlashContext, suggestion):
     await suggest(ctx, suggestion=suggestion)
-
-
-@slash.slash(name="invite", description="Add the bot to your server")
-async def invite_slash(ctx: SlashContext):
-    await ctx.send("https://dsc.gg/1bot")
-
-
-# @slash.slash(name="upvote", description="Upvote me on DiscordBotList")
-# async def upvote_slash(ctx: SlashContext):
-#     await upvote(ctx)
 
 
 # Loop through all files in cogs directory and load them

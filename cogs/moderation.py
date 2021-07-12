@@ -95,7 +95,7 @@ class Moderation(commands.Cog):
             await ctx.send(":x: You can't kick yourself!")
             return
 
-        if member == self.client.user:
+        if member.id == self.client.user.id:
             await ctx.send(":x: I can't kick myself!")
             return
 
@@ -125,18 +125,23 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: commands.UserConverter, *, reason=None):
+        try:
+            member = ctx.guild.get_member(member.id)
+        except:
+            pass
+
         if member == ctx.author:
             await ctx.send(":x: You can't ban yourself!")
             return
 
-        if member == self.client.user:
+        if member.id == self.client.user.id:
             await ctx.send(":x: I can't ban myself!")
             return
 
         bot = ctx.guild.get_member(self.client.user.id)
         bot_role = bot.top_role
 
-        if bot_role <= member.top_role:
+        if isinstance(member, discord.Member) and bot_role <= member.top_role:
             await ctx.send(
                 ":x: The user has a higher role or the same top role as mine.\n"
                 + "Please move my role higher!"
