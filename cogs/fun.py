@@ -7,6 +7,7 @@ import requests
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
+from Discord_Together.discordtogether import DiscordTogether
 
 
 class Fun(commands.Cog):
@@ -16,6 +17,27 @@ class Fun(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
+
+    # YouTube Together
+    @commands.command(help="Watch YouTube together with friends", aliases=["yt"])
+    async def youtube(self, ctx, *, vc: commands.VoiceChannelConverter):
+        if not isinstance(vc, discord.VoiceChannel):
+            embed = discord.Embed(
+                title="Error!",
+                color=0xFF6600,
+                description=":x: That does not seem like a valid voice channel!\n"
+                + "Please make sure you capitalise the name correctly. If you are using the regular command, we recommend using the slash version of this command instead.",
+            )
+            embed.set_footer(
+                text="Quick tip: if you have developer mode enabled, you can mention the voice channel with <#id>, replacing 'id' with the voice channel's ID."
+            )
+
+            await ctx.send(embed=embed)
+            return
+
+        dt = DiscordTogether(token=os.environ["TOKEN"])
+        invite_code = await dt.activity(option="youtube", vc_id=vc.id)
+        await ctx.send(f"Click to join: <https://discord.com/invite/{invite_code}>")
 
     # Dad joke command
     @commands.command(help="Get a random dad joke", brief="Get a random dad joke")
@@ -135,6 +157,21 @@ class Fun(commands.Cog):
             await ctx.send("I flipped a coin for you, it's **tails**!")
 
     # Slash commands
+    @cog_ext.cog_slash(
+        name="youtube_together",
+        description="Watch YouTube together in a voice channel",
+        options=[
+            create_option(
+                name="vc",
+                description="The voice channel where you want to start the activity",
+                required=True,
+                option_type=7,
+            )
+        ],
+    )
+    async def yt_slash(self, ctx: SlashContext, vc: discord.VoiceChannel):
+        await self.youtube(ctx, vc=vc)
+
     @cog_ext.cog_slash(name="dadjoke", description="Get a random dad joke")
     async def dadjoke_slash(self, ctx: SlashContext):
         await self.dadjoke(ctx)
