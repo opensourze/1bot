@@ -21,23 +21,24 @@ class Fun(commands.Cog):
     # YouTube Together
     @commands.command(help="Watch YouTube together with friends", aliases=["yt"])
     async def youtube(self, ctx, *, vc: commands.VoiceChannelConverter):
-        if not isinstance(vc, discord.VoiceChannel):
-            embed = discord.Embed(
-                title="Error!",
-                color=0xFF6600,
-                description=":x: That does not seem like a valid voice channel!\n"
-                + "Please make sure you capitalise the name correctly. If you are using the regular command, we recommend using the slash version of this command instead.",
-            )
-            embed.set_footer(
-                text="Quick tip: if you have developer mode enabled, you can mention the voice channel with <#id>, replacing 'id' with the voice channel's ID."
-            )
-
-            await ctx.send(embed=embed)
-            return
-
         dt = DiscordTogether(token=os.environ["TOKEN"])
         invite_code = await dt.activity(option="youtube", vc_id=vc.id)
         await ctx.send(f"Click to join: <https://discord.com/invite/{invite_code}>")
+
+    @youtube.error
+    async def yt_error(self, ctx, error):
+        if isinstance(error, commands.ChannelNotFound):
+            embed = discord.Embed(
+                title=":x: Channel Not Found",
+                description=f"Couldn't find that channel. You must type the **exact** name of the channel, "
+                + "**which is why it is recommended to use the Slash Command version of this command instead.**\n"
+                + "If you are typing a `#` before the name of the channel, **don't**.",
+                color=0xFF0000,
+            ).set_footer(
+                text="Quick tip: If you have developer mode on, you can type <#id> and replace 'id' with the voice channel ID"
+            )
+
+            await ctx.send(embed=embed)
 
     # Dad joke command
     @commands.command(help="Get a random dad joke", brief="Get a random dad joke")

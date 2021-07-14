@@ -77,6 +77,8 @@ client.loop.create_task(change_status())
 
 @client.event
 async def on_command_error(ctx, error):  # Error handlers
+    if ctx.command.has_error_handler():
+        return
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.send(
             ":x: I don't have enough permissions to run this command!\n"
