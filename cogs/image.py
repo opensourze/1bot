@@ -8,7 +8,7 @@ from PIL import Image
 import requests
 
 
-class Image(commands.Cog):
+class Images(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -20,7 +20,7 @@ class Image(commands.Cog):
 
     # amogus
     @commands.command(
-        help="Amogus, but with a member's profile picture", aliases=["sus"]
+        help="Amogus, but with a member's profile picture", aliases=["sus", "amongus"]
     )
     async def amogus(self, ctx, *, member: commands.MemberConverter = None):
         try:
@@ -198,4 +198,4 @@ class Image(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(Image(client))
+    client.add_cog(Images(client))
