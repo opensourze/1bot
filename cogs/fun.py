@@ -35,10 +35,14 @@ class Fun(commands.Cog):
                 + "If you are typing a `#` before the name of the channel, **don't**.",
                 color=0xFF0000,
             ).set_footer(
-                text="Quick tip: If you have developer mode on, you can type <#id> and replace 'id' with the voice channel ID"
+                text="Quick tip: If you have developer mode on, you can just use the ID of the voice channel."
             )
 
             await ctx.send(embed=embed)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(
+                ":x: You must specify a voice channel to start the activity in."
+            )
 
     # Dad joke command
     @commands.command(help="Get a random dad joke", brief="Get a random dad joke")

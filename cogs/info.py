@@ -17,9 +17,9 @@ info_btns = create_actionrow(
         ),
         create_button(
             style=ButtonStyle.URL,
-            label="Command list",
-            emoji="ℹ️",
-            url="https://1bot.netlify.app/commands",
+            label="Website",
+            emoji="🌐",
+            url="https://1bot.netlify.app/",
         ),
         create_button(
             style=ButtonStyle.URL,
@@ -57,7 +57,7 @@ class Info(commands.Cog):
             inline=False,
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
-        info_embed.add_field(name="Bot version", value="1.2.1", inline=False)
+        info_embed.add_field(name="Bot version", value="1.2.3", inline=False)
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False
         )
@@ -92,7 +92,10 @@ class Info(commands.Cog):
         embed = discord.Embed(title=f"{ctx.guild.name} information", color=0xFF6600)
         embed.set_thumbnail(url=ctx.guild.icon_url)
         embed.add_field(name="Owner", value=str(owner))
-        embed.add_field(name="Created on", value=str(ctx.guild.created_at)[:10])
+        embed.add_field(
+            name="Created at",
+            value=ctx.guild.created_at.strftime("%a, %d %B %Y, %I:%M %p UTC"),
+        )
         embed.add_field(name="Region", value=str(ctx.guild.region).capitalize())
         embed.add_field(name="Member count", value=ctx.guild.member_count)
         embed.add_field(name="Emojis", value=f"{len(ctx.guild.emojis)} emojis")
@@ -114,8 +117,15 @@ class Info(commands.Cog):
 
         embed = discord.Embed(title=member.name, color=member.color)
         embed.set_thumbnail(url=member.avatar_url)
-        embed.add_field(name="Account creation date", value=str(member.created_at)[:10])
-        embed.add_field(name="Joined this server on", value=str(member.joined_at)[:10])
+        embed.add_field(
+            name="Account creation date",
+            value=member.created_at.strftime("%a, %d %B %Y, %I:%M %p UTC"),
+        )
+        embed.add_field(
+            name="Joined this server on",
+            value=member.joined_at.strftime("%a, %d %B %Y, %I:%M %p UTC"),
+        )
+        embed.add_field(name="Nickname", value=member.display_name)
         if len(" ".join(roles)) <= 1024:
             embed.add_field(
                 name=f"Roles ({role_length})",
@@ -125,7 +135,7 @@ class Info(commands.Cog):
         else:
             embed.add_field(
                 name=f"Roles ({role_length})",
-                value="**[Only showing first 5 roles, since there are too many roles to show]**\n"
+                value="**[Only showing first 5 roles since there are too many roles to show]**\n"
                 + " ".join(roles[:5]),
                 inline=False,
             )

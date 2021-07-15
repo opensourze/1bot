@@ -100,6 +100,10 @@ async def on_command_error(ctx, error):  # Error handlers
         )
     elif isinstance(error, commands.ChannelNotFound):
         await ctx.send(":x: I don't think that channel exists!")
+    elif isinstance(error, commands.MemberNotFound):
+        await ctx.send(
+            f":x: Member not found. Member arguments must have the exact name of the member including capitalisation, or you can just ping the member."
+        )
     elif isinstance(error, commands.CommandOnCooldown):
         await ctx.send(
             f":x: Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
