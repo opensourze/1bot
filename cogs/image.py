@@ -1,4 +1,5 @@
 from io import BytesIO
+from contextlib import suppress
 
 import discord
 from discord.ext import commands
@@ -23,10 +24,8 @@ class Images(commands.Cog):
         help="Amogus, but with a member's profile picture", aliases=["sus", "amongus"]
     )
     async def amogus(self, ctx, *, member: commands.MemberConverter = None):
-        try:
+        with suppress():
             await ctx.trigger_typing()
-        except:
-            pass
 
         member = member or ctx.author
         member_av = member.avatar_url_as(size=256)
@@ -44,13 +43,26 @@ class Images(commands.Cog):
             f"when the {member.name} is sus", file=discord.File("amogus.png")
         )
 
+    @cog_ext.cog_slash(
+        name="amogus",
+        description="Amogus, but with a member's profile picture",
+        options=[
+            create_option(
+                name="member",
+                description="The member whose profile picture you want to use",
+                required=True,
+                option_type=6,
+            )
+        ],
+    )
+    async def amogus_slash(self, ctx: SlashContext, member):
+        await self.amogus(ctx, member=member)
+
     # Clyde
     @commands.command(help="Generate an image of Clyde saying something")
     async def clyde(self, ctx, *, text="you didn't give me anything to say"):
-        try:
+        with suppress():
             await ctx.trigger_typing()
-        except:
-            pass
 
         json = requests.get(url=f"{self.neko_url}clyde&text={text}").json()
 
@@ -68,89 +80,6 @@ class Images(commands.Cog):
         else:
             await ctx.send(f":x: Error: {json['message']}")
 
-    # Captcha
-    @commands.command(help="Please select all squares with.. your profile picture.")
-    async def captcha(self, ctx, *, member: commands.MemberConverter = None):
-        member = member or ctx.author
-
-        try:
-            await ctx.trigger_typing()
-        except:
-            pass
-
-        json = requests.get(
-            url=f"{self.neko_url}captcha&url={member.avatar_url}&username={member.name}"
-        ).json()
-
-        if json["success"]:
-            embed = discord.Embed(
-                color=0xFF6600, title="Please prove that you're not a robot."
-            ).set_image(url=json["message"])
-
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f":x: Error: {json['message']}")
-
-    # Change my mind
-    @commands.command(
-        aliases=["cmm"], help="Ask people to change your mind about something"
-    )
-    async def changemymind(self, ctx, *, text):
-        try:
-            await ctx.trigger_typing()
-        except:
-            pass
-
-        json = requests.get(url=f"{self.neko_url}changemymind&text={text}").json()
-
-        if json["success"]:
-            embed = (
-                discord.Embed(color=0xFF6600)
-                .set_author(name=f"Change {ctx.author.name}'s mind")
-                .set_image(url=json["message"])
-            )
-
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f":x: Error: {json['message']}")
-
-    # Tweet
-    @commands.command(help="Generate an image of a tweet", aliases=["twitter"])
-    async def tweet(self, ctx, *, text="I don't know how to use 1Bot image commands"):
-        try:
-            await ctx.trigger_typing()
-        except:
-            pass
-
-        json = requests.get(
-            url=f"{self.neko_url}tweet&text={text}&username={ctx.author.name}"
-        ).json()
-
-        if json["success"]:
-            embed = discord.Embed(
-                color=0x1DA1F2, title=f"{ctx.author.name}'s tweet"
-            ).set_image(url=json["message"])
-
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f":x: Error: {json['message']}")
-
-    # Slash commands
-    @cog_ext.cog_slash(
-        name="amogus",
-        description="Amogus, but with a member's profile picture",
-        options=[
-            create_option(
-                name="member",
-                description="The member whose profile picture you want to use",
-                required=True,
-                option_type=6,
-            )
-        ],
-    )
-    async def amogus_slash(self, ctx: SlashContext, member):
-        await self.amogus(ctx, member=member)
-
     @cog_ext.cog_slash(
         name="clyde",
         description="Generate an image of Clyde saying something",
@@ -166,6 +95,27 @@ class Images(commands.Cog):
     async def clyde_slash(self, ctx: SlashContext, text):
         await ctx.defer()
         await self.clyde(ctx, text=text)
+
+    # Captcha
+    @commands.command(help="Please select all squares with.. your profile picture.")
+    async def captcha(self, ctx, *, member: commands.MemberConverter = None):
+        member = member or ctx.author
+
+        with suppress():
+            await ctx.trigger_typing()
+
+        json = requests.get(
+            url=f"{self.neko_url}captcha&url={member.avatar_url}&username={member.name}"
+        ).json()
+
+        if json["success"]:
+            embed = discord.Embed(
+                color=0xFF6600, title="Please prove that you're not a robot."
+            ).set_image(url=json["message"])
+
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f":x: Error: {json['message']}")
 
     @cog_ext.cog_slash(
         name="captcha",
@@ -183,6 +133,27 @@ class Images(commands.Cog):
         await ctx.defer()
         await self.captcha(ctx, member=member)
 
+    # Change my mind
+    @commands.command(
+        aliases=["cmm"], help="Ask people to change your mind about something"
+    )
+    async def changemymind(self, ctx, *, text):
+        with suppress():
+            await ctx.trigger_typing()
+
+        json = requests.get(url=f"{self.neko_url}changemymind&text={text}").json()
+
+        if json["success"]:
+            embed = (
+                discord.Embed(color=0xFF6600)
+                .set_author(name=f"Change {ctx.author.name}'s mind")
+                .set_image(url=json["message"])
+            )
+
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f":x: Error: {json['message']}")
+
     @cog_ext.cog_slash(
         name="changemymind",
         description="Ask people to change your mind about something",
@@ -190,6 +161,25 @@ class Images(commands.Cog):
     async def changemymind_slash(self, ctx: SlashContext, *, text):
         await ctx.defer()
         await self.changemymind(ctx, text=text)
+
+    # Tweet
+    @commands.command(help="Generate an image of a tweet", aliases=["twitter"])
+    async def tweet(self, ctx, *, text="I don't know how to use 1Bot image commands"):
+        with suppress():
+            await ctx.trigger_typing()
+
+        json = requests.get(
+            url=f"{self.neko_url}tweet&text={text}&username={ctx.author.name}"
+        ).json()
+
+        if json["success"]:
+            embed = discord.Embed(
+                color=0x1DA1F2, title=f"{ctx.author.name}'s tweet"
+            ).set_image(url=json["message"])
+
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f":x: Error: {json['message']}")
 
     @cog_ext.cog_slash(name="tweet", description="Generate an image of a tweet")
     async def tweet_slash(self, ctx: SlashContext, *, text):

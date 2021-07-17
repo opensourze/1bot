@@ -2,6 +2,7 @@ print("Bot written by OpenSourze#1111")
 
 import os
 from asyncio import sleep
+from contextlib import suppress
 from itertools import cycle
 
 import discord
@@ -77,8 +78,9 @@ client.loop.create_task(change_status())
 
 @client.event
 async def on_command_error(ctx, error):  # Error handlers
-    if ctx.command.has_error_handler():
-        return
+    with suppress():
+        if ctx.command.has_error_handler():
+            return  # Exit if command has error handler
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.send(
             ":x: I don't have enough permissions to run this command!\n"
@@ -116,7 +118,7 @@ async def on_command_error(ctx, error):  # Error handlers
 
 @client.event
 async def on_slash_command_error(ctx, error):
-    # Send slash command errors to normal commands error handler
+    # Send slash command errors to normal command error handler
     await on_command_error(ctx, error)
 
 
@@ -135,6 +137,7 @@ async def on_message(message):
 @client.command(help="Create a suggestion for the bot")
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def suggest(ctx, *, suggestion):
+    # Get 1Bot support server suggestions channel
     channel = client.get_channel(862697260164055082)
 
     embed = discord.Embed(title="Suggestion", description=suggestion, color=0xFF6600)
@@ -148,17 +151,17 @@ async def suggest(ctx, *, suggestion):
     await message.add_reaction("❌")
 
 
+@slash.slash(name="suggest", description="Create a suggestion for the bot")
+@commands.cooldown(1, 10, commands.BucketType.user)
+async def suggest_slash(ctx: SlashContext, suggestion):
+    await suggest(ctx, suggestion=suggestion)
+
+
 @client.command(hidden=True, aliases=["stop", "close", "exit"])
 @commands.is_owner()
 async def logout(ctx):
     await ctx.send(":exclamation: Logging out")
     await client.close()
-
-
-@slash.slash(name="suggest", description="Create a suggestion for the bot")
-@commands.cooldown(1, 10, commands.BucketType.user)
-async def suggest_slash(ctx: SlashContext, suggestion):
-    await suggest(ctx, suggestion=suggestion)
 
 
 # Loop through all files in cogs directory and load them

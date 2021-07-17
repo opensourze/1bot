@@ -44,6 +44,21 @@ class Fun(commands.Cog):
                 ":x: You must specify a voice channel to start the activity in."
             )
 
+    @cog_ext.cog_slash(
+        name="youtube_together",
+        description="Watch YouTube together in a voice channel",
+        options=[
+            create_option(
+                name="vc",
+                description="The voice channel where you want to start the activity",
+                required=True,
+                option_type=7,
+            )
+        ],
+    )
+    async def yt_slash(self, ctx: SlashContext, vc: discord.VoiceChannel):
+        await self.youtube(ctx, vc=vc)
+
     # Dad joke command
     @commands.command(help="Get a random dad joke", brief="Get a random dad joke")
     async def dadjoke(self, ctx):
@@ -51,6 +66,10 @@ class Fun(commands.Cog):
             "https://official-joke-api.appspot.com/jokes/general/random"
         ).json()[0]
         await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
+
+    @cog_ext.cog_slash(name="dadjoke", description="Get a random dad joke")
+    async def dadjoke_slash(self, ctx: SlashContext):
+        await self.dadjoke(ctx)
 
     # Programming joke command
     @commands.command(
@@ -63,6 +82,12 @@ class Fun(commands.Cog):
             "https://official-joke-api.appspot.com/jokes/programming/random"
         ).json()[0]
         await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
+
+    @cog_ext.cog_slash(
+        name="programmingjoke", description="Get a programming-related joke"
+    )
+    async def programmingjoke_slash(self, ctx: SlashContext):
+        await self.programmingjoke(ctx)
 
     # Reddit/meme command
     @commands.command(
@@ -97,6 +122,21 @@ class Fun(commands.Cog):
         if json["nsfw"]:
             await ctx.send(f":exclamation: Warning: NSFW post!\n\n<{json['postLink']}>")
 
+    @cog_ext.cog_slash(
+        name="reddit",
+        description="Get a random post from meme subreddits, optionally provide a custom subreddit",
+        options=[
+            create_option(
+                name="subreddit",
+                description="Subreddit to get a post from (optional)",
+                required=False,
+                option_type=3,
+            )
+        ],
+    )
+    async def reddit_slash(self, ctx: SlashContext, subreddit: str = None):
+        await self.meme(ctx, subreddit=subreddit)
+
     # GIF command
     @commands.command(
         help="Search for GIFs (filtered) on Tenor",
@@ -110,6 +150,10 @@ class Fun(commands.Cog):
 
         # Send first result
         await ctx.send(json["results"][0]["url"])
+
+    @cog_ext.cog_slash(name="gif", description="Search for GIFs (filtered) on Tenor")
+    async def gif_slash(self, ctx: SlashContext, *, query):
+        await self.gif(ctx, query=query)
 
     # 8ball command
     @commands.command(
@@ -153,59 +197,6 @@ class Fun(commands.Cog):
             content=f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*\n**{random_response}**'
         )
 
-    # Coin flip command
-    @commands.command(help="Flip a coin", aliases=["coinflip", "flipcoin"])
-    async def flip(self, ctx):
-        if random.randint(1, 10) <= 5:
-            await ctx.send("I flipped a coin for you, it's **heads**!")
-        else:
-            await ctx.send("I flipped a coin for you, it's **tails**!")
-
-    # Slash commands
-    @cog_ext.cog_slash(
-        name="youtube_together",
-        description="Watch YouTube together in a voice channel",
-        options=[
-            create_option(
-                name="vc",
-                description="The voice channel where you want to start the activity",
-                required=True,
-                option_type=7,
-            )
-        ],
-    )
-    async def yt_slash(self, ctx: SlashContext, vc: discord.VoiceChannel):
-        await self.youtube(ctx, vc=vc)
-
-    @cog_ext.cog_slash(name="dadjoke", description="Get a random dad joke")
-    async def dadjoke_slash(self, ctx: SlashContext):
-        await self.dadjoke(ctx)
-
-    @cog_ext.cog_slash(
-        name="programmingjoke", description="Get a programming-related joke"
-    )
-    async def programmingjoke_slash(self, ctx: SlashContext):
-        await self.programmingjoke(ctx)
-
-    @cog_ext.cog_slash(
-        name="reddit",
-        description="Get a random post from meme subreddits, optionally provide a custom subreddit",
-        options=[
-            create_option(
-                name="subreddit",
-                description="Subreddit to get a post from (optional)",
-                required=False,
-                option_type=3,
-            )
-        ],
-    )
-    async def reddit_slash(self, ctx: SlashContext, subreddit: str = None):
-        await self.meme(ctx, subreddit=subreddit)
-
-    @cog_ext.cog_slash(name="gif", description="Search for GIFs (filtered) on Tenor")
-    async def gif_slash(self, ctx: SlashContext, *, query):
-        await self.gif(ctx, query=query)
-
     @cog_ext.cog_slash(
         name="8ball",
         description="Ask the magic 8-ball a question",
@@ -220,6 +211,14 @@ class Fun(commands.Cog):
     )
     async def eightball_slash(self, ctx: SlashContext, question):
         await self.eightball(ctx, question=question)
+
+    # Coin flip command
+    @commands.command(help="Flip a coin", aliases=["coinflip", "flipcoin"])
+    async def flip(self, ctx):
+        if random.randint(1, 10) <= 5:
+            await ctx.send("I flipped a coin for you, it's **heads**!")
+        else:
+            await ctx.send("I flipped a coin for you, it's **tails**!")
 
     @cog_ext.cog_slash(name="coinflip", description="Flip a coin")
     async def flip_slash(self, ctx: SlashContext):

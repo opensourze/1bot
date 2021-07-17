@@ -26,6 +26,12 @@ info_btns = create_actionrow(
             label="Join server",
             url="https://discord.gg/4yA6XkfnwR",
         ),
+        create_button(
+            style=ButtonStyle.URL,
+            label="Upvote me",
+            emoji="⬆️",
+            url="https://discordbotlist.com/bots/1bot/upvote",
+        ),
     ]
 )
 
@@ -67,6 +73,10 @@ class Info(commands.Cog):
         info_embed.set_thumbnail(url=self.client.user.avatar_url)
         await ctx.send(embed=info_embed, components=[info_btns])
 
+    @cog_ext.cog_slash(name="info", description="View the bot's information")
+    async def info_slash(self, ctx: SlashContext):
+        await self.info(ctx)
+
     # Avatar command
     @commands.command(
         help="Get your/any user's avatar",
@@ -78,6 +88,21 @@ class Info(commands.Cog):
         avatar_embed = discord.Embed(color=0xFF6600, title=f"{user.name}'s avatar")
         avatar_embed.set_image(url=f"{user.avatar_url}")
         await ctx.send(embed=avatar_embed)
+
+    @cog_ext.cog_slash(
+        name="avatar",
+        description="Get a user's avatar",
+        options=[
+            create_option(
+                name="user",
+                description="Which user's avatar do you want to see?",
+                required=True,
+                option_type=6,
+            )
+        ],
+    )
+    async def avatar_slash(self, ctx: SlashContext, *, user):
+        await self.avatar(ctx, user=user)
 
     # Server Info command
     @commands.command(
@@ -102,6 +127,12 @@ class Info(commands.Cog):
         embed.add_field(name="Boost level", value=f"Level {ctx.guild.premium_tier}")
 
         await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="serverinfo", description="View information about the current server"
+    )
+    async def serverinfo_slash(self, ctx: SlashContext):
+        await self.serverinfo(ctx)
 
     # User Info command
     @commands.command(help="View a member's information", aliases=["whois", "user"])
@@ -143,53 +174,6 @@ class Info(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    # TODO: uncomment when bot is approved on top.gg
-    # Upvote command
-    # @client.command(help="Upvote me on Top.gg")
-    # async def upvote(self, ctx):
-    #    await ctx.send(
-    #        "If you like this bot, upvote it on Top.gg to help it grow!\n"
-    #        + "You can upvote every 12 hours.\n\n"
-    #        + "https://top.gg/bot/848936530617434142/vote/"
-    #    )
-
-    # Ping command
-    @commands.command(
-        help="Tests the bot's latency and displays it in milliseconds",
-        brief="Tests the bot's latency",
-    )
-    async def ping(self, ctx):
-        await ctx.send(
-            f"Pong! The bot's latency is `{round(self.client.latency * 1000)}ms`"
-        )
-
-    # Invite command
-    @commands.command(help="Add the bot to your server", aliases=["addbot"])
-    async def invite(ctx):
-        await ctx.send("https://dsc.gg/1bot")
-
-    # Slash commands
-    @cog_ext.cog_slash(
-        name="avatar",
-        description="Get a user's avatar",
-        options=[
-            create_option(
-                name="user",
-                description="Which user's avatar do you want to see?",
-                required=True,
-                option_type=6,
-            )
-        ],
-    )
-    async def avatar_slash(self, ctx: SlashContext, *, user):
-        await self.avatar(ctx, user=user)
-
-    @cog_ext.cog_slash(
-        name="serverinfo", description="View information about the current server"
-    )
-    async def serverinfo_slash(self, ctx: SlashContext):
-        await self.serverinfo(ctx)
-
     @cog_ext.cog_slash(
         name="userinfo",
         description="View information about a user",
@@ -205,22 +189,41 @@ class Info(commands.Cog):
     async def userinfo_slash(self, ctx: SlashContext, member):
         await self.userinfo(ctx, member=member)
 
-    @cog_ext.cog_slash(name="info", description="View the bot's information")
-    async def info_slash(self, ctx: SlashContext):
-        await self.info(ctx)
+    # Upvote command
+    @commands.command(help="Upvote me on DiscordBotList")
+    async def upvote(self, ctx):
+        await ctx.send(
+            "If you like this bot, upvote it to help it grow!\n"
+            + "You can upvote every 12 hours.\n\n"
+            + "https://discordbotlist.com/bots/1bot/upvote/"
+        )
+
+    @cog_ext.cog_slash(name="upvote", description="Upvote me on DiscordBotList")
+    async def upvote_slash(self, ctx: SlashContext):
+        await self.upvote(ctx)
+
+    # Ping command
+    @commands.command(
+        help="Tests the bot's latency and displays it in milliseconds",
+        brief="Tests the bot's latency",
+    )
+    async def ping(self, ctx):
+        await ctx.send(
+            f"Pong! The bot's latency is `{round(self.client.latency * 1000)}ms`"
+        )
 
     @cog_ext.cog_slash(name="ping", description="Test the bot's latency")
     async def ping_slash(self, ctx: SlashContext):
         await self.ping(ctx)
 
+    # Invite command
+    @commands.command(help="Add the bot to your server", aliases=["addbot"])
+    async def invite(ctx):
+        await ctx.send("https://dsc.gg/1bot")
+
     @cog_ext.cog_slash(name="invite", description="Add the bot to your server")
     async def invite_slash(self, ctx: SlashContext):
         await ctx.send("https://dsc.gg/1bot")
-
-    # TODO: uncomment when bot is approved on top.gg
-    # @cog_ext.cog_slash(name="upvote", description="Upvote me on Top.gg")
-    # async def upvote_slash(self, ctx: SlashContext):
-    #     await upvote(ctx)
 
 
 def setup(client):

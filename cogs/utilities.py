@@ -38,6 +38,28 @@ class Utilities(commands.Cog):
                 f"First result for '{query}':\n{json['items'][0]['html_url']}"
             )
 
+    @cog_ext.cog_slash(
+        name="search_github", description="Search for repositories on GitHub"
+    )
+    async def github_slash(self, ctx: SlashContext, *, query):
+        await self.githubsearch(ctx, query=query)
+
+    @cog_ext.cog_slash(
+        name="weather",
+        description="Get weather info for a city",
+        options=[
+            create_option(
+                name="city",
+                description="City name. Optionally add state code and country code separated by commas",
+                required=True,
+                option_type=3,
+            )
+        ],
+    )
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def weather_slash(self, ctx: SlashContext, city):
+        await self.weather(ctx, query=city)
+
     # Weather command
     @commands.command(
         help="Get weather info for a city. The city name is required. Optionally add state and country codes separated by commas. Example: `1 weather washington,wa,us`, or `1 weather washington`",
@@ -95,24 +117,11 @@ class Utilities(commands.Cog):
     # Embed creator
     @commands.command(aliases=["makeembed", "createembed"], help="Create an embed")
     @commands.has_permissions(manage_messages=True)
-    @commands.is_owner()  # TODO: remove when bot is approved on top.gg
     async def embed(self, ctx):
-        voted = requests.get(
-            f"https://top.gg/api/bots/{self.client.user.id}/check?userId={ctx.author.id}",
-            headers={"Authorization": os.environ["TOPGG_TOKEN"]},
-        ).json()["voted"]
-
-        if voted == 1 or ctx.author.id == 748791790798372964:
-            await ctx.channel.send(
-                "Embed creation process started.\n"
-                + "Please send the **title you want to use for the embed** within 60 seconds."
-            )
-        else:
-            await ctx.channel.send(
-                ":x: You need to vote for the bot to use this command. Your vote resets every 12 hours.\n"
-                + "https://top.gg/bot/848936530617434142/vote"
-            )
-            return
+        await ctx.channel.send(
+            "Embed creation process started.\n"
+            + "Please send the **title you want to use for the embed** within 60 seconds."
+        )
 
         try:
             title = await self.client.wait_for(
@@ -170,6 +179,11 @@ class Utilities(commands.Cog):
         except asyncio.TimeoutError:
             await ctx.channel.send(":x: Command has timed out. Exiting embed creator.")
 
+    @cog_ext.cog_slash(name="embed", description="Create an embed")
+    async def embed_slash(self, ctx: SlashContext):
+        await ctx.defer()
+        await self.embed(ctx)
+
     # Poll command
     @commands.command(help="Create a poll")
     @commands.guild_only()
@@ -202,6 +216,27 @@ class Utilities(commands.Cog):
         # loop through emojis until the end of the option list is reached
         for emoji in numbers[: len(option_list)]:
             await poll_msg.add_reaction(emoji)  # react with the number emoji
+
+    @cog_ext.cog_slash(
+        name="poll",
+        description="Create a poll",
+        options=[
+            create_option(
+                name="question",
+                description="The title of the poll",
+                required=True,
+                option_type=3,
+            ),
+            create_option(
+                name="options",
+                description="The choices you want for the poll separated by slashes",
+                required=True,
+                option_type=3,
+            ),
+        ],
+    )
+    async def poll_slash(self, ctx, question, options):
+        await self.poll(ctx, question, options=options)
 
     # Eval command
     @commands.command(name="eval", aliases=["exec"], hidden=True)
@@ -243,57 +278,6 @@ class Utilities(commands.Cog):
         )
 
         await pager.start(ctx)
-
-    # Slash commands
-
-    @cog_ext.cog_slash(
-        name="search_github", description="Search for repositories on GitHub"
-    )
-    async def github_slash(self, ctx: SlashContext, *, query):
-        await self.githubsearch(ctx, query=query)
-
-    @cog_ext.cog_slash(
-        name="weather",
-        description="Get weather info for a city",
-        options=[
-            create_option(
-                name="city",
-                description="City name. Optionally add state code and country code separated by commas",
-                required=True,
-                option_type=3,
-            )
-        ],
-    )
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def weather_slash(self, ctx: SlashContext, city):
-        await self.weather(ctx, query=city)
-
-    # TODO: uncomment when bot is approved on top.gg
-    # @cog_ext.cog_slash(name="embed", description="Create an embed")
-    # async def embed_slash(self, ctx: SlashContext):
-    #     await ctx.defer()
-    #     await self.embed(ctx)
-
-    @cog_ext.cog_slash(
-        name="poll",
-        description="Create a poll",
-        options=[
-            create_option(
-                name="question",
-                description="The title of the poll",
-                required=True,
-                option_type=3,
-            ),
-            create_option(
-                name="options",
-                description="The choices you want for the poll separated by slashes",
-                required=True,
-                option_type=3,
-            ),
-        ],
-    )
-    async def poll_slash(self, ctx, question, options):
-        await self.poll(ctx, question, options=options)
 
 
 # Add cog
