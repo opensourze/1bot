@@ -59,11 +59,11 @@ class Info(commands.Cog):
         )
         info_embed.add_field(
             name="Creator",
-            value="[OpenSourze#1111](https://github.com/opensourze)",
+            value="[OpenSourze](https://github.com/opensourze) - contact on [Twitter](https://twitter.com/opensourze) or [Reddit](https://reddit.com/user/opensourze)",
             inline=False,
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
-        info_embed.add_field(name="Bot version", value="1.2.3", inline=False)
+        info_embed.add_field(name="Bot version", value="1.2.4", inline=False)
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False
         )

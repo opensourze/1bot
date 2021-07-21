@@ -24,7 +24,7 @@ class Images(commands.Cog):
         help="Amogus, but with a member's profile picture", aliases=["sus", "amongus"]
     )
     async def amogus(self, ctx, *, member: commands.MemberConverter = None):
-        with suppress():
+        with suppress(AttributeError):
             await ctx.trigger_typing()
 
         member = member or ctx.author
@@ -61,7 +61,7 @@ class Images(commands.Cog):
     # Clyde
     @commands.command(help="Generate an image of Clyde saying something")
     async def clyde(self, ctx, *, text="you didn't give me anything to say"):
-        with suppress():
+        with suppress(AttributeError):
             await ctx.trigger_typing()
 
         json = requests.get(url=f"{self.neko_url}clyde&text={text}").json()
@@ -101,7 +101,7 @@ class Images(commands.Cog):
     async def captcha(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
 
-        with suppress():
+        with suppress(AttributeError):
             await ctx.trigger_typing()
 
         json = requests.get(
@@ -138,7 +138,7 @@ class Images(commands.Cog):
         aliases=["cmm"], help="Ask people to change your mind about something"
     )
     async def changemymind(self, ctx, *, text):
-        with suppress():
+        with suppress(AttributeError):
             await ctx.trigger_typing()
 
         json = requests.get(url=f"{self.neko_url}changemymind&text={text}").json()
@@ -165,7 +165,7 @@ class Images(commands.Cog):
     # Tweet
     @commands.command(help="Generate an image of a tweet", aliases=["twitter"])
     async def tweet(self, ctx, *, text="I don't know how to use 1Bot image commands"):
-        with suppress():
+        with suppress(AttributeError):
             await ctx.trigger_typing()
 
         json = requests.get(

@@ -1,4 +1,4 @@
-print("Bot written by OpenSourze#1111")
+print("Bot written by @opensourze")
 
 import os
 from asyncio import sleep
@@ -78,7 +78,7 @@ client.loop.create_task(change_status())
 
 @client.event
 async def on_command_error(ctx, error):  # Error handlers
-    with suppress():
+    with suppress(AttributeError):
         if ctx.command.has_error_handler():
             return  # Exit if command has error handler
     if isinstance(error, commands.BotMissingPermissions):
