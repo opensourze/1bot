@@ -44,21 +44,89 @@ class Utilities(commands.Cog):
     async def github_slash(self, ctx: SlashContext, *, query):
         await self.githubsearch(ctx, query=query)
 
-    @cog_ext.cog_slash(
-        name="weather",
-        description="Get weather info for a city",
-        options=[
-            create_option(
-                name="city",
-                description="City name. Optionally add state code and country code separated by commas",
-                required=True,
-                option_type=3,
+    # PyPI command
+    @commands.command(help="Get info for a PyPI module")
+    async def pypi(self, ctx, *, package):
+        request = requests.get(f"https://pypi.org/pypi/{package}/json")
+        if request.status_code == 404:
+            await ctx.send(":x: That module doesn't exist!")
+            return
+
+        json = request.json()
+
+        embed = discord.Embed(
+            title=json["info"]["name"],
+            color=0xFF6600,
+            url=json["info"]["package_url"],
+        )
+
+        if json["info"]["summary"] != "UNKNOWN":
+            embed.description = json["info"]["summary"]
+
+        if len(json["info"]["description"]) <= 1024:
+            embed.add_field(
+                name="Description", value=json["info"]["description"], inline=False
             )
-        ],
-    )
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def weather_slash(self, ctx: SlashContext, city):
-        await self.weather(ctx, query=city)
+        else:
+            # Slice description to 1021 characters and add ellipsis
+            embed.add_field(
+                name="Description",
+                value=json["info"]["description"][:1021] + "...",
+                inline=False,
+            )
+
+        if json["info"]["home_page"]:
+            embed.add_field(name="Homepage", value=json["info"]["home_page"])
+
+        embed.add_field(name="Version", value=json["info"]["version"])
+        embed.add_field(name="Author", value=json["info"]["author"])
+        embed.add_field(name="License", value=json["info"]["license"])
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(name="pypi", description="Get info for a PyPI module")
+    async def pypi_slash(self, ctx: SlashContext, *, package):
+        await self.pypi(ctx, package=package)
+
+    # NPM command
+    @commands.command(help="Get info for an NPM module")
+    async def npm(self, ctx, *, package):
+        json = requests.get(f"https://registry.npmjs.org/{package}").json()
+
+        try:
+            if json["error"]:
+                await ctx.send(":x:" + json["error"])
+        except KeyError:
+            embed = discord.Embed(
+                title=json["name"],
+                description=json["description"],
+                color=0xD50000,
+                url="https://www.npmjs.com/package/" + package,
+            )
+
+            if json["homepage"]:
+                embed.add_field(name="Homepage", value=json["homepage"], inline=False)
+
+            embed.add_field(name="Author", value=json["author"]["name"])
+            embed.add_field(
+                name="GitHub repository",
+                value=json["repository"]["url"][4:],
+                inline=False,
+            )
+            embed.add_field(
+                name="Repository maintainers",
+                value=", ".join(
+                    maintainer["name"] for maintainer in json["maintainers"]
+                ),
+                inline=False,
+            )
+            embed.add_field(name="License", value=json["license"], inline=False)
+
+            await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(name="npm", description="Get info for an NPM module")
+    async def npm_slash(self, ctx: SlashContext, *, package):
+        await self.npm(ctx, package=package)
 
     # Weather command
     @commands.command(
@@ -113,6 +181,22 @@ class Utilities(commands.Cog):
             )
 
             await ctx.send(embed=weather_embed)
+
+    @cog_ext.cog_slash(
+        name="weather",
+        description="Get weather info for a city",
+        options=[
+            create_option(
+                name="city",
+                description="City name. Optionally add state code and country code separated by commas",
+                required=True,
+                option_type=3,
+            )
+        ],
+    )
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def weather_slash(self, ctx: SlashContext, city):
+        await self.weather(ctx, query=city)
 
     # Embed creator
     @commands.command(aliases=["makeembed", "createembed"], help="Create an embed")

@@ -63,7 +63,7 @@ class Info(commands.Cog):
             inline=False,
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
-        info_embed.add_field(name="Bot version", value="1.2.4", inline=False)
+        info_embed.add_field(name="Bot version", value="1.3.0", inline=False)
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False
         )
