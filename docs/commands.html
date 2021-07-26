@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description"
+    content="1Bot can help keep your server safe with moderation tools, help you out with utilities, or make you laugh.">
+  <link rel="stylesheet" href="style.css">
+
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <style>
+    img {
+      width: 80vw;
+      max-width: 700px;
+    }
+  </style>
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="manifest" href="/icons/site.webmanifest">
+  <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#ff6600">
+  <link rel="shortcut icon" href="/icons/favicon.ico">
+  <meta name="msapplication-TileColor" content="#ff954d">
+  <meta name="msapplication-config" content="/icons/browserconfig.xml">
+  <meta name="theme-color" content="#ff754d">
+
+  <title>1Bot Commands</title>
+</head>
+
+<body>
+  <nav class="navbar">
+    <a href="/"><img src="./1bot.png" alt="Logo" class="logo"></a>
+
+    <button class="navbar__menu-btn">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
+    <div class="navbar__links">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="https://discord.gg/4yA6XkfnwR">Server</a></li>
+        <li><a href="https://discordbotlist.com/bots/1bot/upvote">Upvote</a></li>
+        <li class="no-hover"><a href="https://dsc.gg/1bot"><button>Add Bot</button></a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <h1 style="margin-top: 100px;">Commands</h1>
+  <h4>All of 1Bot's commands in maximum detail</h4>
+  <h3>1Bot's prefix is "1". The space after it is completely optional. <b>Please note that Slash Commands are
+      supported.</b>
+  </h3>
+  <h4><code>1 {command} {required argument} [optional argument]</code> (do not literally type the brackets)</h4>
+  <p>Arguments are nothing but options you add to commands.</p>
+  <h4><code>{member} or [member]</code> arguments can be in the form of @mention, user ID, username or nickname. It is
+    case sensitive.</h4>
+  <br>
+  <h2>Moderation commands</h2>
+  <ul>
+    <li>
+      <p>Kick</p>
+      <code>1 kick {member}</code>
+      <p>Removes a member from the server. The member can join the server again if they are kicked.</p>
+    </li>
+    <li>
+      <p>Ban</p>
+      <code>1 ban {member}</code>
+      <p>Removes a member from the server, but they cannot join the server again until the ban is revoked in the server
+        settings.</p>
+    </li>
+    <li>
+      <p>Mute</p>
+      <code>1 mute {member}</code>
+      <p>Removes the permission for a member to send messages or speak in voice channels.</p>
+    </li>
+    <li>
+      <p>Unmute</p>
+      <code>1 unmute {member}</code>
+      <p>Undo the mute command.</p>
+    </li>
+    <li>
+      <p>Clear/purge</p>
+      <code>1 clear [amount]</code> or <code>1 purge [amount]</code>
+      <p>Deletes many messages at once. If amount of messages is not specified, 1Bot will delete the last 5 messages.
+      </p>
+    </li>
+    <li>
+      <p>Lockdown/lock</p>
+      <code>1 lock [channel]</code> or <code>1 lockdown [channel]</code>
+      <p>Disables permissions for everyone to speak in a channel. If no channel is provided, 1Bot will lock the channel
+        where you invoked the command.</p>
+    </li>
+    <li>
+      <p>Unlock</p>
+      <code>1 unlock [channel]</code>
+      <p>Undo the lockdown command.</p>
+    </li>
+  </ul>
+
+  <h2>Utility commands</h2>
+  <ul>
+    <li>
+      <p>Weather</p>
+      <code>1 weather {city,statecode,countrycode}</code>
+      <p>Gets weather information for a city. The city name is required. Optionally add state and country codes
+        separated
+        by commas.</p>
+    </li>
+    <li>
+      <p>GitHub</p>
+      <code>1 github/searchrepo/githubsearch {search query}</code>
+      <p>Search for GitHub repositories right inside Discord! Enter a search query and 1Bot will send you the first
+        result.</p>
+    </li>
+    <li>
+      <p>Embed</p>
+      <code>1 embed/makeembed/createembed</code>
+      <p>(You need to upvote the bot to use this command).</p>
+      <img src="https://raw.githubusercontent.com/Fraserbc/BetterDiscord-Embeds/master/images/embed_example1.PNG"
+        alt="Embed example" loading="lazy">
+      <p>Example embed ↑<br><br>
+        This command starts an embed creator, which builds an embed in the channel you're in. The messages sent in the
+        process will be cleared before sending the embed.</p>
+    </li>
+    <li>
+      <p>Poll</p>
+      <code>1 poll "{Question}" {choice1/choice2/choice3}....</code>
+      <p>Creates a poll. Put the question in double quotes and separate each option with a slash. You cannot have more
+        than 10 options.</p>
+    <li>
+      <p>NPM</p>
+      <code>1 npm {package name}</code>
+      <p>Get information about the specified NPM package. This is not a search command, so you will need to provide the
+        correct name of the package.</p>
+    </li>
+    <li>
+      <p>PyPI</p>
+      <code>1 pypi {package name}</code>
+      <p>Get information about the specified PyPI module. This is not a search command, so you will need to provide the
+        correct name of the module.</p>
+    </li>
+  </ul>
+
+  <h2>Fun commands</h2>
+  <ul>
+    <li>
+      <p>YouTube Together</p>
+      <code>1 yt/youtube {voicechannel}</code>
+      <p><b>We recommend using slash commands for this instead.</b> 1Bot will start YouTube Together in the mentioned
+        voice channel. YouTube Together lets you watch YouTube videos with your friends at the same time, all within a
+        voice
+        channel.
+        Anyone can control the videos.</p>
+    </li>
+    <li>
+      <p>Reddit/meme</p>
+      <code>1 reddit [subreddit]</code> or <code>1 meme [subreddit]</code>
+      <p>If a subreddit is not specified, 1Bot will fetch a random meme from Reddit for you. If you do include a
+        subreddit, 1Bot will get a random post from there.</p>
+    </li>
+    <li>
+      <p>GIF</p>
+      <code>1 gif {query}</code>
+      <p>Search for GIFs on Tenor with your query and send the top result.</p>
+    </li>
+    <li>
+      <p>8Ball</p>
+      <code>1 8ball/eightball {question}</code>
+      <p>Ask the magic 8Ball a yes-or-no question.</p>
+    </li>
+    <li>
+      <p>Dad joke</p>
+      <code>1 dadjoke</code>
+      <p>Send a random dad joke.</p>
+    </li>
+    <li>
+      <p>Programming joke</p>
+      <code>1 codingjoke/programmingjoke</code>
+      <p>Send a random programming-related dad joke.</p>
+    </li>
+    <li>
+      <p>Coin flip</p>
+      <code>1 flip/coinflip/flipcoin</code>
+      <p>Flip a coin. You have a 50-50 chance of getting heads or tails.</p>
+    </li>
+  </ul>
+
+  <h2>Image commands</h2>
+  <ul>
+    <li>
+      <p>Amogus</p>
+      <code>1 amogus/sus [member]</code>
+      <p>Amogus, but with the member's avatar. If the member is not provided, your own avatar will be used.</p>
+    </li>
+    <li>
+      <p>Clyde</p>
+      <code>1 clyde {text}</code>
+      <p>Generate an image of Discord's built-in Clyde bot saying whatever is in the text argument.</p>
+    </li>
+    <li>
+      <p>Change my mind</p>
+      <code>1 changemymind/cmm {text}</code><br>
+      <img src="./cmm.png" alt="Change My Mind command">
+    </li>
+    <li>
+      <p>Tweet</p>
+      <code>1 tweet {text}</code><br>
+      <img src="./tweet.png" alt="Tweet command">
+    </li>
+    <li>
+      <p>Captcha</p>
+      <code>1 captcha [member]</code><br>
+      <img src="./captcha.png" alt="Captcha command" style="max-height: 70vh !important; width: auto;">
+    </li>
+  </ul>
+
+  <h2>Info commands</h2>
+  <ul>
+    <li>
+      <p>Bot info</p>
+      <code>1 info/botinfo/information</code>
+      <p>Sends information about the bot.</p>
+    </li>
+    <li>
+      <p>User info</p>
+      <code>1 user/userinfo [member]</code>
+      <p>Sends information about the member. If the member is not specified, 1Bot will send information about yourself.
+      </p>
+    </li>
+    <li>
+      <p>Server info</p>
+      <code>1 server/serverinfo</code>
+      <p>Sends information about the server you are currently in.</p>
+    </li>
+    <li>
+      <p>Avatar</p>
+      <code>1 avatar/av/pfp [member]</code>
+      <p>Sends the avatar of the member. If not specified, you'll get your own avatar.</p>
+    </li>
+  </ul>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+  <script src="./script.js"></script>
+</body>
+
+</html>
