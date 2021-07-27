@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import contextlib
 import io
 import os
@@ -13,7 +14,7 @@ from discord_slash.utils.manage_commands import create_option
 from temperature_converter_py import fahrenheit_to_celsius
 
 
-class Utilities(commands.Cog):
+class Utility(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -95,7 +96,7 @@ class Utilities(commands.Cog):
 
         try:
             if json["error"]:
-                await ctx.send(":x:" + json["error"])
+                await ctx.send(":x: " + json["error"])
         except KeyError:
             embed = discord.Embed(
                 title=json["name"],
@@ -110,7 +111,7 @@ class Utilities(commands.Cog):
             embed.add_field(name="Author", value=json["author"]["name"])
             embed.add_field(
                 name="GitHub repository",
-                value=json["repository"]["url"][4:],
+                value=json["repository"]["url"][4:-4],
                 inline=False,
             )
             embed.add_field(
@@ -127,6 +128,40 @@ class Utilities(commands.Cog):
     @cog_ext.cog_slash(name="npm", description="Get info for an NPM module")
     async def npm_slash(self, ctx: SlashContext, *, package):
         await self.npm(ctx, package=package)
+
+    # Base64
+    @commands.group(
+        invoke_without_command=True, help="Encode/decode base64", aliases=["b64"]
+    )
+    async def base64(self, ctx):
+        embed = discord.Embed(
+            title="Base64 commands",
+            description="Run `1 base64 e {text}` to convert the text into base64.\n"
+            + "Run `1 base64 d {base64}` to decode base64 code.\n",
+            color=0xFF6600,
+        ).set_footer(text="Don't include the brackets while running commands!")
+
+        await ctx.send(embed=embed)
+
+    @base64.command(help="Encode text into base64", aliases=["e"])
+    async def encode(self, ctx, *, text):
+        await ctx.send(base64.b64encode(text.encode()).decode())
+
+    @base64.command(help="Decode base64 into text", aliases=["d"])
+    async def decode(self, ctx, *, code):
+        await ctx.send(base64.b64decode(code.encode()).decode())
+
+    @cog_ext.cog_subcommand(
+        base="base64", name="encode", description="Encode text into base64"
+    )
+    async def encode_slash(self, ctx: SlashContext, *, text):
+        await self.encode(ctx, text=text)
+
+    @cog_ext.cog_subcommand(
+        base="base64", name="decode", description="Decode base64 into text"
+    )
+    async def decode_slash(self, ctx: SlashContext, *, code):
+        await self.decode(ctx, code=code)
 
     # Weather command
     @commands.command(
@@ -366,4 +401,4 @@ class Utilities(commands.Cog):
 
 # Add cog
 def setup(client):
-    client.add_cog(Utilities(client))
+    client.add_cog(Utility(client))

@@ -65,7 +65,7 @@ async def on_ready():
 
 async def change_status():
     statuses = cycle(
-        ["you can run my commands in DMs too!", "1 help | 1bot.netlify.app"]
+        ["1 help | you can run my commands in DMs too!", "1 help | 1bot.netlify.app"]
     )
 
     while not client.is_closed():
