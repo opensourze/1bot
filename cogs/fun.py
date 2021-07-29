@@ -149,7 +149,10 @@ class Fun(commands.Cog):
         ).json()
 
         # Send first result
-        await ctx.send(json["results"][0]["url"])
+        try:
+            await ctx.send(json["results"][0]["url"])
+        except IndexError:
+            await ctx.send(":x: Couldn't find any matching GIFs.")
 
     @cog_ext.cog_slash(name="gif", description="Search for GIFs (filtered) on Tenor")
     async def gif_slash(self, ctx: SlashContext, *, query):

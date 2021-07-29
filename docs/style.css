@@ -102,7 +102,7 @@ a button:active {
 }
 
 main {
-  margin-top: 80px;
+  margin-top: 85px;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -115,7 +115,7 @@ main img {
 }
 
 main .title {
-  margin-bottom: 0;
+  margin: 5px auto;
   color: #ff6600;
   text-shadow: 0px 0px 40px #ff6600b0;
   font-size: 12vw;
@@ -149,8 +149,17 @@ section img {
 
 code {
   background-color: #1f1f1f;
-  padding: 5px;
-  margin: 6px;
+}
+
+footer {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: black;
+  padding: 1em;
+  margin: -8px;
+  font-size: medium;
 }
 
 @font-face {

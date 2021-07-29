@@ -15,44 +15,10 @@ from discord_slash.utils.manage_components import create_actionrow, create_butto
 dotenv.load_dotenv()
 
 
-class CustomHelpCommand(commands.MinimalHelpCommand):
-    info_btns = create_actionrow(
-        *[
-            create_button(
-                style=ButtonStyle.URL,
-                label="Add bot",
-                emoji="➕",
-                url="https://dsc.gg/1bot",
-            ),
-            create_button(
-                style=ButtonStyle.URL,
-                label="Command list",
-                emoji="ℹ️",
-                url="https://1bot.netlify.app/commands",
-            ),
-            create_button(
-                style=ButtonStyle.URL,
-                label="Join server",
-                url="https://discord.gg/4yA6XkfnwR",
-            ),
-        ]
-    )
-
-    async def send_pages(self):
-        destination = self.get_destination()
-        for page in self.paginator.pages:
-            embed = discord.Embed(
-                title="1Bot Commands", description=page, color=0xFF6600
-            )
-            embed.set_author(name="1Bot", icon_url=client.user.avatar_url)
-
-            await destination.send(embed=embed, components=[self.info_btns])
-
-
 client = commands.AutoShardedBot(
     command_prefix=commands.when_mentioned_or(*["1 ", "1"]),
     case_insensitive=True,
-    help_command=CustomHelpCommand(),
+    help_command=None,
 )
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 
@@ -75,6 +41,21 @@ async def change_status():
 
 client.loop.create_task(change_status())
 
+error_btns = create_actionrow(
+    *[
+        create_button(
+            style=ButtonStyle.URL,
+            url=f"https://opensourze.github.io/1bot/commands",
+            label="Command list",
+        ),
+        create_button(
+            style=ButtonStyle.URL,
+            url=f"https://discord.gg/4yA6XkfnwR",
+            label="Support server",
+        ),
+    ]
+)
+
 
 @client.event
 async def on_command_error(ctx, error):  # Error handlers
@@ -85,7 +66,8 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send(
             ":x: I don't have enough permissions to run this command!\n"
             + "Missing permissions: "
-            + f"`{', '.join(error.missing_perms)}`"
+            + f"`{', '.join(error.missing_perms)}`",
+            components=[error_btns],
         )
     elif isinstance(error, commands.MissingPermissions):
         await ctx.send(
@@ -97,21 +79,22 @@ async def on_command_error(ctx, error):  # Error handlers
         await ctx.send(":x: Only the owner of the bot can use this command.")
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(
-            ":x: You've missed one or more required arguments.\n"
-            + "Check the command's help for what arguments you should provide."
+            ":x: You've missed one or more required options.\n"
+            + "Check the command's help for what options you should provide.",
+            components=[error_btns],
         )
     elif isinstance(error, commands.ChannelNotFound):
         await ctx.send(":x: I don't think that channel exists!")
     elif isinstance(error, commands.MemberNotFound):
         await ctx.send(
-            f":x: Member not found. Member arguments must have the exact name of the member including capitalisation, or you can just ping the member."
+            f":x: Member not found. Member options must have the exact name of the member including capitalisation, or you can just ping the member."
         )
     elif isinstance(error, commands.CommandOnCooldown):
         await ctx.send(
             f":x: Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
         )
     elif isinstance(error, commands.BadArgument):
-        await ctx.send(":x: Invalid argument.")
+        await ctx.send(":x: Invalid option.", components=[error_btns])
     elif not isinstance(error, commands.CommandNotFound):
         print(error)
 
@@ -128,9 +111,37 @@ async def on_message(message):
         message.content == f"<@!{client.user.id}>"
         or message.content == f"<@{client.user.id}>"
     ):
-        await message.channel.send("My prefix is `1`. Optionally add a space after it.")
+        await message.channel.send(
+            "My prefix is `1`. You can add a space after it, but it's optional."
+        )
     else:
         await client.process_commands(message)
+
+
+info_btns = create_actionrow(
+    *[
+        create_button(
+            style=ButtonStyle.URL,
+            label="Command list",
+            emoji="ℹ️",
+            url="https://opensourze.github.io/1bot/commands",
+        ),
+        create_button(
+            style=ButtonStyle.URL,
+            label="Join the support server",
+            url="https://discord.gg/4yA6XkfnwR",
+        ),
+    ]
+)
+
+# Help command
+@client.command()
+async def help(ctx, *args):
+    await ctx.send(
+        "**My prefix is `1`**.\n"
+        + "You can add a space after the 1 if you want to, but it is completely optional.",
+        components=[info_btns],
+    )
 
 
 # Suggest command

@@ -89,9 +89,14 @@ class Moderation(commands.Cog):
             return
 
         await member.add_roles(muted_role, reason=reason)
-        await ctx.send(
-            f":white_check_mark: {member.mention} has been muted with the reason: {reason}."
+
+        embed = discord.Embed(
+            title="✅ Member muted",
+            color=0xFF6600,
+            description=f"{member.mention} was muted by {ctx.author.mention}",
+            timestamp=ctx.message.created_at,
         )
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="mute",
@@ -166,7 +171,14 @@ class Moderation(commands.Cog):
         except:
             pass
         await ctx.guild.kick(member, reason=reason)
-        await ctx.send(f":white_check_mark: Kicked {member.mention}. Reason: {reason}")
+
+        embed = discord.Embed(
+            title="✅ Member kicked",
+            color=0xFF6600,
+            description=f"{member.mention} was kicked by {ctx.author.mention}",
+            timestamp=ctx.message.created_at,
+        )
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="kick",
@@ -224,7 +236,14 @@ class Moderation(commands.Cog):
         except:
             pass
         await ctx.guild.ban(member, reason=reason)
-        await ctx.send(f":white_check_mark: Banned {member.mention}. Reason: {reason}")
+
+        embed = discord.Embed(
+            title="✅ Member banned",
+            color=0xFF6600,
+            description=f"{member.mention} was banned by {ctx.author.mention}",
+            timestamp=ctx.message.created_at,
+        )
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="ban",
@@ -260,7 +279,15 @@ class Moderation(commands.Cog):
         # If channel is None, fall back to the channel where the command is being invoked
         channel = channel or ctx.channel
         await channel.set_permissions(ctx.guild.default_role, send_messages=False)
-        await ctx.send(f":white_check_mark: Locked down {channel.mention}.")
+
+        embed = discord.Embed(
+            title="✅ Channel locked down",
+            color=0xFF6600,
+            description=f"{channel.mention} was locked down by {ctx.author.mention}.\n"
+            + "Members cannot send messages in the channel now.",
+            timestamp=ctx.message.created_at,
+        )
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="lockdown",
@@ -289,7 +316,14 @@ class Moderation(commands.Cog):
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
         await channel.set_permissions(ctx.guild.default_role, send_messages=True)
-        await ctx.send(f":white_check_mark: Unlocked {channel.mention}.")
+
+        embed = discord.Embed(
+            title="✅ Channel removed from lockdown",
+            color=0xFF6600,
+            description=f"{channel.mention} was unlocked by {ctx.author.mention}",
+            timestamp=ctx.message.created_at,
+        )
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="unlock",

@@ -19,7 +19,7 @@ info_btns = create_actionrow(
             style=ButtonStyle.URL,
             label="Website",
             emoji="🌐",
-            url="https://1bot.netlify.app/",
+            url="https://opensourze.github.io/1bot/",
         ),
         create_button(
             style=ButtonStyle.URL,
@@ -63,7 +63,7 @@ class Info(commands.Cog):
             inline=False,
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
-        info_embed.add_field(name="Bot version", value="1.2.6", inline=False)
+        info_embed.add_field(name="Bot version", value="1.2.7", inline=False)
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False
         )
