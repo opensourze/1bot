@@ -2,7 +2,6 @@ print("Bot written by @opensourze")
 
 import os
 from asyncio import sleep
-from contextlib import suppress
 from itertools import cycle
 
 import discord
@@ -40,69 +39,6 @@ async def change_status():
 
 
 client.loop.create_task(change_status())
-
-error_btns = create_actionrow(
-    *[
-        create_button(
-            style=ButtonStyle.URL,
-            url=f"https://opensourze.github.io/1bot/commands",
-            label="Command list",
-        ),
-        create_button(
-            style=ButtonStyle.URL,
-            url=f"https://discord.gg/4yA6XkfnwR",
-            label="Support server",
-        ),
-    ]
-)
-
-
-@client.event
-async def on_command_error(ctx, error):  # Error handlers
-    with suppress(AttributeError):
-        if ctx.command.has_error_handler():
-            return  # Exit if command has error handler
-    if isinstance(error, commands.BotMissingPermissions):
-        await ctx.send(
-            ":x: I don't have enough permissions to run this command!\n"
-            + "Missing permissions: "
-            + f"`{', '.join(error.missing_perms)}`",
-            components=[error_btns],
-        )
-    elif isinstance(error, commands.MissingPermissions):
-        await ctx.send(
-            ":x: You don't have enough permissions to use this command.\n"
-            + "Missing permissions: "
-            + f"`{', '.join(error.missing_perms)}`"
-        )
-    elif isinstance(error, commands.NotOwner):
-        await ctx.send(":x: Only the owner of the bot can use this command.")
-    elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send(
-            ":x: You've missed one or more required options.\n"
-            + "Check the command's help for what options you should provide.",
-            components=[error_btns],
-        )
-    elif isinstance(error, commands.ChannelNotFound):
-        await ctx.send(":x: I don't think that channel exists!")
-    elif isinstance(error, commands.MemberNotFound):
-        await ctx.send(
-            f":x: Member not found. Member options must have the exact name of the member including capitalisation, or you can just ping the member."
-        )
-    elif isinstance(error, commands.CommandOnCooldown):
-        await ctx.send(
-            f":x: Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
-        )
-    elif isinstance(error, commands.BadArgument):
-        await ctx.send(":x: Invalid option.", components=[error_btns])
-    elif not isinstance(error, commands.CommandNotFound):
-        print(error)
-
-
-@client.event
-async def on_slash_command_error(ctx, error):
-    # Send slash command errors to normal command error handler
-    await on_command_error(ctx, error)
 
 
 @client.event

@@ -12,6 +12,119 @@ class Moderation(commands.Cog):
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
 
+    # Nickname command
+    @commands.command(help="Change someone's nickname", aliases=["nick"])
+    @commands.has_permissions(manage_nicknames=True)
+    async def nickname(
+        self, ctx, member: commands.MemberConverter, *, nickname: str = None
+    ):
+        try:
+            await member.edit(nick=nickname)
+            await ctx.send(f"`{member}`'s nickname has been changed to `{nickname}`.")
+        except discord.Forbidden:
+            await ctx.send(
+                ":x: I don't have permission to change that user's nickname.\n"
+                + "They might have a higher role than me, or they are the owner."
+            )
+
+    @cog_ext.cog_slash(
+        name="nickname",
+        description="Change someone's nickname",
+        options=[
+            create_option(
+                name="member",
+                description="The member whose nickname you want to change.",
+                required=True,
+                option_type=6,
+            ),
+            create_option(
+                name="nickname",
+                description="The nickname you want to change the member to. Leave blank to remove the nickname",
+                required=False,
+                option_type=3,
+            ),
+        ],
+    )
+    @commands.has_permissions(manage_nicknames=True)
+    async def nickname_slash(self, ctx: SlashContext, member, nickname: str = None):
+        await self.nickname(ctx, member, nickname=nickname)
+
+    # Role commands
+    @commands.group(invoke_without_command=True, help="Create or delete roles")
+    @commands.has_permissions(manage_roles=True)
+    async def role(self, ctx):
+        embed = discord.Embed(
+            title="Role commands",
+            description="Run `1 role c {rolename}` to create a role with the provided name.\n"
+            + "Run `1 role a {member} {role}` to add the role to the provided member.\n"
+            + "Run `1 role d {role}` to delete the role.\n"
+            + "Run `1 role r {member} {role}` to remove the role from the member.",
+            color=0xFF6600,
+        )
+        embed.add_field(
+            name="PS:",
+            value="You can type the name of the role (the exact name, with capitalisation) to provide it as an option, or just @mention it. If you have developer mode on, you can also use the role's ID.",
+        )
+        embed.set_footer(text="Don't include the brackets while running commands!")
+
+        await ctx.send(embed=embed)
+
+    @role.command(help="Create a role", aliases=["c"])
+    @commands.has_permissions(manage_roles=True)
+    async def create(self, ctx, *, name: str):
+        await ctx.guild.create_role(name=name)
+        await ctx.send(f":white_check_mark: Role `{name}` has been created")
+
+    @role.command(help="Delete a role", aliases=["d"])
+    @commands.has_permissions(manage_roles=True)
+    async def delete(self, ctx, *, role: commands.RoleConverter):
+        await role.delete()
+        await ctx.send(f":white_check_mark: Role `{role.name}` has been deleted")
+
+    @role.command(help="Add a role to a member", aliases=["a"])
+    @commands.has_permissions(manage_roles=True)
+    async def add(
+        self, ctx, member: commands.MemberConverter, *, role: commands.RoleConverter
+    ):
+        await member.add_roles(role)
+        await ctx.send(f":white_check_mark: Role `{role}` has been added to {member}.")
+
+    @role.command(help="Remove a role from a member", aliases=["r"])
+    @commands.has_permissions(manage_roles=True)
+    async def remove(
+        self, ctx, member: commands.MemberConverter, *, role: commands.RoleConverter
+    ):
+        await member.remove_roles(role)
+        await ctx.send(
+            f":white_check_mark: Role `{role}` has been removed from {member}."
+        )
+
+    @cog_ext.cog_subcommand(
+        base="role",
+        name="create",
+        description="Create a new role",
+    )
+    @commands.has_permissions(manage_roles=True)
+    async def role_create_slash(self, ctx: SlashContext, name):
+        await self.create(ctx, name=name)
+
+    @cog_ext.cog_subcommand(
+        base="role",
+        name="delete",
+        description="Delete a role",
+        options=[
+            create_option(
+                name="role",
+                description="The role you want to delete",
+                required=True,
+                option_type=8,
+            )
+        ],
+    )
+    @commands.has_permissions(manage_roles=True)
+    async def role_delete_slash(self, ctx: SlashContext, role):
+        await self.delete(ctx, role=role)
+
     # Purge/Clear command
     @commands.command(
         help="Clear multiple messages at once (deletes 5 messages by default)",
@@ -20,7 +133,7 @@ class Moderation(commands.Cog):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def clear(self, ctx, amount=5):
+    async def clear(self, ctx, amount: int = 5):
         await ctx.channel.purge(limit=amount + 1)
 
     @cog_ext.cog_slash(
@@ -41,6 +154,29 @@ class Moderation(commands.Cog):
         await ctx.send(
             f":white_check_mark: I have cleared {amount} messages", delete_after=2
         )
+
+    # Slowmode command
+    @commands.command(
+        help="Set slowmode for the current channel", aliases=["slow", "sm"]
+    )
+    @commands.has_permissions(manage_channels=True)
+    async def slowmode(self, ctx, seconds: int):
+        if seconds < 0:
+            await ctx.send(":x: Slowmode must be a positive number")
+            return
+        elif seconds > 21600:
+            await ctx.send(":x: Slowmode must be less than 21600 seconds (6 hours)")
+        else:
+            await ctx.channel.edit(slowmode_delay=seconds)
+
+        await ctx.send(f":white_check_mark: Slowmode set to {seconds} seconds")
+
+    @cog_ext.cog_slash(
+        name="slowmode", description="Set slowmode for the current channel"
+    )
+    @commands.has_permissions(manage_channels=True)
+    async def slowmode_slash(self, ctx: SlashContext, seconds: int):
+        await self.slowmode(ctx, seconds=seconds)
 
     # Mute command
     @commands.command(
@@ -95,7 +231,7 @@ class Moderation(commands.Cog):
             color=0xFF6600,
             description=f"{member.mention} was muted by {ctx.author.mention}",
             timestamp=ctx.message.created_at,
-        )
+        ).add_field(name="Reason", value=reason)
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
@@ -121,7 +257,14 @@ class Moderation(commands.Cog):
     async def unmute(self, ctx, *, member: commands.MemberConverter):
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
         await member.remove_roles(muted_role)
-        await ctx.send(f":white_check_mark: {member.mention} has been unmuted")
+
+        embed = discord.Embed(
+            title="✅ Member muted",
+            color=0xFF6600,
+            description=f"{member.mention} was muted by {ctx.author.mention}",
+            timestamp=ctx.message.created_at,
+        )
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="unmute",
@@ -177,7 +320,7 @@ class Moderation(commands.Cog):
             color=0xFF6600,
             description=f"{member.mention} was kicked by {ctx.author.mention}",
             timestamp=ctx.message.created_at,
-        )
+        ).add_field(name="Reason", value=reason)
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
@@ -242,7 +385,7 @@ class Moderation(commands.Cog):
             color=0xFF6600,
             description=f"{member.mention} was banned by {ctx.author.mention}",
             timestamp=ctx.message.created_at,
-        )
+        ).add_field(name="Reason", value=reason)
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
@@ -279,6 +422,7 @@ class Moderation(commands.Cog):
         # If channel is None, fall back to the channel where the command is being invoked
         channel = channel or ctx.channel
         await channel.set_permissions(ctx.guild.default_role, send_messages=False)
+        await channel.set_permissions(ctx.guild.me, send_messages=True)
 
         embed = discord.Embed(
             title="✅ Channel locked down",
@@ -315,7 +459,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
-        await channel.set_permissions(ctx.guild.default_role, send_messages=True)
+        await channel.set_permissions(ctx.guild.default_role, send_messages=None)
 
         embed = discord.Embed(
             title="✅ Channel removed from lockdown",

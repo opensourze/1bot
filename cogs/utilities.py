@@ -14,7 +14,7 @@ from discord_slash.utils.manage_commands import create_option
 from temperature_converter_py import fahrenheit_to_celsius
 
 
-class Utility(commands.Cog):
+class Utilities(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -128,6 +128,28 @@ class Utility(commands.Cog):
     @cog_ext.cog_slash(name="npm", description="Get info for an NPM module")
     async def npm_slash(self, ctx: SlashContext, *, package):
         await self.npm(ctx, package=package)
+
+    # Lyrics command
+    @commands.command(help="Get lyrics for a song", aliases=["ly"])
+    async def lyrics(self, ctx, *, song):
+        with contextlib.suppress(KeyError):
+            await ctx.trigger_typing()
+
+        json = requests.get(f"https://some-random-api.ml/lyrics?title={song}").json()
+
+        embed = discord.Embed(
+            title=json["title"], color=0xFF6600, description=json["lyrics"]
+        )
+        embed.set_author(
+            name="Click to view lyrics in your browser", url=json["links"]["genius"]
+        )
+        embed.set_thumbnail(url=json["thumbnail"]["genius"])
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(name="lyrics", description="Get lyrics for a song")
+    async def lyrics_slash(self, ctx: SlashContext, *, song):
+        await self.lyrics(ctx, song=song)
 
     # Base64
     @commands.group(
@@ -401,4 +423,4 @@ class Utility(commands.Cog):
 
 # Add cog
 def setup(client):
-    client.add_cog(Utility(client))
+    client.add_cog(Utilities(client))

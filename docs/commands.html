@@ -23,9 +23,7 @@
       margin: 20px 0;
       width: 92vw;
       display: flex;
-      flex-flow: column nowrap;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
     }
 
     section.collapsed ul {
@@ -117,6 +115,33 @@
             server settings.</p>
         </li>
         <li>
+          <p>Nickname</p>
+          <code>1 nick/nickname {member} [nickname]</code>
+          <p>Changes the nickname of the member. If you leave the nickname option blank, the member's nickname will be
+            removed.</p>
+        </li>
+        <li>
+          <p>Slowmode</p>
+          <code>1 slowmode {seconds}</code>
+          <p>Sets the slowmode for the current channel. The seconds option doesn't have to be one of Discord's slowmode
+            interval numbers. It can be anything, like "7", which is not a valid option in Discord's default slowmode
+            settings.</p>
+        </li>
+        <li>
+          <p>Role commands</p>
+          <p><em>Tip: </em>You can type the name of the role (the exact name, with capitalisation) to provide it as an
+            option, or just @mention it. If you have developer mode on, you can also use the role's ID.</p>
+
+          <code>1 role create/c {name}</code>
+          <p>Creates a new role with the given name.</p>
+          <code>1 role delete/d {role}</code>
+          <p>Deletes the specified role.</p>
+          <code>1 role add/a {member} {role}</code>
+          <p>Adds the specified role to the member.</p>
+          <code>1 role remove/r {member} {role}</code>
+          <p>Removes the specified role from the member.</p>
+        </li>
+        <li>
           <p>Mute</p>
           <code>1 mute {member}</code>
           <p>Removes the permission for a member to send messages or speak in voice channels.</p>
@@ -205,6 +230,12 @@
             The decode subcommand will convert your provided base64 code into text.
           </p>
         </li>
+
+        <li>
+          <p>Lyrics</p>
+          <code>1 lyrics {song}</code>
+          <p>Gets lyrics for the specified song. The song name is required.</p>
+        </li>
       </ul>
     </section>
 
@@ -264,7 +295,8 @@
         <li>
           <p>Clyde</p>
           <code>1 clyde {text}</code>
-          <p>Generate an image of Discord's built-in Clyde bot saying whatever is in the text option.</p>
+          <p>Generate an image of Discord's built-in Clyde bot saying whatever is in the text option.<br>
+            <strong>You can also attach an image to use instead of a member's avatar.</strong></p>
         </li>
         <li>
           <p>Change my mind</p>
@@ -285,6 +317,7 @@
             your own avatar and username will be used.</p>
           <img src="./captcha.png" alt="Captcha command" style="max-height: 70vh !important; width: auto;">
         </li>
+        <li></li>
       </ul>
     </section>
 

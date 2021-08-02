@@ -1,12 +1,12 @@
-from io import BytesIO
 from contextlib import suppress
+from io import BytesIO
 
 import discord
+import requests
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 from PIL import Image
-import requests
 
 
 class Images(commands.Cog):
@@ -27,21 +27,22 @@ class Images(commands.Cog):
         with suppress(AttributeError):
             await ctx.trigger_typing()
 
-        member = member or ctx.author
-        member_av = member.avatar_url_as(size=256)
+        if not ctx.message.attachments:
+            member = member or ctx.author
+            img = member.avatar_url_as(size=256)
+        else:
+            img = ctx.message.attachments[0]
 
-        data = BytesIO(await member_av.read())
+        data = BytesIO(await img.read())
         av = Image.open(data).resize((187, 187))
 
         amogus = Image.open("amogus-template.png")
 
-        # Paste the avatar onto the amogus image
+        # Paste the avatar/attachment onto the amogus image
         amogus.paste(av, (698, 209))
         amogus.save("amogus.png")
 
-        await ctx.send(
-            f"when the {member.name} is sus", file=discord.File("amogus.png")
-        )
+        await ctx.send(file=discord.File("amogus.png"))
 
     @cog_ext.cog_slash(
         name="amogus",
