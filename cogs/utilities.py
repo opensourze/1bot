@@ -137,6 +137,11 @@ class Utilities(commands.Cog):
 
         json = requests.get(f"https://some-random-api.ml/lyrics?title={song}").json()
 
+        with contextlib.suppress(KeyError):
+            if json["error"]:
+                await ctx.send(":x: " + json["error"])
+                return
+
         embed = discord.Embed(
             title=json["title"], color=0xFF6600, description=json["lyrics"]
         )
