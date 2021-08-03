@@ -9,7 +9,7 @@ from discord_slash.utils.manage_commands import create_option
 from PIL import Image
 
 
-class Images(commands.Cog):
+class Images(commands.Cog, description="Generate fun images"):
     def __init__(self, client):
         self.client = client
 
@@ -24,14 +24,15 @@ class Images(commands.Cog):
         help="Amogus, but with a member's profile picture", aliases=["sus", "amongus"]
     )
     async def amogus(self, ctx, *, member: commands.MemberConverter = None):
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
-
-        if not ctx.message.attachments:
+        try:
+            if not ctx.message.attachments:
+                member = member or ctx.author
+                img = member.avatar_url_as(size=256)
+            else:
+                img = ctx.message.attachments[0]
+        except AttributeError:  # ctx.message is None on slash commands
             member = member or ctx.author
             img = member.avatar_url_as(size=256)
-        else:
-            img = ctx.message.attachments[0]
 
         data = BytesIO(await img.read())
         av = Image.open(data).resize((187, 187))

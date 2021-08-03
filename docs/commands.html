@@ -115,6 +115,12 @@
             server settings.</p>
         </li>
         <li>
+          <p>Unban</p>
+          <code>1 unban {username+tag}</code>
+          <p>Unbans a user. You must provide the exact username along with the tag.<br>
+            Example: <code>1 unban Wumpus#0000</code></p>
+        </li>
+        <li>
           <p>Nickname</p>
           <code>1 nick/nickname {member} [nickname]</code>
           <p>Changes the nickname of the member. If you leave the nickname option blank, the member's nickname will be
@@ -157,6 +163,18 @@
           <p>Deletes many messages at once. If amount of messages is not specified, 1Bot will delete the last 5
             messages.
           </p>
+        </li>
+        <li>
+          <p>Nuke</p>
+          <code>1 nuke/clearchannel/clearall [channel]</code>
+          <p>Deletes all messages in the specified channel. If the channel is not provided, the current channel will be
+            cleared.</p>
+        </li>
+        <li>
+          <p>ClearUser</p>
+          <code>1 clearuser {amount} {member}</code>
+          <p>Deletes multiple messages from a user at once. If the amount of messages is not specified, 1Bot will delete
+            the last 5 messages from the member.</p>
         </li>
         <li>
           <p>Lockdown/lock</p>
@@ -242,6 +260,13 @@
     <section class="collapsed">
       <h2>Fun commands</h2>
       <ul>
+        <li>
+          <p>Mock text</p>
+          <code>1 mock {text}</code>
+          <p>Makes the bot say the provided text, but as if you are mocking someone. Example:</p>
+          <code>1 mock I am very smart</code>
+          <p>Result: i aM VeRy sMaRt</p>
+        </li>
         <li>
           <p>YouTube Together</p>
           <code>1 yt/youtube {voicechannel}</code>
@@ -366,6 +391,11 @@
           <code>1 upvote</code>
           <p>Sends the link to upvote 1Bot on <a href="https://discordbotlist.com/bots/1bot/upvote">DiscordBotList.</a>
           </p>
+        </li>
+        <li>
+          <p>Invite</p>
+          <code>1 invite</code>
+          <p>Sends the link to <a href="https://dsc.gg/1bot">add 1Bot</a> to your server.</p>
         </li>
       </ul>
     </section>

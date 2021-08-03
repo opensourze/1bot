@@ -36,13 +36,38 @@ info_btns = create_actionrow(
 )
 
 
-class Info(commands.Cog):
+class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
     def __init__(self, client):
         self.client = client
 
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
+
+    # Suggest command
+    @commands.command(help="Create a suggestion for the bot")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def suggest(self, ctx, *, suggestion):
+        # Get 1Bot support server's suggestions channel
+        channel = self.client.get_channel(862697260164055082)
+
+        embed = discord.Embed(
+            title="Suggestion", description=suggestion, color=0xFF6600
+        )
+        embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+
+        message = await channel.send(embed=embed)
+        await ctx.send(
+            ":white_check_mark: Your suggestion has been submitted to "
+            + channel.mention
+        )
+        await message.add_reaction("✅")
+        await message.add_reaction("❌")
+
+    @cog_ext.cog_slash(name="suggest", description="Create a suggestion for the bot")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def suggest_slash(self, ctx: SlashContext, suggestion):
+        await self.suggest(ctx, suggestion=suggestion)
 
     # Bot info command
     @commands.command(
@@ -63,7 +88,7 @@ class Info(commands.Cog):
             inline=False,
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
-        info_embed.add_field(name="Bot version", value="BETA v1.3.0", inline=False)
+        info_embed.add_field(name="Bot version", value="**Beta** v1.3.1", inline=False)
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False
         )
@@ -218,7 +243,7 @@ class Info(commands.Cog):
 
     # Invite command
     @commands.command(help="Add the bot to your server", aliases=["addbot"])
-    async def invite(ctx):
+    async def invite(self, ctx):
         await ctx.send("https://dsc.gg/1bot")
 
     @cog_ext.cog_slash(name="invite", description="Add the bot to your server")
@@ -227,4 +252,4 @@ class Info(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(Info(client))
+    client.add_cog(Miscellaneous(client))

@@ -14,7 +14,10 @@ from discord_slash.utils.manage_commands import create_option
 from temperature_converter_py import fahrenheit_to_celsius
 
 
-class Utilities(commands.Cog):
+class Utilities(
+    commands.Cog,
+    description="1Bot has some neat utilities to help you out with anything",
+):
     def __init__(self, client):
         self.client = client
 
@@ -326,6 +329,7 @@ class Utilities(commands.Cog):
             await ctx.channel.send(":x: Command has timed out. Exiting embed creator.")
 
     @cog_ext.cog_slash(name="embed", description="Create an embed")
+    @commands.has_permissions(manage_messages=True)
     async def embed_slash(self, ctx: SlashContext):
         await ctx.defer()
         await self.embed(ctx)

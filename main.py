@@ -7,9 +7,10 @@ from itertools import cycle
 import discord
 import dotenv
 from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext
+from discord_slash import SlashCommand
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_components import create_actionrow, create_button
+from pretty_help import PrettyHelp
 
 dotenv.load_dotenv()
 
@@ -17,7 +18,15 @@ dotenv.load_dotenv()
 client = commands.AutoShardedBot(
     command_prefix=commands.when_mentioned_or(*["1 ", "1"]),
     case_insensitive=True,
-    help_command=None,
+    help_command=PrettyHelp(
+        color=0xFF6600,
+        index_title="1Bot Command Categories",
+        no_category="Other",
+        sort_commands=True,
+        active_time=60,
+        ending_note="Try {ctx.prefix}help <command> (without the brackets!) for how to use the command.\n"
+        + "\nStill confused? Check out the command list!\nhttps://opensourze.github.io/1bot/commands.html",
+    ),
 )
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 
@@ -69,39 +78,6 @@ info_btns = create_actionrow(
         ),
     ]
 )
-
-# Help command
-@client.command()
-async def help(ctx, *args):
-    await ctx.send(
-        "**My prefix is `1`**.\n"
-        + "You can add a space after the 1 if you want to, but it is completely optional.",
-        components=[info_btns],
-    )
-
-
-# Suggest command
-@client.command(help="Create a suggestion for the bot")
-@commands.cooldown(1, 10, commands.BucketType.user)
-async def suggest(ctx, *, suggestion):
-    # Get 1Bot support server suggestions channel
-    channel = client.get_channel(862697260164055082)
-
-    embed = discord.Embed(title="Suggestion", description=suggestion, color=0xFF6600)
-    embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-
-    message = await channel.send(embed=embed)
-    await ctx.send(
-        ":white_check_mark: Your suggestion has been submitted to " + channel.mention
-    )
-    await message.add_reaction("✅")
-    await message.add_reaction("❌")
-
-
-@slash.slash(name="suggest", description="Create a suggestion for the bot")
-@commands.cooldown(1, 10, commands.BucketType.user)
-async def suggest_slash(ctx: SlashContext, suggestion):
-    await suggest(ctx, suggestion=suggestion)
 
 
 @client.command(hidden=True, aliases=["stop", "close", "exit"])

@@ -4,7 +4,7 @@ from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 
 
-class Moderation(commands.Cog):
+class Moderation(commands.Cog, description="All the moderation commands you need"):
     def __init__(self, client):
         self.client = client
 
@@ -87,7 +87,9 @@ class Moderation(commands.Cog):
         self, ctx, member: commands.MemberConverter, *, role: commands.RoleConverter
     ):
         await member.add_roles(role)
-        await ctx.send(f":white_check_mark: Role `{role}` has been added to {member}.")
+        await ctx.send(
+            f":white_check_mark: Role `{role}` has been added to `{member.name}`."
+        )
 
     @role.command(help="Remove a role from a member", aliases=["r"])
     @commands.has_permissions(manage_roles=True)
@@ -96,7 +98,7 @@ class Moderation(commands.Cog):
     ):
         await member.remove_roles(role)
         await ctx.send(
-            f":white_check_mark: Role `{role}` has been removed from {member}."
+            f":white_check_mark: Role `{role}` has been removed from `{member.name}`."
         )
 
     @cog_ext.cog_subcommand(
@@ -194,12 +196,79 @@ class Moderation(commands.Cog):
             )
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def clear_slash(self, ctx: SlashContext, amount: int = 5):
         await self.clear(ctx, amount=amount - 1)
         await ctx.send(
             f":white_check_mark: I have cleared {amount} messages", delete_after=2
         )
+
+    # Nuke/clear channel command
+    @commands.command(help="Clear a channel", aliases=["clearall", "clearchannel"])
+    @commands.guild_only()
+    @commands.has_permissions(manage_messages=True)
+    async def nuke(self, ctx, *, channel: discord.TextChannel = None):
+        channel = channel or ctx.channel
+
+        await channel.purge(limit=None)
+
+        await ctx.send(f":white_check_mark: Cleared {channel.mention}", delete_after=2)
+
+    @cog_ext.cog_slash(
+        name="clearchannel",
+        description="Clear a channel",
+        options=[
+            create_option(
+                name="channel",
+                description="The channel you want to clear",
+                required=True,
+                option_type=7,
+            )
+        ],
+    )
+    @commands.guild_only()
+    @commands.has_permissions(manage_messages=True)
+    async def nuke_slash(self, ctx: SlashContext, channel: discord.TextChannel):
+        await self.nuke(ctx, channel=channel)
+
+    # Clear from a specific user
+    @commands.command(help="Clear all messages from a member")
+    @commands.guild_only()
+    @commands.has_permissions(manage_messages=True)
+    async def clearuser(
+        self, ctx, amount: int = 5, *, member: commands.MemberConverter
+    ):
+        def check(m):
+            return m.author.id == member.id
+
+        await ctx.channel.purge(limit=amount, check=check)
+        await ctx.send(
+            f":white_check_mark: Deleted {amount} messages from {member.name}"
+        )
+
+    @cog_ext.cog_slash(
+        name="clearuser",
+        description="Clear all messages from a member",
+        options=[
+            create_option(
+                name="member",
+                description="The member you want to delete messages from",
+                required=True,
+                option_type=6,
+            ),
+            create_option(
+                name="amount",
+                description="Number of messages to delete (default = 5)",
+                required=False,
+                option_type=4,
+            ),
+        ],
+    )
+    @commands.guild_only()
+    @commands.has_permissions(manage_messages=True)
+    async def clearuser_slash(self, ctx: SlashContext, member, amount=5):
+        await self.clearuser(ctx, amount, member=member)
 
     # Slowmode command
     @commands.command(
@@ -455,6 +524,48 @@ class Moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def ban_slash(self, ctx: SlashContext, member, reason=None):
         await self.ban(ctx, member, reason=reason)
+
+    # Unban command
+    @commands.command(
+        help="Unban someone",
+    )
+    @commands.guild_only()
+    @commands.has_permissions(ban_members=True)
+    async def unban(self, ctx, *, member: commands.UserConverter):
+        banned_users = await ctx.guild.bans()
+        member_name, member_discriminator = member.split("#")
+
+        for ban_entry in banned_users:
+            user = ban_entry.user
+
+            if (user.name, user.discriminator) == (member_name, member_discriminator):
+                await ctx.guild.unban(user)
+                await ctx.send(f"Unbanned {user}")
+                return
+
+        await ctx.send(f":x: Couldn't find a ban for {member}")
+
+    @cog_ext.cog_slash(
+        name="unban",
+        description="Unban someone",
+        options=[
+            create_option(
+                name="user",
+                description="The user to unban (username + tag)",
+                required=True,
+                option_type=3,
+            ),
+            create_option(
+                name="reason",
+                description="Why do you want to unban this user? (Optional)",
+                required=False,
+                option_type=3,
+            ),
+        ],
+    )
+    @commands.has_permissions(ban_members=True)
+    async def unban_slash(self, ctx: SlashContext, user, reason=None):
+        await self.unban(ctx, user, reason=reason)
 
     # Lockdown command
     @commands.command(

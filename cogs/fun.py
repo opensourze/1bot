@@ -10,7 +10,7 @@ from discord_slash.utils.manage_commands import create_option
 from Discord_Together.discordtogether import DiscordTogether
 
 
-class Fun(commands.Cog):
+class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
     def __init__(self, client):
         self.client = client
 
@@ -18,8 +18,26 @@ class Fun(commands.Cog):
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
 
+    # Mock text command
+    @commands.command(help="Mock text (alternating upper and lower case)")
+    async def mock(self, ctx, *, text):
+        mock_text = "".join(
+            [char.upper() if i % 2 else char.lower() for i, char in enumerate(text)]
+        )
+
+        await ctx.send(mock_text)
+
+    @cog_ext.cog_slash(
+        name="mock",
+        description="Mock text (alternating upper and lower case)",
+        guild_ids=[862688794662141993],
+    )
+    async def mock_slash(self, ctx: SlashContext, *, text):
+        await self.mock(ctx, text=text)
+
     # YouTube Together
     @commands.command(help="Watch YouTube together with friends", aliases=["yt"])
+    @commands.guild_only()
     async def youtube(self, ctx, *, vc: commands.VoiceChannelConverter):
         dt = DiscordTogether(token=os.environ["TOKEN"])
         invite_code = await dt.activity(option="youtube", vc_id=vc.id)
