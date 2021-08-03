@@ -106,6 +106,10 @@ class Errors(commands.Cog):
                     + "The developers have been notified. We'll fix this as soon as we can!"
                 )
 
+    @commands.Cog.listener()
+    async def on_slash_command_error(self, ctx, error):
+        await self.on_command_error(ctx, error)
+
 
 def setup(client):
     client.add_cog(Errors(client))

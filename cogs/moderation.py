@@ -125,6 +125,52 @@ class Moderation(commands.Cog):
     async def role_delete_slash(self, ctx: SlashContext, role):
         await self.delete(ctx, role=role)
 
+    @cog_ext.cog_subcommand(
+        base="role",
+        name="add",
+        description="Add a role to a member",
+        options=[
+            create_option(
+                name="member",
+                description="The member you want to add the role to",
+                required=True,
+                option_type=6,
+            ),
+            create_option(
+                name="role",
+                description="The role you want to add",
+                required=True,
+                option_type=8,
+            ),
+        ],
+    )
+    @commands.has_permissions(manage_roles=True)
+    async def role_add_slash(self, ctx: SlashContext, member, role):
+        await self.add(ctx, member, role=role)
+
+    @cog_ext.cog_subcommand(
+        base="role",
+        name="remove",
+        description="Remove a role from a member",
+        options=[
+            create_option(
+                name="member",
+                description="The member you want to remove the role from",
+                required=True,
+                option_type=6,
+            ),
+            create_option(
+                name="role",
+                description="The role you want to remove",
+                required=True,
+                option_type=8,
+            ),
+        ],
+    )
+    @commands.has_permissions(manage_roles=True)
+    async def role_remove_slash(self, ctx: SlashContext, member, role):
+        await self.remove(ctx, member, role=role)
+
     # Purge/Clear command
     @commands.command(
         help="Clear multiple messages at once (deletes 5 messages by default)",
