@@ -24,7 +24,7 @@ client = commands.AutoShardedBot(
         no_category="Other",
         sort_commands=True,
         active_time=60,
-        ending_note="Try {ctx.prefix}help <command> (without the brackets!) for how to use the command.\n"
+        ending_note="Try 1help <command> (without the brackets!) for how to use the command.\n"
         + "\nStill confused? Check out the command list!\nhttps://1bot.netlify.app/commands",
     ),
 )
@@ -44,7 +44,7 @@ async def change_status():
 
     while not client.is_closed():
         await client.change_presence(activity=discord.Game(name=next(statuses)))
-        await sleep(7)
+        await sleep(8)
 
 
 client.loop.create_task(change_status())

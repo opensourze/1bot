@@ -88,7 +88,9 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
             inline=False,
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
-        info_embed.add_field(name="Bot version", value="**Beta** v1.3.1", inline=False)
+        info_embed.add_field(
+            name="Bot version", value="Beta phase - v1.3.2", inline=False
+        )
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False
         )
@@ -244,11 +246,15 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
     # Invite command
     @commands.command(help="Add the bot to your server", aliases=["addbot"])
     async def invite(self, ctx):
-        await ctx.send("https://dsc.gg/1bot")
+        await ctx.send(
+            "Here's the link to add the bot to your server. Thanks!\nhttps://dsc.gg/1bot"
+        )
 
     @cog_ext.cog_slash(name="invite", description="Add the bot to your server")
     async def invite_slash(self, ctx: SlashContext):
-        await ctx.send("https://dsc.gg/1bot")
+        await ctx.send(
+            "Here's the link to add the bot to your server. Thanks!\nhttps://dsc.gg/1bot"
+        )
 
 
 def setup(client):

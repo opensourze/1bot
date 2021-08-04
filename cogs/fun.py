@@ -96,9 +96,7 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
         aliases=["codingjoke"],
     )
     async def programmingjoke(self, ctx):
-        json = requests.get(
-            "https://official-joke-api.appspot.com/jokes/programming/random"
-        ).json()[0]
+        json = requests.get("https://programming-humor.herokuapp.com/").json()
         await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
 
     @cog_ext.cog_slash(

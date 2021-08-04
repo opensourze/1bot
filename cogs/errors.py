@@ -10,6 +10,7 @@ error_btns = create_actionrow(
             style=ButtonStyle.URL,
             url=f"https://1bot.netlify.app/commands",
             label="Command list",
+            emoji="ℹ️",
         ),
         create_button(
             style=ButtonStyle.URL,
@@ -47,7 +48,7 @@ class Errors(commands.Cog):
             await ctx.send(":x: Only the owner of the bot can use this command.")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
-                ":x: You've missed one or more required options.\n"
+                ":x: You haven't provided all the required options.\n"
                 + "Check the command list to know what options to provide.",
                 components=[error_btns],
             )

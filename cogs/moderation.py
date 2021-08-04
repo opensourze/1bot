@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
@@ -236,9 +238,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.command(help="Clear all messages from a member")
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def clearuser(
-        self, ctx, amount: int = 5, *, member: commands.MemberConverter
-    ):
+    async def clearuser(self, ctx, amount: int, *, member: commands.MemberConverter):
         def check(m):
             return m.author.id == member.id
 
@@ -259,8 +259,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
             create_option(
                 name="amount",
-                description="Number of messages to delete (default = 5)",
-                required=False,
+                description="Number of messages to delete",
+                required=True,
                 option_type=4,
             ),
         ],
@@ -365,18 +365,140 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def mute_slash(self, ctx: SlashContext, member, reason=None):
         await self.mute(ctx, member, reason=reason)
 
+    time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+
+    def time2seconds(self, time):
+        try:
+            return int(time[:-1]) * self.time_convert[time[-1]]
+        except:
+            return int(time)
+
+    # Tempmute command
+    @commands.command(help="Temporarily mute a member", aliases=["tmute"])
+    @commands.guild_only()
+    @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_roles=True)
+    async def tempmute(
+        self,
+        ctx: SlashContext,
+        member: commands.MemberConverter,
+        duration: str,
+        *,
+        reason=None,
+    ):
+        unit_tuple = tuple([unit for unit in self.time_convert.keys()])
+
+        if not duration.lower().endswith(unit_tuple) and not duration[0].isdigit():
+            await ctx.send(
+                ":x: **Invalid duration**! Here are some examples:\n\n"
+                + '`1tempmute @Big Wumpus 2d Spam`- 2 days, with reason "Spam"\n'
+                + "`1 tmute Wumpus 1h`- 1 hour without any reason\n"
+                + "`1tempmute Wumpus 20m`- 20 minutes without any reason\n"
+                + "\nYou can also use `s` for seconds."
+            )
+            return
+
+        muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+
+        if member == ctx.author:
+            await ctx.send(":x: You can't mute yourself!")
+            return
+
+        if member == self.client.user:
+            await ctx.send(":x: I can't mute myself!")
+            return
+
+        bot = ctx.guild.get_member(self.client.user.id)
+        bot_role = bot.top_role
+
+        if bot_role <= member.top_role:
+            await ctx.send(
+                ":x: The user has a higher role or the same top role as mine.\n"
+                + "Please move my role higher!"
+            )
+            return
+
+        if not muted_role:
+            await ctx.send(
+                ":information_source: Couldn't find a Muted role in this server. Creating a new one..."
+            )
+            muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
+
+            for channel in ctx.guild.channels:
+                await channel.set_permissions(
+                    muted_role, send_messages=False, speak=False
+                )
+
+        if bot_role <= muted_role:
+            await ctx.send(
+                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
+            )
+            return
+
+        await member.add_roles(muted_role, reason=reason)
+        embed = discord.Embed(
+            title="✅ Member muted",
+            color=0xFF6600,
+            description=f"{member.mention} was temporarily muted by {ctx.author.mention}",
+            timestamp=ctx.message.created_at,
+        )
+        embed.add_field(name="Reason", value=reason)
+        if not duration[-1].isalpha():
+            embed.add_field(name="Auto-unmute after", value=str(duration) + " seconds")
+        else:
+            embed.add_field(name="Auto-unmute after", value=duration)
+
+        await ctx.send(embed=embed)
+
+        await asyncio.sleep(self.time2seconds(duration))
+        await member.remove_roles(muted_role, reason=reason)
+
+    @cog_ext.cog_slash(
+        name="tempmute",
+        description="Temporarily mute a member",
+        options=[
+            create_option(
+                name="member",
+                description="The member to tempmute",
+                required=True,
+                option_type=6,
+            ),
+            create_option(
+                name="duration",
+                description="The duration of the mute",
+                required=True,
+                option_type=3,
+            ),
+            create_option(
+                name="reason",
+                description="The reason for the mute (optional)",
+                required=False,
+                option_type=3,
+            ),
+        ],
+    )
+    @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_roles=True)
+    async def tempmute_slash(self, ctx: SlashContext, member, duration, reason=None):
+        await self.tempmute(ctx, member, duration, reason=reason)
+
     # Unmute command
     @commands.command(help="Unmute a member")
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def unmute(self, ctx, *, member: commands.MemberConverter):
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+        if muted_role not in member.roles:
+            await ctx.send(":x: That member isn't muted!")
+            return
+
         await member.remove_roles(muted_role)
 
         embed = discord.Embed(
-            title="✅ Member muted",
+            title="✅ Member unmuted",
             color=0xFF6600,
-            description=f"{member.mention} was muted by {ctx.author.mention}",
+            description=f"{member.mention} was unmuted by {ctx.author.mention}",
             timestamp=ctx.message.created_at,
         )
         await ctx.send(embed=embed)
@@ -394,6 +516,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         ],
     )
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def unmute_slash(self, ctx: SlashContext, member):
         await self.unmute(ctx, member=member)
 
@@ -404,6 +527,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
+    @commands.bot_has_permissions(kick_members=True)
     async def kick(self, ctx, member: commands.MemberConverter, *, reason=None):
         if member == ctx.author:
             await ctx.send(":x: You can't kick yourself!")
@@ -457,6 +581,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         ],
     )
     @commands.has_permissions(kick_members=True)
+    @commands.bot_has_permissions(kick_members=True)
     async def kick_slash(self, ctx: SlashContext, member, reason=None):
         await self.kick(ctx, member, reason=reason)
 
@@ -467,6 +592,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
+    @commands.bot_has_permissions(ban_members=True)
     async def ban(self, ctx, member: commands.UserConverter, *, reason=None):
         member = ctx.guild.get_member(member.id) or member
 
@@ -522,6 +648,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         ],
     )
     @commands.has_permissions(ban_members=True)
+    @commands.bot_has_permissions(ban_members=True)
     async def ban_slash(self, ctx: SlashContext, member, reason=None):
         await self.ban(ctx, member, reason=reason)
 
@@ -575,6 +702,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True)
     async def lockdown(self, ctx, channel: discord.TextChannel = None):
         # If channel is None, fall back to the channel where the command is being invoked
         channel = channel or ctx.channel
@@ -603,6 +731,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         ],
     )
     @commands.has_permissions(manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True)
     async def lockdown_slash(
         self, ctx: SlashContext, channel: discord.TextChannel = None
     ):
@@ -639,6 +768,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         ],
     )
     @commands.has_permissions(manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True)
     async def unlock_slash(
         self, ctx: SlashContext, channel: discord.TextChannel = None
     ):
