@@ -25,7 +25,7 @@ client = commands.AutoShardedBot(
         sort_commands=True,
         active_time=60,
         ending_note="Try {ctx.prefix}help <command> (without the brackets!) for how to use the command.\n"
-        + "\nStill confused? Check out the command list!\nhttps://opensourze.github.io/1bot/commands.html",
+        + "\nStill confused? Check out the command list!\nhttps://1bot.netlify.app/commands",
     ),
 )
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
@@ -69,7 +69,7 @@ info_btns = create_actionrow(
             style=ButtonStyle.URL,
             label="Command list",
             emoji="ℹ️",
-            url="https://opensourze.github.io/1bot/commands",
+            url="https://1bot.netlify.app/commands",
         ),
         create_button(
             style=ButtonStyle.URL,

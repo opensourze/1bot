@@ -19,7 +19,7 @@ info_btns = create_actionrow(
             style=ButtonStyle.URL,
             label="Website",
             emoji="🌐",
-            url="https://opensourze.github.io/1bot/",
+            url="https://1bot.netlify.app/",
         ),
         create_button(
             style=ButtonStyle.URL,

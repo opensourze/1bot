@@ -4,4 +4,4 @@
 
 [Click here to add the bot to a server](https://dsc.gg/1bot)
 
-[Website (with detailed command list)](https://opensourze.github.io/1bot)
+[Website (with detailed command list)](https://1bot.netlify.app)

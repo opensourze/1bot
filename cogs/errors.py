@@ -1,5 +1,3 @@
-from contextlib import suppress
-
 import discord
 from discord.errors import HTTPException
 from discord.ext import commands
@@ -10,7 +8,7 @@ error_btns = create_actionrow(
     *[
         create_button(
             style=ButtonStyle.URL,
-            url=f"https://opensourze.github.io/1bot/commands",
+            url=f"https://1bot.netlify.app/commands",
             label="Command list",
         ),
         create_button(
@@ -28,9 +26,10 @@ class Errors(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        with suppress(AttributeError):
-            if ctx.command.has_error_handler():
-                return  # Exit if command has error handler
+        if isinstance(error, commands.CommandNotFound):
+            return
+        if ctx.command.has_error_handler():
+            return  # Exit if command has error handler
         if isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
                 ":x: I don't have enough permissions to run this command!\n"
