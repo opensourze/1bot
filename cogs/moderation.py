@@ -10,6 +10,42 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     def __init__(self, client):
         self.client = client
 
+    async def mute_checker(self, ctx, bot_role, member, muted_role):
+        """
+        Returns False if the bot cannot mute the member.
+        """
+        if member == ctx.author:
+            await ctx.send(":x: You can't mute yourself!")
+            return False
+
+        if member == self.client.user:
+            await ctx.send(":x: I can't mute myself!")
+            return False
+
+        if bot_role <= member.top_role:
+            await ctx.send(
+                ":x: The user has a higher role or the same top role as mine.\n"
+                + "Please move my role higher!"
+            )
+            return False
+
+        if not muted_role:
+            await ctx.send(
+                ":information_source: Couldn't find a Muted role in this server. Creating a new one..."
+            )
+            muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
+
+            for channel in ctx.guild.channels:
+                await channel.set_permissions(
+                    muted_role, send_messages=False, speak=False
+                )
+
+        if bot_role <= muted_role:
+            await ctx.send(
+                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
+            )
+            return False
+
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
@@ -304,39 +340,10 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-        if member == ctx.author:
-            await ctx.send(":x: You can't mute yourself!")
-            return
-
-        if member == self.client.user:
-            await ctx.send(":x: I can't mute myself!")
-            return
-
-        bot = ctx.guild.get_member(self.client.user.id)
-        bot_role = bot.top_role
-
-        if bot_role <= member.top_role:
-            await ctx.send(
-                ":x: The user has a higher role or the same top role as mine.\n"
-                + "Please move my role higher!"
-            )
-            return
-
-        if not muted_role:
-            await ctx.send(
-                ":information_source: Couldn't find a Muted role in this server. Creating a new one..."
-            )
-            muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
-
-            for channel in ctx.guild.channels:
-                await channel.set_permissions(
-                    muted_role, send_messages=False, speak=False
-                )
-
-        if bot_role <= muted_role:
-            await ctx.send(
-                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
-            )
+        if (
+            await self.mute_checker(ctx, ctx.guild.me.top_role, member, muted_role)
+            == False
+        ):
             return
 
         await member.add_roles(muted_role, reason=reason)
@@ -408,31 +415,10 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             await ctx.send(":x: I can't mute myself!")
             return
 
-        bot = ctx.guild.get_member(self.client.user.id)
-        bot_role = bot.top_role
-
-        if bot_role <= member.top_role:
-            await ctx.send(
-                ":x: The user has a higher role or the same top role as mine.\n"
-                + "Please move my role higher!"
-            )
-            return
-
-        if not muted_role:
-            await ctx.send(
-                ":information_source: Couldn't find a Muted role in this server. Creating a new one..."
-            )
-            muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
-
-            for channel in ctx.guild.channels:
-                await channel.set_permissions(
-                    muted_role, send_messages=False, speak=False
-                )
-
-        if bot_role <= muted_role:
-            await ctx.send(
-                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
-            )
+        if (
+            await self.mute_checker(ctx, ctx.guild.me.top_role, member, muted_role)
+            == False
+        ):
             return
 
         await member.add_roles(muted_role, reason=reason)
@@ -450,7 +436,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         await ctx.send(embed=embed)
 
-        await asyncio.sleep(self.time2seconds(duration))
+        await asyncio.sleep(self.time2seconds(duration.lower()))
         await member.remove_roles(muted_role, reason=reason)
 
     @cog_ext.cog_slash(
@@ -489,8 +475,20 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.bot_has_permissions(manage_roles=True)
     async def unmute(self, ctx, *, member: commands.MemberConverter):
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+
         if muted_role not in member.roles:
             await ctx.send(":x: That member isn't muted!")
+            return
+        elif ctx.guild.me.top_role <= muted_role:
+            await ctx.send(
+                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
+            )
+            return
+        elif ctx.guild.me.top_role <= member.top_role:
+            await ctx.send(
+                ":x: The user has a higher role or the same top role as mine.\n"
+                + "Please move my role higher!"
+            )
             return
 
         await member.remove_roles(muted_role)
@@ -532,20 +530,16 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         if member == ctx.author:
             await ctx.send(":x: You can't kick yourself!")
             return
-
-        if member.id == self.client.user.id:
+        elif member.id == self.client.user.id:
             await ctx.send(":x: I can't kick myself!")
             return
-
-        bot = ctx.guild.get_member(self.client.user.id)
-        bot_role = bot.top_role
-
-        if bot_role <= member.top_role:
+        elif ctx.guild.me.top_role <= member.top_role:
             await ctx.send(
                 ":x: The user has a higher role or the same top role as mine.\n"
                 + "Please move my role higher!"
             )
             return
+
         try:
             await member.send(
                 f":exclamation: You were kicked from {ctx.guild.name}. Reason: {reason}"
@@ -594,8 +588,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def ban(self, ctx, member: commands.UserConverter, *, reason=None):
-        member = ctx.guild.get_member(member.id) or member
-
         if member == ctx.author:
             await ctx.send(":x: You can't ban yourself!")
             return
@@ -604,10 +596,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             await ctx.send(":x: I can't ban myself!")
             return
 
-        bot = ctx.guild.get_member(self.client.user.id)
-        bot_role = bot.top_role
-
-        if isinstance(member, discord.Member) and bot_role <= member.top_role:
+        if ctx.guild.me.top_role <= member.top_role:
             await ctx.send(
                 ":x: The user has a higher role or the same top role as mine.\n"
                 + "Please move my role higher!"

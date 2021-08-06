@@ -1,5 +1,4 @@
 import discord
-from discord.errors import HTTPException
 from discord.ext import commands
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_components import create_actionrow, create_button
@@ -80,16 +79,18 @@ class Errors(commands.Cog):
             await ctx.send(":x: Invalid option.", components=[error_btns])
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send(":x: This command can't be used in direct messages.")
-        elif isinstance(error, discord.Forbidden) or isinstance(error, HTTPException):
-            # Forbidden and HTTPException are raised when the bot cannot send a message, so we don't want to do anything
-            pass
-
+        elif "Forbidden" in str(error):
+            await ctx.send(
+                ":x: I'm unable to complete the command, **my role is probably too low**!"
+            )
         elif isinstance(error, commands.ExpectedClosingQuoteError):
             await ctx.send(":x: You opened a quote but didn't close it!")
         elif isinstance(error, commands.UnexpectedQuoteError):
             await ctx.send(":x: You didn't use quotes correctly.")
         elif "cannot identify image file" in str(error):
             await ctx.send(":x: I don't think that's a valid image!")
+        elif "Invalid base64-encoded string" in str(error):
+            await ctx.send(":x: That base64 code is invalid. Are you sure it's base64?")
         else:
             channel = self.client.get_channel(871032761018896414)
             try:

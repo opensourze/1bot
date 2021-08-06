@@ -89,7 +89,7 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
         info_embed.add_field(
-            name="Bot version", value="Beta phase - v1.3.2", inline=False
+            name="Bot version", value="**Beta stage** - v1.3.2", inline=False
         )
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False
