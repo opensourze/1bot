@@ -121,13 +121,20 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
             json = requests.get(f"https://meme-api.herokuapp.com/gimme").json()
 
         try:
-            if json["code"]:  # If there is an error code...
-                await ctx.send(json["message"])  # Send the error message
+            if json["code"]:
+                await ctx.send(
+                    json["message"]
+                )  # Send the error message if there is an error code
                 return
         except KeyError:
             if json["nsfw"] == False:
+                title = (
+                    json["title"][:253] + "..."
+                    if len(json["title"]) > 256
+                    else json["title"]
+                )
                 meme_embed = discord.Embed(
-                    title=json["title"],
+                    title=title,
                     color=0xFF6600,
                     url=json["postLink"],
                     description=f"r/{json['subreddit']}",

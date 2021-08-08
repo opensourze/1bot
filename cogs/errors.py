@@ -81,7 +81,7 @@ class Errors(commands.Cog):
             await ctx.send(":x: This command can't be used in direct messages.")
         elif "Forbidden" in str(error):
             await ctx.send(
-                ":x: I'm unable to complete the command, **my role is probably too low**!"
+                ":x: I'm unable to complete the command, **my role is probably too low**, or the member you gave me is the **owner/admin**!"
             )
         elif isinstance(error, commands.ExpectedClosingQuoteError):
             await ctx.send(":x: You opened a quote but didn't close it!")

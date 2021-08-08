@@ -145,13 +145,16 @@ class Utilities(
                 await ctx.send(":x: " + json["error"])
                 return
 
-        embed = discord.Embed(
-            title=json["title"], color=0xFF6600, description=json["lyrics"]
-        )
+        embed = discord.Embed(title=json["title"], color=0xFF6600)
         embed.set_author(
             name="Click to view lyrics in your browser", url=json["links"]["genius"]
         )
         embed.set_thumbnail(url=json["thumbnail"]["genius"])
+
+        if len(json["lyrics"]) > 4096:
+            embed.description = json["lyrics"][:4093] + "..."
+        else:
+            embed.description = json["lyrics"]
 
         await ctx.send(embed=embed)
 

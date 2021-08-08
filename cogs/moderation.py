@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import suppress
 
 import discord
 from discord.ext import commands
@@ -395,7 +396,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     ):
         unit_tuple = tuple([unit for unit in self.time_convert.keys()])
 
-        if not duration.lower().endswith(unit_tuple) and not duration[0].isdigit():
+        if not duration.lower().endswith(unit_tuple) or not duration[0].isdigit():
             await ctx.send(
                 ":x: **Invalid duration**! Here are some examples:\n\n"
                 + '`1tempmute @Big Wumpus 2d Spam`- 2 days, with reason "Spam"\n'
@@ -587,33 +588,36 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def ban(self, ctx, member: commands.UserConverter, *, reason=None):
-        if member == ctx.author:
+    async def ban(self, ctx, user: commands.UserConverter, *, reason=None):
+        if user == ctx.author:
             await ctx.send(":x: You can't ban yourself!")
             return
 
-        if member.id == self.client.user.id:
+        if user == self.client.user:
             await ctx.send(":x: I can't ban myself!")
             return
 
-        if ctx.guild.me.top_role <= member.top_role:
-            await ctx.send(
-                ":x: The user has a higher role or the same top role as mine.\n"
-                + "Please move my role higher!"
-            )
-            return
+        with suppress(AttributeError):
+            if ctx.guild.me.top_role <= user.top_role:
+                await ctx.send(
+                    ":x: The user has a higher role or the same top role as mine.\n"
+                    + "Please move my role higher!"
+                )
+                return
+
         try:
-            await member.send(
+            await user.send(
                 f":exclamation: You were banned from {ctx.guild.name}! Reason: {reason}"
             )
         except:
             pass
-        await ctx.guild.ban(member, reason=reason)
+
+        await ctx.guild.ban(user, reason=reason)
 
         embed = discord.Embed(
             title="✅ Member banned",
             color=0xFF6600,
-            description=f"{member.mention} was banned by {ctx.author.mention}",
+            description=f"{user.mention} was banned by {ctx.author.mention}",
             timestamp=ctx.message.created_at,
         ).add_field(name="Reason", value=reason)
         await ctx.send(embed=embed)
@@ -647,7 +651,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, *, member: commands.UserConverter):
+    async def unban(self, ctx, *, member: str):
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split("#")
 
