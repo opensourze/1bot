@@ -83,13 +83,13 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
             inline=False,
         )
         info_embed.add_field(
-            name="Creator",
-            value="[OpenSourze](https://github.com/opensourze) - contact on [Twitter](https://twitter.com/opensourze) or [Reddit](https://reddit.com/user/opensourze)",
+            name="Developer",
+            value="[OpenSourze](https://twitter.com/opensourze)",
             inline=False,
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
         info_embed.add_field(
-            name="Bot version", value="**Beta stage** - v1.3.2", inline=False
+            name="Bot version", value="**Beta stage** - v1.3.3", inline=False
         )
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False

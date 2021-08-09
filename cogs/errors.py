@@ -89,7 +89,9 @@ class Errors(commands.Cog):
             await ctx.send(":x: You didn't use quotes correctly.")
         elif "cannot identify image file" in str(error):
             await ctx.send(":x: I don't think that's a valid image!")
-        elif "Invalid base64-encoded string" in str(error):
+        elif "Invalid base64-encoded string" in str(
+            error
+        ) or "Incorrect padding" in str(error):
             await ctx.send(":x: That base64 code is invalid. Are you sure it's base64?")
         else:
             channel = self.client.get_channel(871032761018896414)

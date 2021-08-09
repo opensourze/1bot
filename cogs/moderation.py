@@ -653,15 +653,26 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, *, member: str):
         banned_users = await ctx.guild.bans()
-        member_name, member_discriminator = member.split("#")
 
-        for ban_entry in banned_users:
-            user = ban_entry.user
+        try:
+            member_name, member_discriminator = member.split("#")
 
-            if (user.name, user.discriminator) == (member_name, member_discriminator):
-                await ctx.guild.unban(user)
-                await ctx.send(f"Unbanned {user}")
-                return
+            for ban_entry in banned_users:
+                user = ban_entry.user
+
+                if (user.name, user.discriminator) == (
+                    member_name,
+                    member_discriminator,
+                ):
+                    await ctx.guild.unban(user)
+                    await ctx.send(f"Unbanned {user}")
+                    return
+
+        except ValueError:
+            await ctx.send(
+                ":x: You need to provide the exact username + tag of the banned user to unban them!"
+            )
+            return
 
         await ctx.send(f":x: Couldn't find a ban for {member}")
 
