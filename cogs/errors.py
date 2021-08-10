@@ -32,67 +32,70 @@ class Errors(commands.Cog):
             return  # Exit if command has error handler
         if isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
-                ":x: I don't have enough permissions to run this command!\n"
+                "❌ I don't have enough permissions to complete this command!\n"
                 + "Missing permissions: "
-                + f"`{', '.join(error.missing_perms)}`",
+                + f"`{', '.join([err.capitalize().replace('_', ' ') for err in error.missing_perms])}`\n\n"
+                + "Please add these permissions to my role ('1Bot') in your server settings.",
                 components=[error_btns],
             )
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(
-                ":x: You don't have enough permissions to use this command.\n"
+                "❌ You don't have enough permissions to use this command.\n"
                 + "Missing permissions: "
-                + f"`{', '.join(error.missing_perms)}`"
+                + f"`{', '.join([err.capitalize().replace('_', ' ') for err in error.missing_perms])}`"
             )
         elif isinstance(error, commands.NotOwner):
-            await ctx.send(":x: Only the owner of the bot can use this command.")
+            await ctx.send("❌ Only the owner of the bot can use this command.")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
-                ":x: You haven't provided all the required options.\n"
+                "❌ You haven't provided all the required options.\n"
                 + "Check the command list to know what options to provide.",
                 components=[error_btns],
             )
         elif isinstance(error, commands.TooManyArguments):
             await ctx.send(
-                ":x: You've passed extra options to the command!\n"
+                "❌ You've passed extra options to the command!\n"
                 + "Check the command list to know what options to provide.",
                 components=[error_btns],
             )
         elif isinstance(error, commands.ChannelNotFound):
-            await ctx.send(":x: I don't think that channel exists!")
+            await ctx.send("❌ I don't think that channel exists!")
         elif isinstance(error, commands.MemberNotFound):
             await ctx.send(
-                f":x: Member not found. The member option must have the exact name of the member including capitalisation, or you can just ping the member."
+                f"❌ Member not found. The member option must have the exact name of the member including capitalisation, or you can just ping the member."
             )
         elif isinstance(error, commands.UserNotFound):
             await ctx.send(
-                f":x: User not found. The user option must have the exact name + tag of the user including capitalisation, or you can just @mention them if they are in the server. If you have developer mode on, you can also use the user's ID."
+                f"❌ User not found. The user option must have the exact name + tag of the user including capitalisation, or you can just @mention them if they are in the server. If you have developer mode on, you can also use the user's ID."
             )
         elif isinstance(error, commands.RoleNotFound):
             await ctx.send(
-                f":x: Role not found. The role option must have the exact name of the role including capitalisation, or you can just @mention the role. If you have developer mode on, you can use the role's ID."
+                f"❌ Role not found. The role option must have the exact name of the role including capitalisation, or you can just @mention the role. If you have developer mode on, you can use the role's ID."
             )
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
-                f":x: Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
+                f"❌ Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
             )
         elif isinstance(error, commands.BadArgument):
-            await ctx.send(":x: Invalid option.", components=[error_btns])
+            await ctx.send("❌ Invalid option.", components=[error_btns])
         elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.send(":x: This command can't be used in direct messages.")
+            await ctx.send("❌ This command can't be used in direct messages.")
         elif "Forbidden" in str(error):
             await ctx.send(
-                ":x: I'm unable to complete the command, **my role is probably too low**, or the member you gave me is the **owner/admin**!"
+                "❌ I'm unable to complete the command, **my role is probably too low**, or the member you gave me is the **owner/admin**!"
             )
         elif isinstance(error, commands.ExpectedClosingQuoteError):
-            await ctx.send(":x: You opened a quote but didn't close it!")
-        elif isinstance(error, commands.UnexpectedQuoteError):
-            await ctx.send(":x: You didn't use quotes correctly.")
+            await ctx.send("❌ You opened a quote but didn't close it!")
+        elif isinstance(
+            error, commands.UnexpectedQuoteError
+        ) or "Expected space after closing quotation" in str(error):
+            await ctx.send("❌ You didn't use quotes correctly.")
         elif "cannot identify image file" in str(error):
-            await ctx.send(":x: I don't think that's a valid image!")
+            await ctx.send("❌ I don't think that's a valid image!")
         elif "Invalid base64-encoded string" in str(
             error
         ) or "Incorrect padding" in str(error):
-            await ctx.send(":x: That base64 code is invalid. Are you sure it's base64?")
+            await ctx.send("❌ That base64 code is invalid. Are you sure it's base64?")
         else:
             channel = self.client.get_channel(871032761018896414)
             try:
@@ -104,7 +107,7 @@ class Errors(commands.Cog):
 
                 await channel.send("<@&864736371045695519>", embed=embed)
                 await ctx.send(
-                    ":x: Something went wrong, probably on our side!\n"
+                    "❌ Something went wrong, probably on our side!\n"
                     + "The developers have been notified. We'll fix this as soon as we can!"
                 )
             except AttributeError:
@@ -115,7 +118,7 @@ class Errors(commands.Cog):
 
                 await channel.send("<@&864736371045695519>", embed=embed)
                 await ctx.send(
-                    ":x: Something went wrong, probably on our side!\n"
+                    "❌ Something went wrong, probably on our side!\n"
                     + "The developers have been notified. We'll fix this as soon as we can!"
                 )
 

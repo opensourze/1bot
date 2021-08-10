@@ -47,7 +47,7 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
     async def yt_error(self, ctx, error):
         if isinstance(error, commands.ChannelNotFound):
             embed = discord.Embed(
-                title=":x: Channel Not Found",
+                title="❌ Channel Not Found",
                 description=f"Couldn't find that channel. You must type the **exact** name of the channel, "
                 + "**which is why it is recommended to use the Slash Command version of this command instead.**\n"
                 + "If you are typing a `#` before the name of the channel, **don't**.",
@@ -59,7 +59,7 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
             await ctx.send(embed=embed)
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
-                ":x: You must specify a voice channel to start the activity in."
+                "❌ You must specify a voice channel to start the activity in."
             )
 
     @cog_ext.cog_slash(
@@ -143,7 +143,7 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
                 await ctx.send(embed=meme_embed)
 
         if json["nsfw"]:
-            await ctx.send(f":exclamation: Warning: NSFW post!\n\n<{json['postLink']}>")
+            await ctx.send(f"❗ Warning: NSFW post!\n\n<{json['postLink']}>")
 
     @cog_ext.cog_slash(
         name="reddit",
@@ -175,7 +175,7 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
         try:
             await ctx.send(json["results"][0]["url"])
         except IndexError:
-            await ctx.send(":x: Couldn't find any matching GIFs.")
+            await ctx.send("❌ Couldn't find any matching GIFs.")
 
     @cog_ext.cog_slash(name="gif", description="Search for GIFs (filtered) on Tenor")
     async def gif_slash(self, ctx: SlashContext, *, query):

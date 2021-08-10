@@ -57,10 +57,7 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 
         message = await channel.send(embed=embed)
-        await ctx.send(
-            ":white_check_mark: Your suggestion has been submitted to "
-            + channel.mention
-        )
+        await ctx.send("✅ Your suggestion has been submitted to " + channel.mention)
         await message.add_reaction("✅")
         await message.add_reaction("❌")
 
@@ -89,7 +86,7 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
         info_embed.add_field(
-            name="Bot version", value="**Beta stage** - v1.3.3", inline=False
+            name="Bot version", value="**Beta stage** - v1.3.4", inline=False
         )
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False

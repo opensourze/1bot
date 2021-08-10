@@ -2,11 +2,13 @@ print("Bot written by @opensourze")
 
 import os
 from asyncio import sleep
+from contextlib import suppress
 from itertools import cycle
 
 import discord
 import dotenv
 from discord.ext import commands
+from discord.ext.commands.errors import ExtensionNotLoaded
 from discord_slash import SlashCommand
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_components import create_actionrow, create_button
@@ -83,8 +85,25 @@ info_btns = create_actionrow(
 @client.command(hidden=True, aliases=["stop", "close", "exit"])
 @commands.is_owner()
 async def logout(ctx):
-    await ctx.send(":exclamation: Logging out")
+    await ctx.send("❗ Logging out")
     await client.close()
+
+
+@client.command(hidden=True, aliases=["refresh"])
+@commands.is_owner()
+async def reload(ctx):
+    msg = await ctx.send("Reloading cogs")
+
+    with suppress(ExtensionNotLoaded):
+        for filename in os.listdir("./cogs"):
+            if filename.endswith(".py"):
+                client.unload_extension(f"cogs.{filename[:-3]}")
+
+        for filename in os.listdir("./cogs"):
+            if filename.endswith(".py"):
+                client.load_extension(f"cogs.{filename[:-3]}")
+
+    await msg.edit(content="✅ Reloaded cogs")
 
 
 # Loop through all files in cogs directory and load them

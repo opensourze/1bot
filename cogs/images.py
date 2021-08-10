@@ -80,7 +80,7 @@ class Images(commands.Cog, description="Generate fun images"):
 
             await ctx.send(embed=embed)
         else:
-            await ctx.send(f":x: Error: {json['message']}")
+            await ctx.send(f"❌ Error: {json['message']}")
 
     @cog_ext.cog_slash(
         name="clyde",
@@ -117,7 +117,7 @@ class Images(commands.Cog, description="Generate fun images"):
 
             await ctx.send(embed=embed)
         else:
-            await ctx.send(f":x: Error: {json['message']}")
+            await ctx.send(f"❌ Error: {json['message']}")
 
     @cog_ext.cog_slash(
         name="captcha",
@@ -154,7 +154,7 @@ class Images(commands.Cog, description="Generate fun images"):
 
             await ctx.send(embed=embed)
         else:
-            await ctx.send(f":x: Error: {json['message']}")
+            await ctx.send(f"❌ Error: {json['message']}")
 
     @cog_ext.cog_slash(
         name="changemymind",
@@ -181,7 +181,7 @@ class Images(commands.Cog, description="Generate fun images"):
 
             await ctx.send(embed=embed)
         else:
-            await ctx.send(f":x: Error: {json['message']}")
+            await ctx.send(f"❌ Error: {json['message']}")
 
     @cog_ext.cog_slash(name="tweet", description="Generate an image of a tweet")
     async def tweet_slash(self, ctx: SlashContext, *, text):

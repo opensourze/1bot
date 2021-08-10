@@ -16,16 +16,16 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         Returns False if the bot cannot mute the member.
         """
         if member == ctx.author:
-            await ctx.send(":x: You can't mute yourself!")
+            await ctx.send("❌ You can't mute yourself!")
             return False
 
         if member == self.client.user:
-            await ctx.send(":x: I can't mute myself!")
+            await ctx.send("❌ I can't mute myself!")
             return False
 
         if bot_role <= member.top_role:
             await ctx.send(
-                ":x: The user has a higher role or the same top role as mine.\n"
+                "❌ The user has a higher role or the same top role as mine.\n"
                 + "Please move my role higher!"
             )
             return False
@@ -43,7 +43,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         if bot_role <= muted_role:
             await ctx.send(
-                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
+                "❌ My role is too low. I can only mute users if my role is higher than the Muted role!"
             )
             return False
 
@@ -53,7 +53,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
     # Nickname command
     @commands.command(help="Change someone's nickname", aliases=["nick"])
+    @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
+    @commands.bot_has_permissions(manage_nicknames=True)
     async def nickname(
         self, ctx, member: commands.MemberConverter, *, nickname: str = None
     ):
@@ -62,7 +64,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             await ctx.send(f"`{member}`'s nickname has been changed to `{nickname}`.")
         except discord.Forbidden:
             await ctx.send(
-                ":x: I don't have permission to change that user's nickname.\n"
+                "❌ I don't have permission to change that user's nickname.\n"
                 + "They might have a higher role than me, or they are the owner."
             )
 
@@ -84,13 +86,17 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
+    @commands.bot_has_permissions(manage_nicknames=True)
     async def nickname_slash(self, ctx: SlashContext, member, nickname: str = None):
         await self.nickname(ctx, member, nickname=nickname)
 
     # Role commands
     @commands.group(invoke_without_command=True, help="Create or delete roles")
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def role(self, ctx):
         embed = discord.Embed(
             title="Role commands",
@@ -109,43 +115,49 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         await ctx.send(embed=embed)
 
     @role.command(help="Create a role", aliases=["c"])
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def create(self, ctx, *, name: str):
         await ctx.guild.create_role(name=name)
-        await ctx.send(f":white_check_mark: Role `{name}` has been created")
+        await ctx.send(f"✅ Role `{name}` has been created")
 
     @role.command(help="Delete a role", aliases=["d"])
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def delete(self, ctx, *, role: commands.RoleConverter):
         await role.delete()
-        await ctx.send(f":white_check_mark: Role `{role.name}` has been deleted")
+        await ctx.send(f"✅ Role `{role.name}` has been deleted")
 
     @role.command(help="Add a role to a member", aliases=["a"])
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def add(
         self, ctx, member: commands.MemberConverter, *, role: commands.RoleConverter
     ):
         await member.add_roles(role)
-        await ctx.send(
-            f":white_check_mark: Role `{role}` has been added to `{member.name}`."
-        )
+        await ctx.send(f"✅ Role `{role}` has been added to `{member.name}`.")
 
     @role.command(help="Remove a role from a member", aliases=["r"])
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def remove(
         self, ctx, member: commands.MemberConverter, *, role: commands.RoleConverter
     ):
         await member.remove_roles(role)
-        await ctx.send(
-            f":white_check_mark: Role `{role}` has been removed from `{member.name}`."
-        )
+        await ctx.send(f"✅ Role `{role}` has been removed from `{member.name}`.")
 
     @cog_ext.cog_subcommand(
         base="role",
         name="create",
         description="Create a new role",
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def role_create_slash(self, ctx: SlashContext, name):
         await self.create(ctx, name=name)
 
@@ -162,7 +174,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def role_delete_slash(self, ctx: SlashContext, role):
         await self.delete(ctx, role=role)
 
@@ -185,7 +199,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def role_add_slash(self, ctx: SlashContext, member, role):
         await self.add(ctx, member, role=role)
 
@@ -208,7 +224,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def role_remove_slash(self, ctx: SlashContext, member, role):
         await self.remove(ctx, member, role=role)
 
@@ -220,6 +238,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
     async def clear(self, ctx, amount: int = 5):
         await ctx.channel.purge(limit=amount + 1)
 
@@ -237,22 +256,45 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
     async def clear_slash(self, ctx: SlashContext, amount: int = 5):
         await self.clear(ctx, amount=amount - 1)
-        await ctx.send(
-            f":white_check_mark: I have cleared {amount} messages", delete_after=2
-        )
+        await ctx.send(f"✅ I have cleared {amount} messages", delete_after=2)
 
     # Nuke/clear channel command
     @commands.command(help="Clear a channel", aliases=["clearall", "clearchannel"])
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
     async def nuke(self, ctx, *, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
 
-        await channel.purge(limit=None)
+        msg = await ctx.send(
+            "**This command will clear everything in the channel!**\n\nThe channel will be completely emptied.\n**Are you sure you want to do this?**"
+        )
+        await msg.add_reaction("✅")
+        await msg.add_reaction("❌")
 
-        await ctx.send(f":white_check_mark: Cleared {channel.mention}", delete_after=2)
+        def check(reaction, user):
+            return (
+                user == ctx.author
+                and str(reaction.emoji) in ["✅", "❌"]
+                and reaction.message.id == msg.id
+            )
+
+        try:
+            reaction, user = await self.client.wait_for(
+                "reaction_add", check=check, timeout=20
+            )
+            if reaction.emoji == "❌":
+                await ctx.send("❗ Cancelling the nuke.")
+                return
+            if reaction.emoji == "✅":
+                await channel.purge(limit=None)
+
+            await ctx.send(f"✅ Cleared {channel.mention}", delete_after=2)
+        except asyncio.TimeoutError:
+            await ctx.send("❌ Timed out.")
 
     @cog_ext.cog_slash(
         name="clearchannel",
@@ -268,6 +310,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
     async def nuke_slash(self, ctx: SlashContext, channel: discord.TextChannel):
         await self.nuke(ctx, channel=channel)
 
@@ -275,14 +318,13 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.command(help="Clear all messages from a member")
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
     async def clearuser(self, ctx, amount: int, *, member: commands.MemberConverter):
         def check(m):
             return m.author.id == member.id
 
         await ctx.channel.purge(limit=amount, check=check)
-        await ctx.send(
-            f":white_check_mark: Deleted {amount} messages from {member.name}"
-        )
+        await ctx.send(f"✅ Deleted {amount} messages from {member.name}")
 
     @cog_ext.cog_slash(
         name="clearuser",
@@ -304,6 +346,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
     async def clearuser_slash(self, ctx: SlashContext, member, amount=5):
         await self.clearuser(ctx, amount, member=member)
 
@@ -311,22 +354,26 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.command(
         help="Set slowmode for the current channel", aliases=["slow", "sm"]
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True)
     async def slowmode(self, ctx, seconds: int):
         if seconds < 0:
-            await ctx.send(":x: Slowmode must be a positive number")
+            await ctx.send("❌ Slowmode must be a positive number")
             return
         elif seconds > 21600:
-            await ctx.send(":x: Slowmode must be less than 21600 seconds (6 hours)")
+            await ctx.send("❌ Slowmode must be less than 21600 seconds (6 hours)")
         else:
             await ctx.channel.edit(slowmode_delay=seconds)
 
-        await ctx.send(f":white_check_mark: Slowmode set to {seconds} seconds")
+        await ctx.send(f"✅ Slowmode set to {seconds} seconds")
 
     @cog_ext.cog_slash(
         name="slowmode", description="Set slowmode for the current channel"
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True)
     async def slowmode_slash(self, ctx: SlashContext, seconds: int):
         await self.slowmode(ctx, seconds=seconds)
 
@@ -369,7 +416,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def mute_slash(self, ctx: SlashContext, member, reason=None):
         await self.mute(ctx, member, reason=reason)
 
@@ -398,7 +447,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         if not duration.lower().endswith(unit_tuple) or not duration[0].isdigit():
             await ctx.send(
-                ":x: **Invalid duration**! Here are some examples:\n\n"
+                "❌ **Invalid duration**! Here are some examples:\n\n"
                 + '`1tempmute @Big Wumpus 2d Spam`- 2 days, with reason "Spam"\n'
                 + "`1 tmute Wumpus 1h`- 1 hour without any reason\n"
                 + "`1tempmute Wumpus 20m`- 20 minutes without any reason\n"
@@ -409,11 +458,11 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
         if member == ctx.author:
-            await ctx.send(":x: You can't mute yourself!")
+            await ctx.send("❌ You can't mute yourself!")
             return
 
         if member == self.client.user:
-            await ctx.send(":x: I can't mute myself!")
+            await ctx.send("❌ I can't mute myself!")
             return
 
         if (
@@ -464,6 +513,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def tempmute_slash(self, ctx: SlashContext, member, duration, reason=None):
@@ -478,16 +528,16 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
         if muted_role not in member.roles:
-            await ctx.send(":x: That member isn't muted!")
+            await ctx.send("❌ That member isn't muted!")
             return
         elif ctx.guild.me.top_role <= muted_role:
             await ctx.send(
-                ":x: My role is too low. I can only mute users if my role is higher than the Muted role!"
+                "❌ My role is too low. I can only mute users if my role is higher than the Muted role!"
             )
             return
         elif ctx.guild.me.top_role <= member.top_role:
             await ctx.send(
-                ":x: The user has a higher role or the same top role as mine.\n"
+                "❌ The user has a higher role or the same top role as mine.\n"
                 + "Please move my role higher!"
             )
             return
@@ -514,6 +564,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def unmute_slash(self, ctx: SlashContext, member):
@@ -529,21 +580,21 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.bot_has_permissions(kick_members=True)
     async def kick(self, ctx, member: commands.MemberConverter, *, reason=None):
         if member == ctx.author:
-            await ctx.send(":x: You can't kick yourself!")
+            await ctx.send("❌ You can't kick yourself!")
             return
         elif member.id == self.client.user.id:
-            await ctx.send(":x: I can't kick myself!")
+            await ctx.send("❌ I can't kick myself!")
             return
         elif ctx.guild.me.top_role <= member.top_role:
             await ctx.send(
-                ":x: The user has a higher role or the same top role as mine.\n"
+                "❌ The user has a higher role or the same top role as mine.\n"
                 + "Please move my role higher!"
             )
             return
 
         try:
             await member.send(
-                f":exclamation: You were kicked from {ctx.guild.name}. Reason: {reason}"
+                f"❗ You were kicked from {ctx.guild.name}. Reason: {reason}"
             )
         except:
             pass
@@ -575,6 +626,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(kick_members=True)
     async def kick_slash(self, ctx: SlashContext, member, reason=None):
@@ -590,24 +642,24 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.bot_has_permissions(ban_members=True)
     async def ban(self, ctx, user: commands.UserConverter, *, reason=None):
         if user == ctx.author:
-            await ctx.send(":x: You can't ban yourself!")
+            await ctx.send("❌ You can't ban yourself!")
             return
 
         if user == self.client.user:
-            await ctx.send(":x: I can't ban myself!")
+            await ctx.send("❌ I can't ban myself!")
             return
 
         with suppress(AttributeError):
             if ctx.guild.me.top_role <= user.top_role:
                 await ctx.send(
-                    ":x: The user has a higher role or the same top role as mine.\n"
+                    "❌ The user has a higher role or the same top role as mine.\n"
                     + "Please move my role higher!"
                 )
                 return
 
         try:
             await user.send(
-                f":exclamation: You were banned from {ctx.guild.name}! Reason: {reason}"
+                f"❗ You were banned from {ctx.guild.name}! Reason: {reason}"
             )
         except:
             pass
@@ -640,6 +692,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def ban_slash(self, ctx: SlashContext, member, reason=None):
@@ -670,11 +723,11 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         except ValueError:
             await ctx.send(
-                ":x: You need to provide the exact username + tag of the banned user to unban them!"
+                "❌ You need to provide the exact username + tag of the banned user to unban them!"
             )
             return
 
-        await ctx.send(f":x: Couldn't find a ban for {member}")
+        await ctx.send(f"❌ Couldn't find a ban for {member}")
 
     @cog_ext.cog_slash(
         name="unban",
@@ -694,7 +747,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(ban_members=True)
+    @commands.bot_has_permissions(ban_members=True)
     async def unban_slash(self, ctx: SlashContext, user, reason=None):
         await self.unban(ctx, user, reason=reason)
 
@@ -734,6 +789,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
     async def lockdown_slash(
@@ -747,6 +803,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True)
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
         await channel.set_permissions(ctx.guild.default_role, send_messages=None)
@@ -771,6 +828,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
         ],
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
     async def unlock_slash(

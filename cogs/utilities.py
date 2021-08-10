@@ -53,7 +53,7 @@ class Utilities(
     async def pypi(self, ctx, *, package):
         request = requests.get(f"https://pypi.org/pypi/{package}/json")
         if request.status_code == 404:
-            await ctx.send(":x: That module doesn't exist!")
+            await ctx.send("❌ That module doesn't exist!")
             return
 
         json = request.json()
@@ -99,7 +99,7 @@ class Utilities(
 
         try:
             if json["error"]:
-                await ctx.send(":x: " + json["error"])
+                await ctx.send("❌ " + json["error"])
         except KeyError:
             embed = discord.Embed(
                 title=json["name"],
@@ -142,7 +142,7 @@ class Utilities(
 
         with contextlib.suppress(KeyError):
             if json["error"]:
-                await ctx.send(":x: " + json["error"])
+                await ctx.send("❌ " + json["error"])
                 return
 
         embed = discord.Embed(title=json["title"], color=0xFF6600)
@@ -210,7 +210,7 @@ class Utilities(
         # If code is 404 (not found), send an error message
         if int(json["cod"]) == 404:
             await ctx.send(
-                ":x: City not found. Provide only the city name, **or:**\n"
+                "❌ City not found. Provide only the city name, **or:**\n"
                 + "The city name with the state code and country code separated by commas.\n"
                 + "E.g.: `washington,wa,us` or just `washington`."
             )
@@ -320,7 +320,7 @@ class Utilities(
             if author.content.lower() == "yes":
                 embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
             elif author.content.lower() != "no":
-                await ctx.send(":exclamation: Exiting embed creator.")
+                await ctx.send("❗ Exiting embed creator.")
                 return
 
             if footer.content.lower() != "empty":
@@ -329,7 +329,7 @@ class Utilities(
             await ctx.channel.send(embed=embed)
 
         except asyncio.TimeoutError:
-            await ctx.channel.send(":x: Command has timed out. Exiting embed creator.")
+            await ctx.channel.send("❌ Command has timed out. Exiting embed creator.")
 
     @cog_ext.cog_slash(name="embed", description="Create an embed")
     @commands.has_permissions(manage_messages=True)
@@ -346,10 +346,10 @@ class Utilities(
         option_list = options.split("/")
 
         if len(option_list) > 10:
-            await ctx.send(":x: You cannot have more than 10 choices!")
+            await ctx.send("❌ You cannot have more than 10 choices!")
             return
         elif len(option_list) < 2:
-            await ctx.send(":x: You need to provide multiple options!")
+            await ctx.send("❌ You need to provide multiple options!")
             return
 
         embed = discord.Embed(
