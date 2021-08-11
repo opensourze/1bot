@@ -30,7 +30,6 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
     @cog_ext.cog_slash(
         name="mock",
         description="Mock text (alternating upper and lower case)",
-        guild_ids=[862688794662141993],
     )
     async def mock_slash(self, ctx: SlashContext, *, text):
         await self.mock(ctx, text=text)
@@ -112,6 +111,7 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
         aliases=["reddit"],
     )
     @commands.bot_has_permissions(embed_links=True)
+    @commands.cooldown(1, 6, commands.BucketType.user)
     async def meme(self, ctx, subreddit=None):
         if subreddit is not None:
             json = requests.get(
@@ -157,6 +157,8 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
             )
         ],
     )
+    @commands.bot_has_permissions(embed_links=True)
+    @commands.cooldown(1, 6, commands.BucketType.user)
     async def reddit_slash(self, ctx: SlashContext, subreddit: str = None):
         await self.meme(ctx, subreddit=subreddit)
 

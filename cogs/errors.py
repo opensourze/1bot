@@ -27,9 +27,10 @@ class Errors(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
-            return
+            return  # Exit if the command is not found
         if ctx.command.has_error_handler():
             return  # Exit if command has error handler
+
         if isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
                 "❌ I don't have enough permissions to complete this command!\n"

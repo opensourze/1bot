@@ -405,6 +405,7 @@ class Utilities(
             "ctx": ctx,
             "message": ctx.message,
             "asyncio": asyncio,
+            "os": os,
         }
 
         stdout = io.StringIO()
