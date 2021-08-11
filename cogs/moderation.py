@@ -422,15 +422,27 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def mute_slash(self, ctx: SlashContext, member, reason=None):
         await self.mute(ctx, member, reason=reason)
 
+    # tempmute command
     time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 
-    def time2seconds(self, time):
+    invalid_duration_msg = (
+        "❌ **Invalid duration**! Here are some examples:\n\n"
+        + '`1tempmute @Big Wumpus 2d Spam`- 2 days, with reason "Spam"\n'
+        + "`1 tmute Wumpus 1h`- 1 hour without any reason\n"
+        + "`1tempmute Wumpus 20m`- 20 minutes without any reason\n"
+        + "\nYou can also use `s` for seconds."
+    )
+
+    async def time2seconds(self, send, time):
         try:
             return int(time[:-1]) * self.time_convert[time[-1]]
         except:
-            return int(time)
+            try:
+                return int(time)
+            except:
+                await send(self.invalid_duration_msg)
+                return False
 
-    # Tempmute command
     @commands.command(help="Temporarily mute a member", aliases=["tmute"])
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
@@ -444,15 +456,13 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         reason=None,
     ):
         unit_tuple = tuple([unit for unit in self.time_convert.keys()])
+        sleep_duration = await self.time2seconds(ctx.send, duration.lower())
+        if sleep_duration is False:
+            return
 
+        # If duration does not end with one of the units or is not a number, send an error
         if not duration.lower().endswith(unit_tuple) or not duration[0].isdigit():
-            await ctx.send(
-                "❌ **Invalid duration**! Here are some examples:\n\n"
-                + '`1tempmute @Big Wumpus 2d Spam`- 2 days, with reason "Spam"\n'
-                + "`1 tmute Wumpus 1h`- 1 hour without any reason\n"
-                + "`1tempmute Wumpus 20m`- 20 minutes without any reason\n"
-                + "\nYou can also use `s` for seconds."
-            )
+            await ctx.send(self.invalid_duration_msg)
             return
 
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
@@ -486,7 +496,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         await ctx.send(embed=embed)
 
-        await asyncio.sleep(self.time2seconds(duration.lower()))
+        await asyncio.sleep(sleep_duration)
         await member.remove_roles(muted_role, reason=reason)
 
     @cog_ext.cog_slash(
