@@ -266,65 +266,96 @@ class Utilities(
     async def weather_slash(self, ctx: SlashContext, city):
         await self.weather(ctx, query=city)
 
-    # Embed creator
+    # Embed command
     @commands.command(aliases=["makeembed", "createembed"], help="Create an embed")
     @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
     async def embed(self, ctx):
-        await ctx.channel.send(
-            "Embed creation process started.\n"
-            + "Please send the **title you want to use for the embed** within 60 seconds."
+        msg1 = await ctx.send(
+            "I'll now ask you to send some messages to use for the embed!\n___"
+        )
+
+        msg2 = await ctx.channel.send(
+            "Now send the **title you want to use for the embed** within 60 seconds."
         )
 
         try:
-            title = await self.client.wait_for(
+            title_msg = await self.client.wait_for(
                 "message",
                 check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
                 timeout=60,
             )
-            await ctx.channel.send(
-                f"Title of the embed will be set to '{title.content}'.\n"
-                + "Please send the text to use for the **content of the embed** within 60 seconds."
-            )
-            desc = await self.client.wait_for(
-                "message",
-                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
-                timeout=60,
-            )
-            await ctx.channel.send(
-                "Please send the text to use as a **footer**.\n"
-                + "The footer text will be small and light and will be at the bottom of the embed.\n"
-                + "**If you don't want a footer, say 'empty'.**"
-            )
-            footer = await self.client.wait_for(
-                "message",
-                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
-                timeout=60,
-            )
-            await ctx.channel.send(
-                "Do you want me to display you as the author of the embed?\n"
-                + "Please answer with **yes** or **no** within 60 seconds.\n"
-                + "__Send anything *other than* yes or no to cancel the embed creation.__"
-            )
-            author = await self.client.wait_for(
-                "message",
-                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
-                timeout=60,
-            )
+            title = title_msg.content
 
-            await ctx.channel.purge(limit=9)
-
-            embed = discord.Embed(
-                title=title.content, color=0xFF6600, description=desc.content
-            )
-
-            if author.content.lower() == "yes":
-                embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-            elif author.content.lower() != "no":
-                await ctx.send("❗ Exiting embed creator.")
+            if len(title) > 256:
+                await ctx.send(
+                    "❌ Title is too long. Run the command again but use a shorter title!"
+                )
                 return
 
-            if footer.content.lower() != "empty":
-                embed.set_footer(text=footer.content)
+            await msg2.delete()
+            await title_msg.delete()
+
+            msg3 = await ctx.channel.send(
+                f"Title of the embed will be set to '{title}'.\n"
+                + "Now send the text to use for the **content of the embed** within 60 seconds."
+            )
+            desc_msg = await self.client.wait_for(
+                "message",
+                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+                timeout=60,
+            )
+
+            description = desc_msg.content
+            await msg3.delete()
+            await desc_msg.delete()
+
+            msg4 = await ctx.channel.send(
+                "Please send the text to use as a **footer**.\n"
+                + "The footer text will be small and light and will be at the bottom of the embed.\n\n"
+                + "**If you don't want a footer, say 'empty'.**"
+            )
+            footer_msg = await self.client.wait_for(
+                "message",
+                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+                timeout=60,
+            )
+
+            footer = footer_msg.content
+            await msg4.delete()
+            await footer_msg.delete()
+
+            msg5 = await ctx.channel.send(
+                "Do you want me to display you as the author of the embed?\n"
+                + "Please answer with **yes** or **no** within 60 seconds.\n\n"
+                + "__Send anything *other than* yes or no to cancel__ - the embed will not be sent if you cancel."
+            )
+            author_msg = await self.client.wait_for(
+                "message",
+                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+                timeout=60,
+            )
+
+            author = author_msg.content
+            await msg5.delete()
+            await author_msg.delete()
+
+            embed = discord.Embed(title=title, description=description)
+
+            if author.lower() == "yes":
+                embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+            elif author.lower() != "no":
+                await ctx.send(
+                    "❗ Cancelled - you will have to run the command again if you want to make an embed."
+                )
+                return
+
+            if footer.lower() != "empty":
+                embed.set_footer(text=footer)
+
+            await msg1.delete()
+            with contextlib.suppress(AttributeError):
+                await ctx.message.delete()
 
             await ctx.channel.send(embed=embed)
 

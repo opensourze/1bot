@@ -6,6 +6,7 @@ from discord_slash import SlashContext, cog_ext
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
+from main import __version__
 
 info_btns = create_actionrow(
     *[
@@ -85,9 +86,7 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
             inline=False,
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
-        info_embed.add_field(
-            name="Bot version", value="**Beta stage** - v1.3.4", inline=False
-        )
+        info_embed.add_field(name="Bot version", value=f"v{__version__}", inline=False)
         info_embed.add_field(
             name="Discord.py version", value=discord.__version__, inline=False
         )
@@ -143,7 +142,7 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         embed.add_field(name="Owner", value=str(owner))
         embed.add_field(
             name="Created at",
-            value=ctx.guild.created_at.strftime("%a, %d %B %Y, %I:%M %p UTC"),
+            value=ctx.guild.created_at.strftime(" %I:%M %p UTC, %a %d %B %Y"),
         )
         embed.add_field(name="Region", value=str(ctx.guild.region).capitalize())
         embed.add_field(name="Member count", value=ctx.guild.member_count)
