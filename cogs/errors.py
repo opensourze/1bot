@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 import discord
 from discord.ext import commands
 from discord_slash.model import ButtonStyle
@@ -28,8 +30,9 @@ class Errors(commands.Cog):
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
             return  # Exit if the command is not found
-        if ctx.command.has_error_handler():
-            return  # Exit if command has error handler
+        with suppress(AttributeError):
+            if ctx.command.has_error_handler():
+                return  # Exit if command has error handler
 
         if isinstance(error, commands.BotMissingPermissions):
             await ctx.send(

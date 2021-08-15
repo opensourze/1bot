@@ -6,7 +6,9 @@ from discord_slash import SlashContext, cog_ext
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
-from main import __version__
+
+__version__ = "0.4.5"
+
 
 info_btns = create_actionrow(
     *[

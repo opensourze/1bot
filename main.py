@@ -16,8 +16,6 @@ from pretty_help import PrettyHelp
 
 dotenv.load_dotenv()
 
-__version__ = "0.4.5"
-
 
 client = commands.AutoShardedBot(
     command_prefix=commands.when_mentioned_or(*["1 ", "1"]),
