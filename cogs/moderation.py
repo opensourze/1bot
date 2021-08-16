@@ -384,6 +384,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
+        with suppress(AttributeError):
+            await ctx.trigger_typing()
+
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
         if (
@@ -456,6 +459,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         *,
         reason=None,
     ):
+        with suppress(AttributeError):
+            await ctx.trigger_typing()
+
         unit_tuple = tuple([unit for unit in self.time_convert.keys()])
         sleep_duration = await self.time2seconds(ctx.send, duration.lower())
         if sleep_duration is False:
