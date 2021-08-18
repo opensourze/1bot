@@ -188,6 +188,7 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
         help="Ask the magic 8-ball a question", name="8ball", aliases=["eightball"]
     )
     async def eightball(self, ctx, *, question):
+        # responses from wikipedia
         responses = [
             # Affirmative
             "It is certain.",

@@ -86,7 +86,9 @@ class Errors(commands.Cog):
             await ctx.send("❌ This command can't be used in direct messages.")
         elif "Forbidden" in str(error):
             await ctx.send(
-                "❌ I'm unable to complete the command, **my role is probably too low**, or the member you gave me is the **owner/admin**!"
+                "❌ Missing Access error. Possible reasons:\n\n"
+                + "1. If I was supposed to perform an action on a *server member*, my roles are too low in the hierarchy. I cannot run this command until you move any of my roles higher than the member's top-most role.\n"
+                + "2. If I was supposed to perform an action on a *channel*, I don't have access to that channel because it is private."
             )
         elif isinstance(error, commands.ExpectedClosingQuoteError):
             await ctx.send("❌ You opened a quote but didn't close it!")
