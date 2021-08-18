@@ -15,6 +15,13 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
 
+    @commands.Cog.listener()
+    async def on_guild_channel_create(self, channel):
+        muted_role = discord.utils.get(channel.guild.roles, name="Muted")
+
+        if muted_role:
+            await channel.set_permissions(muted_role, send_messages=False, speak=False)
+
     # Nickname command
     @commands.command(help="Change someone's nickname", aliases=["nick"])
     @commands.guild_only()
@@ -278,42 +285,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def nuke_slash(self, ctx: SlashContext, channel: discord.TextChannel):
         await self.nuke(ctx, channel=channel)
 
-    # Clear from a specific user
-    @commands.command(help="Clear all messages from a member")
-    @commands.guild_only()
-    @commands.has_permissions(manage_messages=True)
-    @commands.bot_has_permissions(manage_messages=True)
-    async def clearuser(self, ctx, amount: int, *, member: commands.MemberConverter):
-        def check(m):
-            return m.author.id == member.id
-
-        await ctx.channel.purge(limit=amount, check=check)
-        await ctx.send(f"✅ Deleted {amount} messages from {member.name}")
-
-    @cog_ext.cog_slash(
-        name="clearuser",
-        description="Clear all messages from a member",
-        options=[
-            create_option(
-                name="member",
-                description="The member you want to delete messages from",
-                required=True,
-                option_type=6,
-            ),
-            create_option(
-                name="amount",
-                description="Number of messages to delete",
-                required=True,
-                option_type=4,
-            ),
-        ],
-    )
-    @commands.guild_only()
-    @commands.has_permissions(manage_messages=True)
-    @commands.bot_has_permissions(manage_messages=True)
-    async def clearuser_slash(self, ctx: SlashContext, member, amount=5):
-        await self.clearuser(ctx, amount, member=member)
-
     # Slowmode command
     @commands.command(
         help="Set slowmode for the current channel", aliases=["slow", "sm"]
@@ -384,9 +355,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
-
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
         if (
@@ -394,9 +362,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             == False
         ):
             return
-
-        for channel in ctx.guild.channels:
-            await channel.set_permissions(muted_role, send_messages=False, speak=False)
 
         await member.add_roles(muted_role, reason=reason)
 
@@ -459,9 +424,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         *,
         reason=None,
     ):
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
-
         unit_tuple = tuple([unit for unit in self.time_convert.keys()])
         sleep_duration = await self.time2seconds(ctx.send, duration.lower())
         if sleep_duration is False:
@@ -487,9 +449,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             == False
         ):
             return
-
-        for channel in ctx.guild.channels:
-            await channel.set_permissions(muted_role, send_messages=False, speak=False)
 
         await member.add_roles(muted_role, reason=reason)
         embed = discord.Embed(

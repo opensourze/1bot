@@ -17,9 +17,13 @@ from pretty_help import PrettyHelp
 dotenv.load_dotenv()
 
 
+intents = discord.Intents.default()
+intents.guilds = True
+
 client = commands.AutoShardedBot(
     command_prefix=commands.when_mentioned_or(*["1 ", "1"]),
     case_insensitive=True,
+    intents=intents,
     help_command=PrettyHelp(
         color=0xFF6600,
         index_title="1Bot Command Categories",
