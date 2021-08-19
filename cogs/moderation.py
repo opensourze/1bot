@@ -418,7 +418,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.bot_has_permissions(manage_roles=True)
     async def tempmute(
         self,
-        ctx: SlashContext,
+        ctx,
         member: commands.MemberConverter,
         duration: str,
         *,
@@ -435,14 +435,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             return
 
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
-
-        if member == ctx.author:
-            await ctx.send("❌ You can't mute yourself!")
-            return
-
-        if member == self.client.user:
-            await ctx.send("❌ I can't mute myself!")
-            return
 
         if (
             await self.mute_checker(ctx, ctx.guild.me.top_role, member, muted_role)
