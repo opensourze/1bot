@@ -15,7 +15,7 @@ error_btns = create_actionrow(
         ),
         create_button(
             style=ButtonStyle.URL,
-            url=f"https://discord.gg/4yA6XkfnwR",
+            url=f"https://discord.gg/KRjZaV9DP8",
             label="Support server",
         ),
     ]

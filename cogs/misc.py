@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.4.5"
+__version__ = "0.5.0"
 
 
 info_btns = create_actionrow(
@@ -26,8 +26,8 @@ info_btns = create_actionrow(
         ),
         create_button(
             style=ButtonStyle.URL,
-            label="Join server",
-            url="https://discord.gg/4yA6XkfnwR",
+            label="Join the Support Server",
+            url="https://discord.gg/KRjZaV9DP8",
         ),
         create_button(
             style=ButtonStyle.URL,
@@ -48,8 +48,7 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         print(f"{self.__class__.__name__} cog is ready")
 
     # Suggest command
-    @commands.command(help="Create a suggestion for the bot")
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command(help="Submit a suggestion for the bot")
     async def suggest(self, ctx, *, suggestion):
         # Get 1Bot support server's suggestions channel
         channel = self.client.get_channel(862697260164055082)
@@ -64,15 +63,14 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         await message.add_reaction("✅")
         await message.add_reaction("❌")
 
-    @cog_ext.cog_slash(name="suggest", description="Create a suggestion for the bot")
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @cog_ext.cog_slash(name="suggest", description="Submit a suggestion for the bot")
     async def suggest_slash(self, ctx: SlashContext, suggestion):
         await self.suggest(ctx, suggestion=suggestion)
 
     # Bot info command
     @commands.command(
         help="View the bot's information",
-        brief="View information",
+        brief="View 1Bot's information",
         aliases=["information", "botinfo"],
     )
     async def info(self, ctx):

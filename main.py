@@ -12,10 +12,10 @@ from discord.ext.commands.errors import ExtensionNotLoaded
 from discord_slash import SlashCommand
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_components import create_actionrow, create_button
-from pretty_help import PrettyHelp
+
+from help_command import CustomHelpCommand
 
 dotenv.load_dotenv()
-
 
 intents = discord.Intents.default()
 intents.guilds = True
@@ -24,16 +24,9 @@ client = commands.AutoShardedBot(
     command_prefix=commands.when_mentioned_or(*["1 ", "1"]),
     case_insensitive=True,
     intents=intents,
-    help_command=PrettyHelp(
-        color=0xFF6600,
-        index_title="1Bot Command Categories",
-        no_category="Other",
-        sort_commands=True,
-        active_time=60,
-        ending_note="Try 1help <command> (without the brackets!) for how to use the command.\n"
-        + "\nStill confused? Check out the command list!\nhttps://1bot.netlify.app/commands",
-    ),
+    help_command=CustomHelpCommand(),
 )
+client._BotBase__cogs = commands.core._CaseInsensitiveDict()
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 
 
@@ -80,7 +73,7 @@ info_btns = create_actionrow(
         create_button(
             style=ButtonStyle.URL,
             label="Join the support server",
-            url="https://discord.gg/4yA6XkfnwR",
+            url="https://discord.gg/KRjZaV9DP8",
         ),
     ]
 )

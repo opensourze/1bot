@@ -355,7 +355,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
-        muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+        muted_role = discord.utils.get(ctx.guild.roles[::-1], name="Muted")
 
         if (
             await self.mute_checker(ctx, ctx.guild.me.top_role, member, muted_role)
@@ -769,9 +769,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         await self.lockdown(ctx, channel=channel)
 
     # Lockdown Unlock command
-    @commands.command(
-        help="Remove a channel from lockdown", brief="Remove a channel from lockdown"
-    )
+    @commands.command(help="Remove a channel from lockdown")
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)

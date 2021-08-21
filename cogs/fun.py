@@ -77,7 +77,7 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
         await self.youtube(ctx, vc=vc)
 
     # Dad joke command
-    @commands.command(help="Get a random dad joke", brief="Get a random dad joke")
+    @commands.command(help="Get a random dad joke")
     async def dadjoke(self, ctx):
         json = requests.get(
             "https://official-joke-api.appspot.com/jokes/general/random"

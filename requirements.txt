@@ -6,4 +6,3 @@ temperature-converter-py
 buttons
 pillow
 git+https://github.com/Chrovo/Discord-Together-py
-discord-pretty-help
