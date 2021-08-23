@@ -25,6 +25,7 @@ error_btns = create_actionrow(
 class Errors(commands.Cog):
     def __init__(self, client):
         self.client = client
+        self.emoji = ""
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

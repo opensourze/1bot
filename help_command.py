@@ -8,19 +8,19 @@ class CustomHelpCommand(MinimalHelpCommand):
     buttons = create_actionrow(
         *[
             create_button(
-                label="Command List (recommended)",
+                label="Command list",
                 style=ButtonStyle.URL,
                 emoji="📃",
                 url="https://1bot.netlify.app/commands",
             ),
             create_button(
-                label="Join the Support Server",
+                label="Support Server",
                 style=ButtonStyle.URL,
                 url="https://discord.gg/KRjZaV9DP8",
             ),
             create_button(
                 style=ButtonStyle.URL,
-                label="Add bot",
+                label="Add me",
                 emoji="➕",
                 url="https://dsc.gg/1bot",
             ),
@@ -40,8 +40,10 @@ class CustomHelpCommand(MinimalHelpCommand):
             ]
             if command_signatures:
                 embed.add_field(
-                    name=cog.qualified_name,
-                    value=f"{cog.description}\nRun `1 help {cog.qualified_name.lower()}`",
+                    name=f"{cog.emoji} {cog.qualified_name}",
+                    value=f"`1 help {cog.qualified_name.lower()}`\n"
+                    # Link with text "Hover for more" and hovertext with the description of the cog
+                    + f'[Hover for more](https://1bot.netlify.app/commands "{cog.description}")',
                     inline=False,
                 )
 

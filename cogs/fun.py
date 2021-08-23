@@ -13,10 +13,20 @@ from Discord_Together.discordtogether import DiscordTogether
 class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
     def __init__(self, client):
         self.client = client
+        self.emoji = "<:fun:879304660253560912>"
 
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
+
+    # Reverse command
+    @commands.command(aliases=["rev"], help="Reverse the given text")
+    async def reverse(self, ctx, *, text: str):
+        await ctx.send(text[::-1])
+
+    @cog_ext.cog_slash(name="reverse", description="Reverse the given text")
+    async def reverse_slash(self, ctx: SlashContext, *, text: str):
+        await ctx.send(text[::-1])
 
     # Mock text command
     @commands.command(help="Mock text (alternating upper and lower case)")

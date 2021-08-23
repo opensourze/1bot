@@ -12,6 +12,7 @@ from PIL import Image
 class Images(commands.Cog, description="Generate fun images"):
     def __init__(self, client):
         self.client = client
+        self.emoji = "<:images:879309227598958622>"
 
     @commands.Cog.listener()
     async def on_ready(self):

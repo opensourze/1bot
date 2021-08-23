@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 
 
 info_btns = create_actionrow(
@@ -42,10 +42,49 @@ info_btns = create_actionrow(
 class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
     def __init__(self, client):
         self.client = client
+        self.emoji = "<:miscellaneous:879303179928469544>"
 
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
+
+    # Bot info command
+    @commands.command(
+        help="View the bot's information",
+        brief="View 1Bot's information",
+        aliases=["information", "botinfo"],
+    )
+    async def info(self, ctx):
+        cmd_list = [c for c in self.client.commands if not c.hidden]
+
+        info_embed = discord.Embed(title="`1Bot` information", color=0xFF6600)
+        info_embed.add_field(name="Bot version", value=f"v{__version__}", inline=False)
+        info_embed.add_field(
+            name="Command count", value=f"{len(cmd_list)} commands", inline=False
+        )
+        info_embed.add_field(
+            name="Source code",
+            value="View the bot's source code on [GitHub](https://github.com/opensourze/1bot)",
+            inline=False,
+        )
+        info_embed.add_field(
+            name="Developer",
+            value="[OpenSourze](https://twitter.com/opensourze)",
+            inline=False,
+        )
+        info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
+        info_embed.add_field(
+            name="Discord.py version", value=discord.__version__, inline=False
+        )
+        info_embed.add_field(
+            name="Python version", value=platform.python_version(), inline=False
+        )
+        info_embed.set_thumbnail(url=self.client.user.avatar_url)
+        await ctx.send(embed=info_embed, components=[info_btns])
+
+    @cog_ext.cog_slash(name="info", description="View the bot's information")
+    async def info_slash(self, ctx: SlashContext):
+        await self.info(ctx)
 
     # Suggest command
     @commands.command(help="Submit a suggestion for the bot")
@@ -66,39 +105,6 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
     @cog_ext.cog_slash(name="suggest", description="Submit a suggestion for the bot")
     async def suggest_slash(self, ctx: SlashContext, suggestion):
         await self.suggest(ctx, suggestion=suggestion)
-
-    # Bot info command
-    @commands.command(
-        help="View the bot's information",
-        brief="View 1Bot's information",
-        aliases=["information", "botinfo"],
-    )
-    async def info(self, ctx):
-        info_embed = discord.Embed(title="`1Bot` information", color=0xFF6600)
-        info_embed.add_field(
-            name="Source code",
-            value="View the bot's source code on [GitHub](https://github.com/opensourze/1bot)",
-            inline=False,
-        )
-        info_embed.add_field(
-            name="Developer",
-            value="[OpenSourze](https://twitter.com/opensourze)",
-            inline=False,
-        )
-        info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
-        info_embed.add_field(name="Bot version", value=f"v{__version__}", inline=False)
-        info_embed.add_field(
-            name="Discord.py version", value=discord.__version__, inline=False
-        )
-        info_embed.add_field(
-            name="Python version", value=platform.python_version(), inline=False
-        )
-        info_embed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=info_embed, components=[info_btns])
-
-    @cog_ext.cog_slash(name="info", description="View the bot's information")
-    async def info_slash(self, ctx: SlashContext):
-        await self.info(ctx)
 
     # Avatar command
     @commands.command(
@@ -213,12 +219,13 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         await self.userinfo(ctx, member=member)
 
     # Upvote command
-    @commands.command(help="Upvote me on DiscordBotList")
+    @commands.command(help="Upvote me on DiscordBotList", aliases=["vote"])
     async def upvote(self, ctx):
         await ctx.send(
             "If you like this bot, upvote it to help it grow!\n"
             + "You can upvote every 12 hours.\n\n"
-            + "https://discordbotlist.com/bots/1bot/upvote/"
+            + "https://discordbotlist.com/bots/1bot/upvote/\n\n"
+            + "Thank you!"
         )
 
     @cog_ext.cog_slash(name="upvote", description="Upvote me on DiscordBotList")

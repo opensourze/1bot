@@ -20,6 +20,7 @@ class Utilities(
 ):
     def __init__(self, client):
         self.client = client
+        self.emoji = "<:utilities:879301629961175060>"
 
     @commands.Cog.listener()
     async def on_ready(self):
