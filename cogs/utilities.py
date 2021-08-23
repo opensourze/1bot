@@ -26,6 +26,48 @@ class Utilities(
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
 
+    # Raw text command
+    @commands.command(aliases=["rawtext"])
+    async def raw(self, ctx, message_id: int = None):
+        message = None  # gets reassigned after message is fetched
+
+        try:
+            # try fetching the replied message
+            message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+        except (discord.NotFound, AttributeError):  # if the message is not a reply
+            if not message_id:
+                await ctx.send(
+                    "❌ You need to either reply to a message with this command or provide a message ID!"
+                )
+                return
+            else:
+                try:
+                    message = await ctx.channel.fetch_message(message_id)
+                except discord.NotFound:
+                    await ctx.send(
+                        "❌ The message you provided was not found in this channel!"
+                    )
+
+        if not message.content:
+            await ctx.send("❌ This message has no content.")
+            return
+
+        await ctx.send(f"```{message.content}```")
+
+    @cog_ext.cog_slash(
+        name="raw",
+        options=[
+            create_option(
+                name="message_id",
+                description="The ID of the message to get raw text from",
+                required=True,
+                option_type=4,
+            )
+        ],
+    )
+    async def raw_slash(self, ctx: SlashContext, message_id):
+        await self.raw(ctx, message_id=message_id)
+
     # Search repositories
     @commands.command(
         help="Search for GitHub repositories",
