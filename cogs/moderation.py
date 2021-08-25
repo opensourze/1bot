@@ -31,11 +31,12 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def nickname(
         self, ctx, member: commands.MemberConverter, *, nickname: str = None
     ):
-        if len(nickname) > 32:
-            await ctx.send(
-                "❌ Nickname is too long! Nicknames must be lesser than 32 characters in length."
-            )
-            return
+        if nickname:
+            if len(nickname) > 32:
+                await ctx.send(
+                    "❌ Nickname is too long! Nicknames must be lesser than 32 characters in length."
+                )
+                return
         try:
             await member.edit(nick=nickname)
             await ctx.send(f"`{member}`'s nickname has been changed to `{nickname}`.")

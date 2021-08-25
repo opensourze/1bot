@@ -123,7 +123,7 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
     @commands.bot_has_permissions(embed_links=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def meme(self, ctx, subreddit=None):
-        if subreddit is not None:
+        if subreddit:
             json = requests.get(
                 f"https://meme-api.herokuapp.com/gimme/{subreddit}"
             ).json()
