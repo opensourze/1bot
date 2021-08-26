@@ -26,6 +26,37 @@ class Utilities(
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
 
+    # Emoji command
+    @commands.command(aliases=["createemoji", "addemoji", "emote"])
+    @commands.has_permissions(manage_emojis=True)
+    @commands.bot_has_permissions(manage_emojis=True)
+    async def emoji(self, ctx, *, emoji_name: str):
+        with contextlib.suppress(AttributeError):
+            await ctx.trigger_typing()
+
+        try:
+            emoji = await ctx.guild.create_custom_emoji(
+                name=emoji_name, image=await ctx.message.attachments[0].read()
+            )
+
+        # errors
+        except discord.HTTPException as e:
+            if "File cannot be larger than 256" in str(e):
+                await ctx.send(
+                    "❌ The image is too big; please attach an image that is smaller than 256 kb."
+                )
+                return
+            elif "String value did not match validation regex" in str(e):
+                await ctx.send(
+                    "❌ Invalid emoji name, you might have some unsupported special characters or spaces in the name!"
+                )
+                return
+            elif "Must be between 2 and 32 in length" in str(e):
+                await ctx.send("❌ The emoji name must be 2 to 32 characters long.")
+                return
+
+        await ctx.send(f"Emoji created! {emoji}")
+
     # Raw text command
     @commands.command(aliases=["rawtext"])
     async def raw(self, ctx, message_id: int = None):

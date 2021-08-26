@@ -97,7 +97,9 @@ class Errors(commands.Cog):
             error, commands.UnexpectedQuoteError
         ) or "Expected space after closing quotation" in str(error):
             await ctx.send("❌ You didn't use quotes correctly.")
-        elif "cannot identify image file" in str(error):
+        elif "cannot identify image file" in str(
+            error
+        ) or "Unsupported image type" in str(error):
             await ctx.send("❌ I don't think that's a valid image!")
         elif "Invalid base64-encoded string" in str(
             error
