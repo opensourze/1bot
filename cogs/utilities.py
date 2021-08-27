@@ -31,6 +31,10 @@ class Utilities(
     @commands.has_permissions(manage_emojis=True)
     @commands.bot_has_permissions(manage_emojis=True)
     async def emoji(self, ctx, *, emoji_name: str):
+        if not ctx.message.attachments:
+            await ctx.send(f"❌ You need to attach an image to create an emoji!")
+            return
+
         with contextlib.suppress(AttributeError):
             await ctx.trigger_typing()
 

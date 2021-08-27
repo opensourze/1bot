@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.5.3"
+__version__ = "0.5.4"
 
 
 info_btns = create_actionrow(
@@ -147,8 +147,8 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         embed.set_thumbnail(url=ctx.guild.icon_url)
         embed.add_field(name="Owner", value=str(owner))
         embed.add_field(
-            name="Created at",
-            value=ctx.guild.created_at.strftime(" %I:%M %p UTC, %a %d %B %Y"),
+            name="Server created",
+            value=f"<t:{round(ctx.guild.created_at.timestamp())}:R>",
         )
         embed.add_field(name="Region", value=str(ctx.guild.region).capitalize())
         embed.add_field(name="Member count", value=ctx.guild.member_count)
@@ -178,12 +178,12 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         embed = discord.Embed(title=member.name, color=member.color)
         embed.set_thumbnail(url=member.avatar_url)
         embed.add_field(
-            name="Account creation date",
-            value=member.created_at.strftime("%a, %d %B %Y, %I:%M %p UTC"),
+            name="Account created",
+            value=f"<t:{round(member.created_at.timestamp())}:R>",
         )
         embed.add_field(
-            name="Joined this server on",
-            value=member.joined_at.strftime("%a, %d %B %Y, %I:%M %p UTC"),
+            name="Joined this server",
+            value=f"<t:{round(member.joined_at.timestamp())}:R>",
         )
         embed.add_field(name="Nickname", value=member.display_name)
         if len(" ".join(roles)) <= 1024:
