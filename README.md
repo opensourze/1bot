@@ -1,4 +1,3 @@
-# THE PUBLIC BOT HAS NOW SHUT DOWN. However, the code will stay in this repository.
 ## 1Bot - One Discord bot for everything
 
 ### 1Bot can help keep your server safe with moderation tools, help you out with utilities, or make you laugh.
