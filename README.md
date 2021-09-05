@@ -3,11 +3,9 @@
 
 ### 1Bot can help keep your server safe with moderation tools, help you out with utilities, or make you laugh.
 
----(These links no longer work)---  
 [Click here to add the bot to a server](https://dsc.gg/1bot)
 
 [Website (with detailed command list)](https://1bot.netlify.app)  
-\--- ---
 
 ## Read this before self-hosting!
 1Bot has a **weather command**, which uses [OpenWeatherMap's API](https://openweathermap.org/api). You will need to create an account and put your API key in the `.env` file and call it `OWM_KEY`.  
