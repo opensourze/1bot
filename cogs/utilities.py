@@ -1,14 +1,11 @@
 import asyncio
 import base64
 import contextlib
-import io
 import os
-import textwrap
-from traceback import format_exception
 
 import discord
 import requests
-from discord.ext import buttons, commands
+from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 from temperature_converter_py import fahrenheit_to_celsius
@@ -191,15 +188,17 @@ class Utilities(
                 url="https://www.npmjs.com/package/" + package,
             )
 
-            if json["homepage"]:
+            with contextlib.suppress(KeyError):
                 embed.add_field(name="Homepage", value=json["homepage"], inline=False)
 
             embed.add_field(name="Author", value=json["author"]["name"])
-            embed.add_field(
-                name="GitHub repository",
-                value=json["repository"]["url"][4:-4],
-                inline=False,
-            )
+
+            with contextlib.suppress(KeyError):
+                embed.add_field(
+                    name="GitHub repository",
+                    value=json["repository"]["url"][4:-4],
+                    inline=False,
+                )
             embed.add_field(
                 name="Repository maintainers",
                 value=", ".join(
@@ -207,7 +206,8 @@ class Utilities(
                 ),
                 inline=False,
             )
-            embed.add_field(name="License", value=json["license"], inline=False)
+            with contextlib.suppress(KeyError):
+                embed.add_field(name="License", value=json["license"], inline=False)
 
             await ctx.send(embed=embed)
 
@@ -504,48 +504,6 @@ class Utilities(
     )
     async def poll_slash(self, ctx, question, options):
         await self.poll(ctx, question, options=options)
-
-    # Eval command
-    @commands.command(name="eval", aliases=["exec"], hidden=True)
-    @commands.is_owner()
-    async def _eval(self, ctx, *, code):
-        if code.startswith("```") and code.endswith("```"):
-            code = "\n".join(code.split("\n")[1:])[:-3]
-
-        local_variables = {
-            "discord": discord,
-            "commands": commands,
-            "client": self.client,
-            "ctx": ctx,
-            "message": ctx.message,
-            "asyncio": asyncio,
-            "os": os,
-        }
-
-        stdout = io.StringIO()
-
-        try:
-            with contextlib.redirect_stdout(stdout):
-                exec(
-                    f"async def func():\n{textwrap.indent(code, '    ')}",
-                    local_variables,
-                )
-
-                obj = await local_variables["func"]()
-                result = f"{stdout.getvalue()}\nReturned: {obj}\n"
-        except Exception as e:
-            result = "".join(format_exception(e, e, e.__traceback__))
-
-        pager = buttons.Paginator(
-            timeout=None,
-            color=0xFF6600,
-            entries=[result[i : i + 2000] for i in range(0, len(result), 2000)],
-            length=1,
-            prefix="```\n",
-            suffix="```",
-        )
-
-        await pager.start(ctx)
 
 
 # Add cog

@@ -27,7 +27,7 @@ info_btns = create_actionrow(
         create_button(
             style=ButtonStyle.URL,
             label="Join the Support Server",
-            url="https://discord.gg/KRjZaV9DP8",
+            url="https://discord.gg/JGcnKxEPsW",
         ),
         create_button(
             style=ButtonStyle.URL,

@@ -27,6 +27,8 @@ class Errors(commands.Cog):
         self.client = client
         self.emoji = ""
 
+    @commands.Cog.listener()
+    async def on_ready(self):
         self.error_channel = self.client.get_channel(884095331678167111)
 
     @commands.Cog.listener()
@@ -108,6 +110,13 @@ class Errors(commands.Cog):
         ) or "Incorrect padding" in str(error):
             await ctx.send("❌ That base64 code is invalid. Are you sure it's base64?")
         else:
+
+            error_embed = discord.Embed(
+                title="❌ Unhandled error",
+                description="Oops, looks like that command returned an unknown error. The error has been automatically reported to the developers and will be fixed soon. Meanwhile, **do not spam the same command**.",
+                color=0xFF0000,
+            )
+
             try:
                 embed = discord.Embed(
                     title="Error",
@@ -116,10 +125,8 @@ class Errors(commands.Cog):
                 ).add_field(name="Error:", value=error)
 
                 await self.error_channel.send("<@&884078864760971284>", embed=embed)
-                await ctx.send(
-                    "❌ Something went wrong, probably on our side!\n"
-                    + "The developers have been notified. We'll fix this as soon as we can!"
-                )
+                await ctx.send(embed=error_embed)
+
             except AttributeError:
                 embed = discord.Embed(
                     title="Error",
@@ -127,12 +134,10 @@ class Errors(commands.Cog):
                     description=f"Error while invoking command:\n`{ctx.name}`",
                 )
                 embed.add_field(name="Error:", value=error, inline=False)
+                embed.set_footer(text=f"User ID: {ctx.user.id}")
 
                 await self.error_channel.send("<@&884078864760971284>", embed=embed)
-                await ctx.send(
-                    "❌ Something went wrong, probably on our side!\n"
-                    + "The developers have been notified. We'll fix this as soon as we can!"
-                )
+                await ctx.send(embed=error_embed)
 
     @commands.Cog.listener()
     async def on_slash_command_error(self, ctx, error):

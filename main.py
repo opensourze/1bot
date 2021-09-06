@@ -21,7 +21,7 @@ intents = discord.Intents.default()
 intents.guilds = True
 
 client = commands.AutoShardedBot(
-    command_prefix=commands.when_mentioned_or(*["1 ", "1"]),
+    command_prefix=commands.when_mentioned_or(*["1. ", "1."]),
     case_insensitive=True,
     intents=intents,
     help_command=CustomHelpCommand(),
@@ -107,6 +107,9 @@ async def reload(ctx):
 for file in os.listdir("./cogs"):
     if file.endswith(".py"):
         client.load_extension(f"cogs.{file[:-3]}")
+
+# Load Jishaku
+client.load_extension("jishaku")
 
 
 client.run(os.environ["TOKEN"])

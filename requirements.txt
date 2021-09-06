@@ -1,4 +1,5 @@
 enhanced-dpy
+jishaku
 requests
 discord-py-slash-command
 python-dotenv

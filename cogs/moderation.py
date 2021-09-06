@@ -413,11 +413,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         try:
             return int(time[:-1]) * self.time_convert[time[-1]]
         except:
-            try:
-                return int(time)
-            except:
-                await send(self.invalid_duration_msg)
-                return False
+            await send(self.invalid_duration_msg)
+            return False
 
     @commands.command(help="Temporarily mute a member", aliases=["tmute"])
     @commands.guild_only()
