@@ -42,7 +42,7 @@ info_btns = create_actionrow(
 class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
     def __init__(self, client):
         self.client = client
-        self.emoji = "<:miscellaneous:879303179928469544>"
+        self.emoji = "<:miscellaneous:884088957057523733>"
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -90,7 +90,7 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
     @commands.command(help="Submit a suggestion for the bot")
     async def suggest(self, ctx, *, suggestion):
         # Get 1Bot support server's suggestions channel
-        channel = self.client.get_channel(862697260164055082)
+        channel = self.client.get_channel(884095439190786059)
 
         embed = discord.Embed(
             title="Suggestion", description=suggestion, color=0xFF6600

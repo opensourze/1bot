@@ -1,4 +1,4 @@
-discord
+enhanced-dpy
 requests
 discord-py-slash-command
 python-dotenv

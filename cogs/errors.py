@@ -27,6 +27,8 @@ class Errors(commands.Cog):
         self.client = client
         self.emoji = ""
 
+        self.error_channel = self.client.get_channel(884095331678167111)
+
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
@@ -106,7 +108,6 @@ class Errors(commands.Cog):
         ) or "Incorrect padding" in str(error):
             await ctx.send("❌ That base64 code is invalid. Are you sure it's base64?")
         else:
-            channel = self.client.get_channel(871032761018896414)
             try:
                 embed = discord.Embed(
                     title="Error",
@@ -114,18 +115,20 @@ class Errors(commands.Cog):
                     description=f"Error while invoking command:\n`{ctx.message.content}`",
                 ).add_field(name="Error:", value=error)
 
-                await channel.send("<@&864736371045695519>", embed=embed)
+                await self.error_channel.send("<@&884078864760971284>", embed=embed)
                 await ctx.send(
                     "❌ Something went wrong, probably on our side!\n"
                     + "The developers have been notified. We'll fix this as soon as we can!"
                 )
             except AttributeError:
-                embed.description = f"Error while invoking command:\n`/{ctx.name}"
-                embed.add_field(name="Args", value=ctx.args)
-                embed.add_field(name="Kwargs", value=ctx.kwargs)
-                embed.add_field(name="Error:", value=error)
+                embed = discord.Embed(
+                    title="Error",
+                    color=0xFF0000,
+                    description=f"Error while invoking command:\n`{ctx.name}`",
+                )
+                embed.add_field(name="Error:", value=error, inline=False)
 
-                await channel.send("<@&864736371045695519>", embed=embed)
+                await self.error_channel.send("<@&884078864760971284>", embed=embed)
                 await ctx.send(
                     "❌ Something went wrong, probably on our side!\n"
                     + "The developers have been notified. We'll fix this as soon as we can!"

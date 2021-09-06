@@ -20,7 +20,7 @@ class Utilities(
 ):
     def __init__(self, client):
         self.client = client
-        self.emoji = "<:utilities:879301629961175060>"
+        self.emoji = "<:utilities:884088853609193544>"
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -62,7 +62,11 @@ class Utilities(
         await ctx.send(f"Emoji created! {emoji}")
 
     # Raw text command
-    @commands.command(aliases=["rawtext"])
+    @commands.command(
+        aliases=["rawtext"],
+        help="Get the raw, unformatted text of the message you replied to. You can also use a message ID.",
+        brief="Get raw text of the message you replied to.",
+    )
     async def raw(self, ctx, message_id: int = None):
         message = None  # gets reassigned after message is fetched
 
@@ -91,6 +95,7 @@ class Utilities(
 
     @cog_ext.cog_slash(
         name="raw",
+        description="Get raw text of a message with its ID",
         options=[
             create_option(
                 name="message_id",

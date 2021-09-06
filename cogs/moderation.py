@@ -10,7 +10,7 @@ from discord_slash.utils.manage_commands import create_option
 class Moderation(commands.Cog, description="All the moderation commands you need"):
     def __init__(self, client):
         self.client = client
-        self.emoji = "<:moderation:879306827232321536>"
+        self.emoji = "<:moderation:884089065643851787>"
 
     @commands.Cog.listener()
     async def on_ready(self):

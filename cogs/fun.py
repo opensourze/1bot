@@ -13,7 +13,7 @@ from Discord_Together.discordtogether import DiscordTogether
 class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
     def __init__(self, client):
         self.client = client
-        self.emoji = "<:fun:879304660253560912>"
+        self.emoji = "<:fun:884088990146367528>"
 
     @commands.Cog.listener()
     async def on_ready(self):

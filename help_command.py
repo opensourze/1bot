@@ -85,6 +85,6 @@ class CustomHelpCommand(MinimalHelpCommand):
 
         aliases = command.aliases
         if aliases:
-            embed.add_field(name="Aliases", value=", ".join(aliases))
+            embed.add_field(name="Aliases", value=", ".join(aliases), inline=False)
 
         await destination.send(embed=embed)
