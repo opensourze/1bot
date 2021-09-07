@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.5.4"
+__version__ = "0.5.5"
 
 
 info_btns = create_actionrow(
@@ -74,7 +74,7 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
         info_embed.add_field(
-            name="Discord.py version", value=discord.__version__, inline=False
+            name="Pycord version", value=discord.__version__, inline=False
         )
         info_embed.add_field(
             name="Python version", value=platform.python_version(), inline=False

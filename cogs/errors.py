@@ -117,27 +117,15 @@ class Errors(commands.Cog):
                 color=0xFF0000,
             )
 
-            try:
-                embed = discord.Embed(
-                    title="Error",
-                    color=0xFF0000,
-                    description=f"Error while invoking command:\n`{ctx.message.content}`",
-                ).add_field(name="Error:", value=error)
+            embed = discord.Embed(
+                title="Error",
+                color=0xFF0000,
+                description=f"Error while invoking command:\n`{ctx.message.content}`",
+            ).add_field(name="Error:", value=error)
+            embed.set_footer(text=f"User ID: {ctx.author.id}")
 
-                await self.error_channel.send("<@&884078864760971284>", embed=embed)
-                await ctx.send(embed=error_embed)
-
-            except AttributeError:
-                embed = discord.Embed(
-                    title="Error",
-                    color=0xFF0000,
-                    description=f"Error while invoking command:\n`{ctx.name}`",
-                )
-                embed.add_field(name="Error:", value=error, inline=False)
-                embed.set_footer(text=f"User ID: {ctx.user.id}")
-
-                await self.error_channel.send("<@&884078864760971284>", embed=embed)
-                await ctx.send(embed=error_embed)
+            await self.error_channel.send("<@&884078864760971284>", embed=embed)
+            await ctx.send(embed=error_embed)
 
     @commands.Cog.listener()
     async def on_slash_command_error(self, ctx, error):

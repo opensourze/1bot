@@ -79,13 +79,6 @@ info_btns = create_actionrow(
 )
 
 
-@client.command(hidden=True, aliases=["stop", "close", "exit"])
-@commands.is_owner()
-async def logout(ctx):
-    await ctx.send("❗ Logging out")
-    await client.close()
-
-
 @client.command(hidden=True, aliases=["refresh"])
 @commands.is_owner()
 async def reload(ctx):
