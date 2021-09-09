@@ -29,7 +29,7 @@ class Errors(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.error_channel = self.client.get_channel(884095331678167111)
+        self.error_channel = await self.client.fetch_channel(884095331678167111)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

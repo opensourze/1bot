@@ -1,5 +1,6 @@
 enhanced-dpy
 jishaku
+pymongo
 requests
 discord-py-slash-command
 python-dotenv

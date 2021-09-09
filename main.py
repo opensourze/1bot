@@ -19,12 +19,14 @@ dotenv.load_dotenv()
 
 intents = discord.Intents.default()
 intents.guilds = True
+intents.members = True
+
 
 client = commands.AutoShardedBot(
-    command_prefix=commands.when_mentioned_or(*["1. ", "1."]),
+    command_prefix=commands.when_mentioned_or(*["1 ", "1"]),
     case_insensitive=True,
     intents=intents,
-    help_command=CustomHelpCommand(),
+    owner_ids=[748791790798372964, 825292137338765333],
 )
 client._BotBase__cogs = commands.core._CaseInsensitiveDict()
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
@@ -34,6 +36,31 @@ slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 async def on_ready():
     print("-----\nThe bot is now online")
     print(f"{len(client.guilds)} servers\n-----")
+
+    buttons = create_actionrow(
+        *[
+            create_button(
+                label="Command list",
+                style=ButtonStyle.URL,
+                emoji=client.get_emoji(885086857484992553),
+                url="https://1bot.netlify.app/commands",
+            ),
+            create_button(
+                label="Support Server",
+                style=ButtonStyle.URL,
+                emoji=client.get_emoji(885083336240926730),
+                url="https://discord.gg/KRjZaV9DP8",
+            ),
+            create_button(
+                style=ButtonStyle.URL,
+                label="Add me",
+                emoji=client.get_emoji(885088268314611732),
+                url="https://dsc.gg/1bot",
+            ),
+        ]
+    )
+
+    client.help_command = CustomHelpCommand(buttons)
 
 
 async def change_status():
@@ -60,23 +87,6 @@ async def on_message(message):
         )
     else:
         await client.process_commands(message)
-
-
-info_btns = create_actionrow(
-    *[
-        create_button(
-            style=ButtonStyle.URL,
-            label="Command list",
-            emoji="ℹ️",
-            url="https://1bot.netlify.app/commands",
-        ),
-        create_button(
-            style=ButtonStyle.URL,
-            label="Join the support server",
-            url="https://discord.gg/KRjZaV9DP8",
-        ),
-    ]
-)
 
 
 @client.command(hidden=True, aliases=["refresh"])

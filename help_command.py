@@ -1,31 +1,11 @@
 import discord
 from discord.ext.commands import MinimalHelpCommand
-from discord_slash.model import ButtonStyle
-from discord_slash.utils.manage_components import create_actionrow, create_button
 
 
 class CustomHelpCommand(MinimalHelpCommand):
-    buttons = create_actionrow(
-        *[
-            create_button(
-                label="Command list",
-                style=ButtonStyle.URL,
-                emoji="📃",
-                url="https://1bot.netlify.app/commands",
-            ),
-            create_button(
-                label="Support Server",
-                style=ButtonStyle.URL,
-                url="https://discord.gg/KRjZaV9DP8",
-            ),
-            create_button(
-                style=ButtonStyle.URL,
-                label="Add me",
-                emoji="➕",
-                url="https://dsc.gg/1bot",
-            ),
-        ]
-    )
+    def __init__(self, buttons):
+        super().__init__()
+        self.buttons = buttons
 
     async def send_bot_help(self, mapping):
         destination = self.get_destination()
@@ -33,12 +13,7 @@ class CustomHelpCommand(MinimalHelpCommand):
         embed = discord.Embed(title="1Bot Commands", color=0xFF6600)
 
         for cog, commands in mapping.items():
-            command_signatures = [
-                self.get_command_signature(c)
-                for c in commands
-                if "help" not in self.get_command_signature(c) and not c.hidden
-            ]
-            if command_signatures:
+            if cog.qualified_name != "Jishaku":
                 embed.add_field(
                     name=f"{cog.emoji} {cog.qualified_name}",
                     value=f"`1 help {cog.qualified_name.lower()}`\n"

@@ -7,36 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.5.5"
-
-
-info_btns = create_actionrow(
-    *[
-        create_button(
-            style=ButtonStyle.URL,
-            label="Add bot",
-            emoji="➕",
-            url="https://dsc.gg/1bot",
-        ),
-        create_button(
-            style=ButtonStyle.URL,
-            label="Website",
-            emoji="🌐",
-            url="https://1bot.netlify.app/",
-        ),
-        create_button(
-            style=ButtonStyle.URL,
-            label="Join the Support Server",
-            url="https://discord.gg/JGcnKxEPsW",
-        ),
-        create_button(
-            style=ButtonStyle.URL,
-            label="Upvote me",
-            emoji="⬆️",
-            url="https://discordbotlist.com/bots/1bot/upvote",
-        ),
-    ]
-)
+__version__ = "0.6"
 
 
 class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
@@ -47,6 +18,35 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
+
+        self.info_btns = create_actionrow(
+            *[
+                create_button(
+                    style=ButtonStyle.URL,
+                    label="Add me",
+                    emoji=self.client.get_emoji(885088268314611732),
+                    url="https://dsc.gg/1bot",
+                ),
+                create_button(
+                    style=ButtonStyle.URL,
+                    label="Website",
+                    emoji=self.client.get_emoji(885099687252750337),
+                    url="https://1bot.netlify.app/",
+                ),
+                create_button(
+                    style=ButtonStyle.URL,
+                    emoji=self.client.get_emoji(885083336240926730),
+                    label="Support Server",
+                    url="https://discord.gg/JGcnKxEPsW",
+                ),
+                create_button(
+                    style=ButtonStyle.URL,
+                    label="Upvote me",
+                    emoji=self.client.get_emoji(885466072373948416),
+                    url="https://discordbotlist.com/bots/1bot/upvote",
+                ),
+            ]
+        )
 
     # Bot info command
     @commands.command(
@@ -80,7 +80,7 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
             name="Python version", value=platform.python_version(), inline=False
         )
         info_embed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=info_embed, components=[info_btns])
+        await ctx.send(embed=info_embed, components=[self.info_btns])
 
     @cog_ext.cog_slash(name="info", description="View the bot's information")
     async def info_slash(self, ctx: SlashContext):
@@ -141,19 +141,34 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
     )
     @commands.guild_only()
     async def serverinfo(self, ctx):
-        owner = await self.client.fetch_user(ctx.guild.owner_id)
+        humans = [mem for mem in ctx.guild.members if not mem.bot]
+        bots = [mem for mem in ctx.guild.members if mem.bot]
 
         embed = discord.Embed(title=f"{ctx.guild.name} information", color=0xFF6600)
+
         embed.set_thumbnail(url=ctx.guild.icon_url)
-        embed.add_field(name="Owner", value=str(owner))
+        embed.add_field(name="Owner", value=str(ctx.guild.owner), inline=False)
         embed.add_field(
             name="Server created",
             value=f"<t:{round(ctx.guild.created_at.timestamp())}:R>",
+            inline=False,
         )
-        embed.add_field(name="Region", value=str(ctx.guild.region).capitalize())
-        embed.add_field(name="Member count", value=ctx.guild.member_count)
-        embed.add_field(name="Emojis", value=f"{len(ctx.guild.emojis)} emojis")
-        embed.add_field(name="Boost level", value=f"Level {ctx.guild.premium_tier}")
+        embed.add_field(
+            name="Region", value=str(ctx.guild.region).capitalize(), inline=False
+        )
+        embed.add_field(
+            name="Total member count", value=ctx.guild.member_count, inline=False
+        )
+        embed.add_field(
+            name="Humans", value=f"{len(humans)} human members", inline=False
+        )
+        embed.add_field(name="Bots", value=f"{len(bots)} bots", inline=False)
+        embed.add_field(
+            name="Emojis", value=f"{len(ctx.guild.emojis)} emojis", inline=False
+        )
+        embed.add_field(
+            name="Boost level", value=f"Level {ctx.guild.premium_tier}", inline=False
+        )
 
         await ctx.send(embed=embed)
 
@@ -199,7 +214,11 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
                 + " ".join(roles[:5]),
                 inline=False,
             )
-        embed.add_field(name="Is this user a bot?", value=member.bot)
+
+        if member.bot:
+            embed.add_field(name="Is this user a bot?", value="Yes, beep boop")
+        else:
+            embed.add_field(name="Is this user a bot?", value="No - normal human user")
 
         await ctx.send(embed=embed)
 
@@ -258,6 +277,24 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
         await ctx.send(
             "Here's the link to add the bot to your server. Thanks!\nhttps://dsc.gg/1bot"
         )
+
+    # Changelog
+    @commands.command(help="See what's new in the latest version of 1Bot")
+    async def changelog(self, ctx):
+        changelog = discord.Embed(
+            title=f"What's new in version {__version__} of 1Bot",
+            color=0xFF6600,
+            description="v0.6 is a major update to 1Bot, mainly adding long-awaited warn commands!\n\n"
+            + "Custom emojis in buttons:\n"
+            + "We were using default emojis on most buttons, but we've now created custom orange-themed emojis for every button. Check them out in the `info` command.\n\n"
+            + "**What everyone was waiting for: Warn commands!:**\n"
+            + "`warn @user reason`- warns the user with a reason. This also sends a unique Warning ID which you can use to delete the warning.\n"
+            + "`warnings @user`- lists the last 15 warnings for the user"
+            +"`delwarn {Warning ID} @user`- deletes the warning from the user with the provided Warning ID."
+            +"`clearwarns @user`- clears all warnings for the user."
+        )
+
+        await ctx.send(embed=changelog)
 
 
 def setup(client):

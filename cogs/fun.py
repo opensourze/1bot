@@ -89,9 +89,15 @@ class Fun(commands.Cog, description="Who doesn't want to have some fun?"):
     # Dad joke command
     @commands.command(help="Get a random dad joke")
     async def dadjoke(self, ctx):
-        json = requests.get(
-            "https://official-joke-api.appspot.com/jokes/general/random"
-        ).json()[0]
+        r = requests.get("https://official-joke-api.appspot.com/jokes/general/random")
+        if r.status_code != 200:
+            await ctx.send(
+                "❌ The dadjoke server has returned an error. Please try again later."
+            )
+            return
+
+        json = r.json()[0]
+
         await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
 
     @cog_ext.cog_slash(name="dadjoke", description="Get a random dad joke")

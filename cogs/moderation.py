@@ -1,16 +1,25 @@
 import asyncio
 from contextlib import suppress
+from os import environ
 
 import discord
+import dotenv
+from bson.objectid import ObjectId, InvalidId
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
+from pymongo import MongoClient
+
+dotenv.load_dotenv()
+
+cluster = MongoClient(environ["MONGO_URL"])
+warns = cluster["1bot"]["warns"]
 
 
 class Moderation(commands.Cog, description="All the moderation commands you need"):
     def __init__(self, client):
         self.client = client
-        self.emoji = "<:moderation:884089065643851787>"
+        self.emoji = "<:moderation:885461924777693184>"
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -22,6 +31,243 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         if muted_role:
             await channel.set_permissions(muted_role, send_messages=False, speak=False)
+
+    # Warn command
+    @commands.command(help="Warn a member")
+    @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    async def warn(self, ctx, member: commands.MemberConverter, *, reason=None):
+        if not reason:
+            await ctx.send(
+                "❌ You need to provide the reason for the warning.\n"
+                + "Run the command again with the reason to warn the member."
+            )
+            return
+
+        if len(reason) > 970:
+            await ctx.send(
+                "❌ The reason is too long. Please run the command again with a shorter reason."
+            )
+
+        if member == ctx.author:
+            await ctx.send("❌ You can't warn yourself!")
+            return
+        elif member.id == self.client.user.id:
+            await ctx.send("❌ I can't warn myself!")
+            return
+
+        with suppress(AttributeError):
+            await ctx.trigger_typing()
+
+        inserted_warn = warns.insert_one(
+            {
+                "user": member.id,
+                "guild": ctx.guild.id,
+                "moderator": ctx.author.id,
+                "reason": reason,
+            }
+        )
+
+        warn_id = str(inserted_warn.inserted_id)
+
+        with suppress(discord.HTTPException):
+            await member.send(
+                embed=discord.Embed(
+                    title=f"Warned in {ctx.guild.name}",
+                    description=f"You have been warned.",
+                    color=0xFF6600,
+                ).add_field(name="Reason", value=reason)
+            )
+
+        warned_embed = discord.Embed(
+            title="✅ Member warned",
+            description=f"{member.mention} has been warned by {ctx.author.mention}",
+            color=0xFF6600,
+        )
+        warned_embed.add_field(name="Reason", value=reason)
+        warned_embed.add_field(name="Unique warning ID", value=warn_id)
+
+        await ctx.send(embed=warned_embed)
+
+    @cog_ext.cog_slash(
+        name="warn",
+        description="Warn a member",
+        options=[
+            create_option(
+                name="member",
+                description="The member to warn",
+                option_type=6,
+                required=True,
+            ),
+            create_option(
+                name="reason",
+                description="Why do you want to warn this member?",
+                option_type=3,
+                required=True,
+            ),
+        ],
+    )
+    @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    async def warn_slash(self, ctx, member, reason):
+        await self.warn(ctx, member, reason=reason)
+
+    # Warnings command
+    @commands.command(help="View the warnings for a member", aliases=["warns"])
+    @commands.is_owner()
+    @commands.guild_only()
+    async def warnings(self, ctx, *, member: commands.MemberConverter = None):
+        member = member or ctx.author
+
+        with suppress(AttributeError):
+            await ctx.trigger_typing()
+
+        warn_filter = {"user": member.id, "guild": ctx.guild.id}
+
+        warn_count = warns.count_documents(warn_filter)
+
+        embed = discord.Embed(
+            title=f"Warnings for {member}",
+            description=f"This member has **{warn_count}** warnings in total.\n"
+            + f"Showing max 15 warnings.",
+            color=0xFF6600,
+        )
+
+        warnings = warns.find(warn_filter)
+
+        i = 0
+        for warn in warnings:
+            i += 1
+
+            embed.add_field(
+                name=f"Warn ID: {warn['_id']}",
+                value=f"<@!{warn['moderator']}>: {warn['reason']}",
+                inline=False,
+            )
+
+            if i == 15:
+                break
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="warnings",
+        description="View the warnings for a member",
+        options=[
+            create_option(
+                name="member",
+                description="The member to view warnings for",
+                option_type=6,
+                required=True,
+            )
+        ],
+    )
+    @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    async def warns_slash(self, ctx, member):
+        await self.warnings(ctx, member=member)
+
+    # Unwarn/Delwarn command
+    @commands.command(
+        help="Delete a warning from a member with the warning ID",
+        brief="Delete a warning from a user",
+        aliases=["unwarn"],
+    )
+    @commands.has_permissions(manage_messages=True)
+    async def delwarn(
+        self, ctx, warning_id: str = None, *, member: commands.MemberConverter = None
+    ):
+        error_msg = "❌ You need to provide the unique warning ID (which can be found with the `warnings` command, or when you warn the user) and then the member to delete the warning from.\n\nExample:\n`delwarn 613a03ec848e6bd3a5e5eca8 @member`"
+
+        if warning_id is None or member is None:
+            await ctx.send(error_msg)
+            return
+
+        try:
+            warn_id = ObjectId(warning_id)
+        except InvalidId:
+            await ctx.send(
+                "❌ Invalid warning ID. The ID is provided after you warn the user. You can also get it with the `warns` command."
+            )
+            return
+
+        result = warns.find_one(
+            {
+                "user": member.id,
+                "guild": ctx.guild.id,
+                "_id": warn_id,
+            }
+        )
+
+        if not result:
+            await ctx.send(
+                f"❌ Couldn't find a warning for {member.username} with that ID."
+            )
+        else:
+            with suppress(AttributeError):
+                await ctx.trigger_typing()
+
+            warns.delete_one(result)
+
+            await ctx.send(
+                embed=discord.Embed(
+                    title="✅ Warning deleted",
+                    color=0xFF6600,
+                    description=f"Warning for {member} with reason `{result['reason']}` has been deleted.",
+                )
+            )
+
+    @cog_ext.cog_slash(
+        name="delwarn",
+        description="Delete a warning from a member",
+        options=[
+            create_option(
+                name="warning_id",
+                description="The unique warning ID to delete. Can be found with the 'warnings' command",
+                option_type=3,
+                required=True,
+            ),
+            create_option(
+                name="member",
+                description="The member to delete the warning from",
+                option_type=6,
+                required=True,
+            ),
+        ],
+    )
+    @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    async def unwarn_slash(self, ctx, warn_id, member):
+        await self.delwarn(ctx, warning_id=warn_id, member=member)
+
+    # Clear warns command
+    @commands.command(help="Delete all warnings for a member")
+    @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    async def clearwarns(self, ctx, *, member: commands.MemberConverter):
+        with suppress(AttributeError):
+            await ctx.trigger_typing()
+
+        deleted = warns.delete_many({"user": member.id, "guild": ctx.guild.id})
+
+        await ctx.send(f"✅ Deleted {deleted.deleted_count} warnings for {str(member)}.")
+
+    @cog_ext.cog_slash(
+        name="clearwarns",
+        description="Delete all warnings for a member",
+        options=[
+            create_option(
+                name="member",
+                description="The member to delete warnings for",
+                option_type=6,
+                required=True,
+            )
+        ],
+    )
+    @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    async def clearwarns_slash(self, ctx, member):
+        await self.clearwarns(ctx, member=member)
 
     # Nickname command
     @commands.command(help="Change someone's nickname", aliases=["nick"])
