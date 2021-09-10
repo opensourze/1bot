@@ -8,7 +8,6 @@ from itertools import cycle
 import discord
 import dotenv
 from discord.ext import commands
-from discord.ext.commands.errors import ExtensionNotLoaded
 from discord_slash import SlashCommand
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_components import create_actionrow, create_button
@@ -94,7 +93,7 @@ async def on_message(message):
 async def reload(ctx):
     msg = await ctx.send("Reloading cogs")
 
-    with suppress(ExtensionNotLoaded):
+    with suppress(commands.ExtensionNotLoaded):
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):
                 client.unload_extension(f"cogs.{filename[:-3]}")

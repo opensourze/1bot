@@ -13,7 +13,12 @@ class CustomHelpCommand(MinimalHelpCommand):
         embed = discord.Embed(title="1Bot Commands", color=0xFF6600)
 
         for cog, commands in mapping.items():
-            if cog.qualified_name != "Jishaku":
+            command_signatures = [
+                self.get_command_signature(c)
+                for c in commands
+                if "help" not in self.get_command_signature(c) and not c.hidden
+            ]
+            if command_signatures and "Jishaku" not in cog.qualified_name:
                 embed.add_field(
                     name=f"{cog.emoji} {cog.qualified_name}",
                     value=f"`1 help {cog.qualified_name.lower()}`\n"

@@ -32,9 +32,6 @@ class Utilities(
             await ctx.send(f"❌ You need to attach an image to create an emoji!")
             return
 
-        with contextlib.suppress(AttributeError):
-            await ctx.trigger_typing()
-
         try:
             emoji = await ctx.guild.create_custom_emoji(
                 name=emoji_name, image=await ctx.message.attachments[0].read()

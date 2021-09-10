@@ -491,34 +491,35 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
     async def nuke(self, ctx, *, channel: discord.TextChannel = None):
-        channel = channel or ctx.channel
+        with suppress(discord.NotFound):
+            channel = channel or ctx.channel
 
-        msg = await ctx.send(
-            "**This command will clear everything in the channel!**\n\nThe channel will be completely emptied.\n**Are you sure you want to do this?**"
-        )
-        await msg.add_reaction("✅")
-        await msg.add_reaction("❌")
-
-        def check(reaction, user):
-            return (
-                user == ctx.author
-                and str(reaction.emoji) in ["✅", "❌"]
-                and reaction.message.id == msg.id
+            msg = await ctx.send(
+                "**This command will clear everything in the channel!**\n\nThe channel will be completely emptied.\n**Are you sure you want to do this?**"
             )
+            await msg.add_reaction("✅")
+            await msg.add_reaction("❌")
 
-        try:
-            reaction, user = await self.client.wait_for(
-                "reaction_add", check=check, timeout=20
-            )
-            if reaction.emoji == "❌":
-                await ctx.send("❗ Cancelling the nuke.")
-                return
-            if reaction.emoji == "✅":
-                await channel.purge(limit=None)
+            def check(reaction, user):
+                return (
+                    user == ctx.author
+                    and str(reaction.emoji) in ["✅", "❌"]
+                    and reaction.message.id == msg.id
+                )
 
-            await ctx.send(f"✅ Cleared {channel.mention}", delete_after=2)
-        except asyncio.TimeoutError:
-            await ctx.send("❌ Timed out.")
+            try:
+                reaction, user = await self.client.wait_for(
+                    "reaction_add", check=check, timeout=20
+                )
+                if reaction.emoji == "❌":
+                    await ctx.send("❗ Cancelling the nuke.")
+                    return
+                if reaction.emoji == "✅":
+                    await channel.purge(limit=None)
+
+                await ctx.send(f"✅ Cleared {channel.mention}", delete_after=2)
+            except asyncio.TimeoutError:
+                await ctx.send("❌ You didn't react in time, cancelling the nuke.")
 
     @cog_ext.cog_slash(
         name="clearchannel",
