@@ -16,7 +16,7 @@ cluster = MongoClient(environ["MONGO_URL"])
 warns = cluster["1bot"]["warns"]
 
 
-class Moderation(commands.Cog, description="All the moderation commands you need"):
+class Moderation(commands.Cog, description="All the moderation commands you need."):
     def __init__(self, client):
         self.client = client
         self.emoji = "<:moderation:885461924777693184>"

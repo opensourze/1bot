@@ -9,7 +9,7 @@ from discord_slash.utils.manage_commands import create_option
 from PIL import Image
 
 
-class Images(commands.Cog, description="Generate fun images"):
+class Images(commands.Cog, description="Generate fun images!"):
     def __init__(self, client):
         self.client = client
         self.emoji = "<:images:884089121633611836>"

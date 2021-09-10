@@ -13,7 +13,7 @@ from temperature_converter_py import fahrenheit_to_celsius
 
 class Utilities(
     commands.Cog,
-    description="1Bot has some neat utilities to help you out with anything",
+    description="A set of useful utility commands.",
 ):
     def __init__(self, client):
         self.client = client

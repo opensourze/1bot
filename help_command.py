@@ -21,9 +21,8 @@ class CustomHelpCommand(MinimalHelpCommand):
             if command_signatures and "Jishaku" not in cog.qualified_name:
                 embed.add_field(
                     name=f"{cog.emoji} {cog.qualified_name}",
-                    value=f"`1 help {cog.qualified_name.lower()}`\n"
-                    # Link with text "Hover for more" and hovertext with the description of the cog
-                    + f'[Hover for more](https://1bot.netlify.app/commands "{cog.description}")',
+                    value=cog.description
+                    + f"\nRun `help {cog.qualified_name.lower()}`\n",
                     inline=False,
                 )
 

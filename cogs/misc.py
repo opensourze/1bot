@@ -10,7 +10,7 @@ from discord_slash.utils.manage_components import create_actionrow, create_butto
 __version__ = "0.6"
 
 
-class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
+class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     def __init__(self, client):
         self.client = client
         self.emoji = "<:miscellaneous:884088957057523733>"
@@ -290,8 +290,8 @@ class Miscellaneous(commands.Cog, description="Miscellaneous commands"):
             + "**What everyone was waiting for: Warn commands!:**\n"
             + "`warn @user reason`- warns the user with a reason. This also sends a unique Warning ID which you can use to delete the warning.\n"
             + "`warnings @user`- lists the last 15 warnings for the user"
-            +"`delwarn {Warning ID} @user`- deletes the warning from the user with the provided Warning ID."
-            +"`clearwarns @user`- clears all warnings for the user."
+            + "`delwarn {Warning ID} @user`- deletes the warning from the user with the provided Warning ID."
+            + "`clearwarns @user`- clears all warnings for the user.",
         )
 
         await ctx.send(embed=changelog)
