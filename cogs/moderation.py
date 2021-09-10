@@ -213,7 +213,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
                 embed=discord.Embed(
                     title="✅ Warning deleted",
                     color=0xFF6600,
-                    description=f"Warning for {member} with reason `{result['reason']}` has been deleted.",
+                    description=f"Warning for {member.mention} with reason `{result['reason']}` has been deleted.",
                 )
             )
 
@@ -237,8 +237,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
-    async def unwarn_slash(self, ctx, warn_id, member):
-        await self.delwarn(ctx, warning_id=warn_id, member=member)
+    async def unwarn_slash(self, ctx, warning_id, member):
+        await self.delwarn(ctx, warning_id=warning_id, member=member)
 
     # Clear warns command
     @commands.command(help="Delete all warnings for a member")
