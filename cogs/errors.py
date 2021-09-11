@@ -5,22 +5,6 @@ from discord.ext import commands
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-error_btns = create_actionrow(
-    *[
-        create_button(
-            style=ButtonStyle.URL,
-            url=f"https://1bot.netlify.app/commands",
-            label="Command list",
-            emoji="ℹ️",
-        ),
-        create_button(
-            style=ButtonStyle.URL,
-            url=f"https://discord.gg/KRjZaV9DP8",
-            label="Support server",
-        ),
-    ]
-)
-
 
 class Errors(commands.Cog):
     def __init__(self, client):
@@ -30,6 +14,22 @@ class Errors(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.error_channel = await self.client.fetch_channel(884095331678167111)
+        self.error_btns = create_actionrow(
+            *[
+                create_button(
+                    style=ButtonStyle.URL,
+                    url=f"https://1bot.netlify.app/commands",
+                    label="Command list",
+                    emoji=self.client.get_emoji(885086857484992553),
+                ),
+                create_button(
+                    style=ButtonStyle.URL,
+                    url=f"https://discord.gg/KRjZaV9DP8",
+                    label="Support Server",
+                    emoji=self.client.get_emoji(885083336240926730),
+                ),
+            ]
+        )
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -45,7 +45,7 @@ class Errors(commands.Cog):
                 + "Missing permissions: "
                 + f"`{', '.join([err.capitalize().replace('_', ' ') for err in error.missing_perms])}`\n\n"
                 + "Please add these permissions to my role ('1Bot') in your server settings.",
-                components=[error_btns],
+                components=[self.error_btns],
             )
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(
@@ -59,13 +59,13 @@ class Errors(commands.Cog):
             await ctx.send(
                 "❌ You haven't provided all the required options.\n"
                 + "Check the command list to know what options to provide.",
-                components=[error_btns],
+                components=[self.error_btns],
             )
         elif isinstance(error, commands.TooManyArguments):
             await ctx.send(
                 "❌ You've passed extra options to the command!\n"
                 + "Check the command list to know what options to provide.",
-                components=[error_btns],
+                components=[self.error_btns],
             )
         elif isinstance(error, commands.ChannelNotFound):
             await ctx.send("❌ I don't think that channel exists!")
@@ -86,7 +86,7 @@ class Errors(commands.Cog):
                 f"❌ Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
             )
         elif isinstance(error, commands.BadArgument):
-            await ctx.send("❌ Invalid option.", components=[error_btns])
+            await ctx.send("❌ Invalid option.", components=[self.error_btns])
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("❌ This command can't be used in direct messages.")
         elif "Forbidden" in str(error):
