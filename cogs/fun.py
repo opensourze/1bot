@@ -89,20 +89,45 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     # Dad joke command
     @commands.command(help="Get a random dad joke")
     async def dadjoke(self, ctx):
-        r = requests.get("https://official-joke-api.appspot.com/jokes/general/random")
+        r = requests.get(
+            url="https://icanhazdadjoke.com/",
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "1Bot (a Discord Bot) - https://1bot.netlify.app | email: opensourze@protonmail.com",
+            },
+        )
+
         if r.status_code != 200:
             await ctx.send(
-                "❌ The dadjoke server has returned an error. Please try again later."
+                "❌ The dad joke API has returned an error. Please try again later."
             )
             return
 
-        json = r.json()[0]
+        json = r.json()
 
-        await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
+        await ctx.send(json["joke"])
 
     @cog_ext.cog_slash(name="dadjoke", description="Get a random dad joke")
     async def dadjoke_slash(self, ctx: SlashContext):
         await self.dadjoke(ctx)
+
+    # Bored command
+    @commands.command(help="Gives you something to do if you're bored")
+    async def bored(self, ctx):
+        r = requests.get("https://www.boredapi.com/api/activity?participants=1&price=0")
+
+        if r.status_code != 200:
+            await ctx.send(
+                "❌ The Bored API has returned an error. Please try again later."
+            )
+            return
+
+        json = r.json()
+        await ctx.send(json["activity"])
+
+    @cog_ext.cog_slash(name="bored", description="Get something to do if you're bored")
+    async def bored_slash(self, ctx: SlashContext):
+        await self.bored(ctx)
 
     # Programming joke command
     @commands.command(
