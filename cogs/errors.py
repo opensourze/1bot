@@ -68,25 +68,24 @@ class Errors(commands.Cog):
                 components=[self.error_btns],
             )
         elif isinstance(error, commands.ChannelNotFound):
-            await ctx.send("❌ I don't think that channel exists!")
+            await ctx.send(f'❌ I couldn\'t find the channel "{error.argument}"')
         elif isinstance(error, commands.MemberNotFound):
-            await ctx.send(
-                f"❌ Member not found. The member option must have the exact name of the member including capitalisation, or you can just ping the member."
-            )
+            await ctx.send(f'❌ I couldn\'t find the member "{error.argument}".')
         elif isinstance(error, commands.UserNotFound):
-            await ctx.send(
-                f"❌ User not found. The user option must have the exact name + tag of the user including capitalisation, or you can just @mention them if they are in the server. If you have developer mode on, you can also use the user's ID."
-            )
+            await ctx.send(f'❌ I couldn\'t find the user "{error.argument}".')
         elif isinstance(error, commands.RoleNotFound):
             await ctx.send(
-                f"❌ Role not found. The role option must have the exact name of the role including capitalisation, or you can just @mention the role. If you have developer mode on, you can use the role's ID."
+                f'❌ I couldn\'t find the role "{error.argument}". You need to type the exact name of the role or ping it.'
             )
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
-                f"❌ Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after)} seconds."
+                f"❌ Whoa, slow down. This command is on cooldown, try again in {round(error.retry_after, 2)} seconds."
             )
         elif isinstance(error, commands.BadArgument):
-            await ctx.send("❌ Invalid option.", components=[self.error_btns])
+            await ctx.send(
+                "❌ You haven't provided the correct types of options, please check the help command or command list.",
+                components=[self.error_btns],
+            )
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("❌ This command can't be used in direct messages.")
         elif "Forbidden" in str(error):

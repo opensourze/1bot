@@ -623,7 +623,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             title="✅ Member muted",
             color=0xFF6600,
             description=f"{member.mention} was muted by {ctx.author.mention}",
-            timestamp=ctx.message.created_at,
         ).add_field(name="Reason", value=reason)
         await ctx.send(embed=embed)
 
@@ -698,7 +697,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             title="✅ Member muted",
             color=0xFF6600,
             description=f"{member.mention} was temporarily muted by {ctx.author.mention}",
-            timestamp=ctx.message.created_at,
         )
         embed.add_field(name="Reason", value=reason)
         if not duration[-1].isalpha():
@@ -770,7 +768,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             title="✅ Member unmuted",
             color=0xFF6600,
             description=f"{member.mention} was unmuted by {ctx.author.mention}",
-            timestamp=ctx.message.created_at,
         )
         await ctx.send(embed=embed)
 
@@ -826,7 +823,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             title="✅ Member kicked",
             color=0xFF6600,
             description=f"{member.mention} was kicked by {ctx.author.mention}",
-            timestamp=ctx.message.created_at,
         ).add_field(name="Reason", value=reason)
         await ctx.send(embed=embed)
 
@@ -862,7 +858,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def ban(self, ctx, user: commands.UserConverter, *, reason=None):
+    async def ban(self, ctx, user: commands.MemberConverter, *, reason=None):
         if user == ctx.author:
             await ctx.send("❌ You can't ban yourself!")
             return
@@ -892,7 +888,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             title="✅ Member banned",
             color=0xFF6600,
             description=f"{user.mention} was banned by {ctx.author.mention}",
-            timestamp=ctx.message.created_at,
         ).add_field(name="Reason", value=reason)
         await ctx.send(embed=embed)
 
@@ -995,7 +990,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             color=0xFF6600,
             description=f"{channel.mention} was locked down by {ctx.author.mention}.\n"
             + "Members cannot send messages in the channel now.",
-            timestamp=ctx.message.created_at,
         )
         await ctx.send(embed=embed)
 
@@ -1032,7 +1026,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             title="✅ Channel removed from lockdown",
             color=0xFF6600,
             description=f"{channel.mention} was unlocked by {ctx.author.mention}",
-            timestamp=ctx.message.created_at,
         )
         await ctx.send(embed=embed)
 
