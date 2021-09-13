@@ -129,22 +129,6 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def bored_slash(self, ctx: SlashContext):
         await self.bored(ctx)
 
-    # Programming joke command
-    @commands.command(
-        help="Get a random programming-related joke",
-        brief="Get a programming joke",
-        aliases=["codingjoke"],
-    )
-    async def programmingjoke(self, ctx):
-        json = requests.get("https://programming-humor.herokuapp.com/").json()
-        await ctx.send(f"**{json['setup']}**\n\n{json['punchline']}")
-
-    @cog_ext.cog_slash(
-        name="programmingjoke", description="Get a programming-related joke"
-    )
-    async def programmingjoke_slash(self, ctx: SlashContext):
-        await self.programmingjoke(ctx)
-
     # Reddit/meme command
     @commands.command(
         help="Get a random meme from Reddit (optionally provide any subreddit)",

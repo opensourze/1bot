@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.6.1"
+__version__ = "0.6.2"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):

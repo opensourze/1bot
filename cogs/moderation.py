@@ -55,6 +55,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         elif member.id == self.client.user.id:
             await ctx.send("❌ I can't warn myself!")
             return
+        elif member.guild_permissions.administrator:
+            await ctx.send("❌ I can't warn an administrator.")
+            return
 
         with suppress(AttributeError):
             await ctx.trigger_typing()
