@@ -19,6 +19,36 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
 
+    # dog command
+    @commands.command(help="Get a random dog image and fact", aliases=["doggo"])
+    async def dog(self, ctx):
+        json = requests.get("https://some-random-api.ml/animal/dog").json()
+
+        embed = discord.Embed(color=0xFF6600)
+        embed.add_field(name="Random Fact", value=json["fact"])
+        embed.set_image(url=json["image"])
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(description="Get a random dog image and fact")
+    async def dog_slash(self, ctx: SlashContext):
+        await self.dog(ctx)
+
+    # cat command
+    @commands.command(help="Get a random cat image and fact", aliases=["kitty"])
+    async def cat(self, ctx):
+        json = requests.get("https://some-random-api.ml/animal/cat").json()
+
+        embed = discord.Embed(color=0xFF6600)
+        embed.add_field(name="Random Fact", value=json["fact"])
+        embed.set_image(url=json["image"])
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(description="Get a random cat image and fact")
+    async def cat_slash(self, ctx: SlashContext):
+        await self.cat(ctx)
+
     # Reverse command
     @commands.command(aliases=["rev"], help="Reverse the given text")
     async def reverse(self, ctx, *, text: str):

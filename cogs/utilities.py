@@ -128,12 +128,15 @@ class Utilities(
     # PyPI command
     @commands.command(help="Get info for a PyPI module")
     async def pypi(self, ctx, *, package):
-        request = requests.get(f"https://pypi.org/pypi/{package}/json")
-        if request.status_code == 404:
+        # Get package JSON
+        res = requests.get(f"https://pypi.org/pypi/{package}/json")
+
+        if res.status_code == 404:
+            # Exit with an error message if status is 404 (not found)
             await ctx.send("❌ That module doesn't exist!")
             return
 
-        json = request.json()
+        json = res.json()
 
         embed = discord.Embed(
             title=json["info"]["name"],
@@ -144,6 +147,7 @@ class Utilities(
         if json["info"]["summary"] != "UNKNOWN":
             embed.description = json["info"]["summary"]
 
+        # Max length for embed fields is 1024
         if len(json["info"]["description"]) <= 1024:
             embed.add_field(
                 name="Description", value=json["info"]["description"], inline=False
@@ -161,7 +165,9 @@ class Utilities(
 
         embed.add_field(name="Version", value=json["info"]["version"])
         embed.add_field(name="Author", value=json["info"]["author"])
-        embed.add_field(name="License", value=json["info"]["license"])
+
+        if json["info"]["license"]:
+            embed.add_field(name="License", value=json["info"]["license"])
 
         await ctx.send(embed=embed)
 
@@ -177,6 +183,7 @@ class Utilities(
         try:
             if json["error"]:
                 await ctx.send("❌ " + json["error"])
+
         except KeyError:
             embed = discord.Embed(
                 title=json["name"],
@@ -193,6 +200,7 @@ class Utilities(
             with contextlib.suppress(KeyError):
                 embed.add_field(
                     name="GitHub repository",
+                    # Remove "git+" and ".git" from the url
                     value=json["repository"]["url"][4:-4],
                     inline=False,
                 )
@@ -231,6 +239,7 @@ class Utilities(
         )
         embed.set_thumbnail(url=json["thumbnail"]["genius"])
 
+        # Max length for descriptions is 4096 characters
         if len(json["lyrics"]) > 4096:
             embed.description = json["lyrics"][:4093] + "..."
         else:

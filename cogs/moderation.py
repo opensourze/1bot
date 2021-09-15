@@ -117,7 +117,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
     # Warnings command
     @commands.command(help="View the warnings for a member", aliases=["warns"])
-    @commands.is_owner()
     @commands.guild_only()
     async def warnings(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author

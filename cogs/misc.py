@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.6.2"
+__version__ = "0.6.3"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -147,7 +147,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         embed = discord.Embed(title=f"{ctx.guild.name} information", color=0xFF6600)
 
         embed.set_thumbnail(url=ctx.guild.icon_url)
-        embed.add_field(name="Owner", value=str(ctx.guild.owner), inline=False)
+        embed.add_field(name="Owner", value=ctx.guild.owner.mention, inline=False)
         embed.add_field(
             name="Server created",
             value=f"<t:{round(ctx.guild.created_at.timestamp())}:R>",
