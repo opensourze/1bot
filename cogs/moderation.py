@@ -1071,6 +1071,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         embed.set_author(name=str(author), icon_url=author.avatar_url)
         embed.add_field(name="Deleted message found in", value=channel.mention)
 
+        if not content:
+            embed.title = "Note: This deleted message does not have any text content."
+
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(

@@ -92,8 +92,12 @@ async def on_message(message):
         await client.process_commands(message)
 
 
+# Store message details when it is deleted
 @client.event
 async def on_message_delete(message):
+    if not message.guild:
+        return
+
     try:
         client.sniped_messages[message.guild.id].update(
             {
