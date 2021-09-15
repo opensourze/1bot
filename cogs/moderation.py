@@ -1051,6 +1051,43 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     ):
         await self.unlock(ctx, channel=channel)
 
+    # Snipe command
+    @commands.command(help="Shows the last deleted message in the current channel")
+    @commands.guild_only()
+    async def snipe(self, ctx, snipe_channel: discord.TextChannel = None):
+        snipe_channel = snipe_channel or ctx.channel
+
+        try:
+            content, author, channel, timestamp = self.client.sniped_messages[
+                ctx.guild.id
+            ][snipe_channel.id]
+        except:
+            await ctx.send(
+                "❌ I couldn't find a deleted message in this channel in my logs."
+            )
+            return
+
+        embed = discord.Embed(description=content, color=0xFF6600, timestamp=timestamp)
+        embed.set_author(name=str(author), icon_url=author.avatar_url)
+        embed.add_field(name="Deleted message found in", value=channel.mention)
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="snipe",
+        description="Find the last deleted message in a channel",
+        options=[
+            create_option(
+                name="channel",
+                description="The channel you want to get the deleted message from",
+                option_type=7,
+                required=False,
+            )
+        ],
+    )
+    async def snipe_slash(self, ctx: SlashContext, channel):
+        await self.snipe(ctx, channel)
+
 
 # Add cog
 def setup(client):

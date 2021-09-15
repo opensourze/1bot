@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.6.3"
+__version__ = "0.6.4"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -284,17 +284,16 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="v0.6 is a major update to 1Bot, mainly adding long-awaited warn commands!\n\n"
-            + "Custom emojis in buttons:\n"
-            + "We were using default emojis on most buttons, but we've now created custom orange-themed emojis for every button. Check them out in the `info` command.\n\n"
-            + "**What everyone was waiting for: Warn commands!:**\n"
-            + "`warn @user reason`- warns the user with a reason. This also sends a unique Warning ID which you can use to delete the warning.\n"
-            + "`warnings @user`- lists the last 15 warnings for the user"
-            + "`delwarn {Warning ID} @user`- deletes the warning from the user with the provided Warning ID."
-            + "`clearwarns @user`- clears all warnings for the user.",
+            description="New `snipe` command that lets you find the last deleted message in any channel of a server.",
         )
 
         await ctx.send(embed=changelog)
+
+    @cog_ext.cog_slash(
+        name="changelog", description="See what's new in the latest version of 1Bot"
+    )
+    async def changelog_slash(self, ctx: SlashContext):
+        await self.changelog(ctx)
 
 
 def setup(client):

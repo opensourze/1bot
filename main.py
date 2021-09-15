@@ -30,6 +30,8 @@ client = commands.AutoShardedBot(
 client._BotBase__cogs = commands.core._CaseInsensitiveDict()
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 
+client.sniped_messages = {}
+
 
 @client.event
 async def on_ready():
@@ -62,6 +64,7 @@ async def on_ready():
     client.help_command = CustomHelpCommand(buttons)
 
 
+# Changing status
 async def change_status():
     statuses = cycle(
         ["1 help | you can run my commands in DMs too!", "1 help | 1bot.netlify.app"]
@@ -75,6 +78,7 @@ async def change_status():
 client.loop.create_task(change_status())
 
 
+# Send prefix when mentioned
 @client.event
 async def on_message(message):
     if (
@@ -88,6 +92,31 @@ async def on_message(message):
         await client.process_commands(message)
 
 
+@client.event
+async def on_message_delete(message):
+    try:
+        client.sniped_messages[message.guild.id].update(
+            {
+                message.channel.id: (
+                    message.content,
+                    message.author,
+                    message.channel,
+                    message.created_at,
+                )
+            }
+        )
+    except KeyError:
+        client.sniped_messages[message.guild.id] = {
+            message.channel.id: (
+                message.content,
+                message.author,
+                message.channel,
+                message.created_at,
+            )
+        }
+
+
+# Command to reload cogs
 @client.command(hidden=True, aliases=["refresh"])
 @commands.is_owner()
 async def reload(ctx):

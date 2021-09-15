@@ -8,7 +8,7 @@ from discord_slash.utils.manage_components import create_actionrow, create_butto
 
 class Errors(commands.Cog):
     def __init__(self, client):
-        self.client = client
+        self.client: commands.Bot = client
         self.emoji = ""
 
     @commands.Cog.listener()
@@ -68,7 +68,7 @@ class Errors(commands.Cog):
                 components=[self.error_btns],
             )
         elif isinstance(error, commands.ChannelNotFound):
-            await ctx.send(f'❌ I couldn\'t find the channel "{error.argument}"')
+            await ctx.send(f'❌ I couldn\'t find the channel "{error.argument}".')
         elif isinstance(error, commands.MemberNotFound):
             await ctx.send(f'❌ I couldn\'t find the member "{error.argument}".')
         elif isinstance(error, commands.UserNotFound):
@@ -112,8 +112,13 @@ class Errors(commands.Cog):
 
             error_embed = discord.Embed(
                 title="❌ Unhandled error",
-                description="Oops, looks like that command returned an unknown error. The error has been automatically reported to the developers and will be fixed soon. Meanwhile, **do not spam the same command**.",
+                description="Oops, looks like that command returned an unknown error. The error has been automatically reported to the developers in our server and will be fixed soon.\n"
+                + "Meanwhile, **do not spam the same command**.",
                 color=0xFF0000,
+            )
+            error_embed.add_field(
+                name="Join our server to track this error",
+                value="If you would like to see more about this error and our progress on fixing it, join the server by clicking the button below.",
             )
 
             try:
@@ -131,7 +136,21 @@ class Errors(commands.Cog):
                 ).add_field(name="Error:", value=error)
 
             await self.error_channel.send("<@&884078864760971284>", embed=embed)
-            await ctx.send(embed=error_embed)
+            await ctx.send(
+                embed=error_embed,
+                components=[
+                    create_actionrow(
+                        *[
+                            create_button(
+                                label="Join the server",
+                                style=ButtonStyle.URL,
+                                emoji=self.client.get_emoji(885083336240926730),
+                                url="https://discord.gg/KRjZaV9DP8",
+                            )
+                        ]
+                    )
+                ],
+            )
 
     @commands.Cog.listener()
     async def on_slash_command_error(self, ctx, error):
