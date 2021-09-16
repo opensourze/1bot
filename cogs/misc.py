@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.6.4"
+__version__ = "0.6.5"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -284,7 +284,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="New `snipe` command that lets you find the last deleted message in any channel of a server.",
+            description="New `chess` command that lets you play chess (yes, actual chess) with a friend inside a voice channel. Try it!",
         )
 
         await ctx.send(embed=changelog)

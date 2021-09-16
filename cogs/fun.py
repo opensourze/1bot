@@ -7,13 +7,15 @@ import requests
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
-from Discord_Together.discordtogether import DiscordTogether
+from discordTogether import DiscordTogether
 
 
 class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?"):
     def __init__(self, client):
         self.client = client
         self.emoji = "<:fun:884088990146367528>"
+
+        self.dt = DiscordTogether(client)
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -77,44 +79,48 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     # YouTube Together
     @commands.command(help="Watch YouTube together with friends", aliases=["yt"])
     @commands.guild_only()
-    async def youtube(self, ctx, *, vc: commands.VoiceChannelConverter):
-        dt = DiscordTogether(token=os.environ["TOKEN"])
-        invite_code = await dt.activity(option="youtube", vc_id=vc.id)
-        await ctx.send(f"Click to join: <https://discord.com/invite/{invite_code}>")
+    async def youtube(self, ctx):
+        try:
+            author_vc = ctx.author.voice.channel.id
+            link = await self.dt.create_link(author_vc, "youtube")
 
-    @youtube.error
-    async def yt_error(self, ctx, error):
-        if isinstance(error, commands.ChannelNotFound):
-            embed = discord.Embed(
-                title="❌ Channel Not Found",
-                description=f"Couldn't find that channel. You must type the **exact** name of the channel, "
-                + "**which is why it is recommended to use the Slash Command version of this command instead.**\n"
-                + "If you are typing a `#` before the name of the channel, **don't**.",
-                color=0xFF0000,
-            ).set_footer(
-                text="Quick tip: If you have developer mode on, you can just use the ID of the voice channel."
-            )
-
-            await ctx.send(embed=embed)
-        elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
-                "❌ You must specify a voice channel to start the activity in."
+                f"Click the **link itself** to start the activity. Your friends can then click the play button to join.\n\n(Expires in 24 hours)\n"
+                + str(link)
             )
+        except AttributeError:
+            await ctx.send("❌ You need to be in a voice channel to use this command.")
 
     @cog_ext.cog_slash(
         name="youtube_together",
         description="Watch YouTube together in a voice channel",
-        options=[
-            create_option(
-                name="vc",
-                description="The voice channel where you want to start the activity",
-                required=True,
-                option_type=7,
-            )
-        ],
     )
-    async def yt_slash(self, ctx: SlashContext, vc: discord.VoiceChannel):
-        await self.youtube(ctx, vc=vc)
+    async def yt_slash(self, ctx: SlashContext):
+        await self.youtube(ctx)
+
+    # Chess
+    @commands.command(
+        help="Play chess with friends in a voice channel", aliases=["chesstogether"]
+    )
+    @commands.guild_only()
+    async def chess(self, ctx):
+        try:
+            author_vc = ctx.author.voice.channel.id
+            link = await self.dt.create_link(author_vc, "chess")
+
+            await ctx.send(
+                f"Click the **link itself** to start the activity. Your friends can then click the play button to join.\n\n(Expires in 24 hours)\n"
+                + str(link)
+            )
+        except AttributeError:
+            await ctx.send("❌ You need to be in a voice channel to use this command.")
+
+    @cog_ext.cog_slash(
+        name="chess_together",
+        description="Play chess with friends in a voice channel",
+    )
+    async def chess_slash(self, ctx: SlashContext):
+        await self.chess(ctx)
 
     # Dad joke command
     @commands.command(help="Get a random dad joke")
