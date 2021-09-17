@@ -14,6 +14,7 @@ dotenv.load_dotenv()
 
 cluster = MongoClient(environ["MONGO_URL"])
 warns = cluster["1bot"]["warns"]
+mute_db = cluster["1bot"]["muted"]
 
 
 class Moderation(commands.Cog, description="All the moderation commands you need."):
@@ -27,10 +28,17 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
-        muted_role = discord.utils.get(channel.guild.roles, name="Muted")
+        muted_role = discord.utils.get(channel.guild.roles[::-1], name="Muted")
 
         if muted_role:
             await channel.set_permissions(muted_role, send_messages=False, speak=False)
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        if mute_db.find_one({"user": member.id, "guild": member.guild.id}):
+            muted_role = discord.utils.get(member.guild.roles[::-1], name="Muted")
+
+            await member.add_roles(muted_role)
 
     # Warn command
     @commands.command(help="Warn a member")
@@ -589,7 +597,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             await ctx.send(
                 ":information_source: Couldn't find a Muted role in this server. Creating a new one..."
             )
-            muted_role = await ctx.guild.create_role(name="Muted", color=0xFF0000)
+            muted_role = await ctx.guild.create_role(name="Muted", color=0x919191)
 
             for channel in ctx.guild.channels:
                 await channel.set_permissions(
@@ -620,6 +628,10 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             return
 
         await member.add_roles(muted_role, reason=reason)
+
+        existing_mute = mute_db.find_one({"user": member.id, "guild": ctx.guild.id})
+        if not existing_mute:
+            mute_db.insert_one({"user": member.id, "guild": ctx.guild.id})
 
         embed = discord.Embed(
             title="✅ Member muted",
@@ -695,6 +707,11 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             return
 
         await member.add_roles(muted_role, reason=reason)
+
+        existing_mute = mute_db.find_one({"user": member.id, "guild": ctx.guild.id})
+        if not existing_mute:
+            mute_db.insert_one({"user": member.id, "guild": ctx.guild.id})
+
         embed = discord.Embed(
             title="✅ Member muted",
             color=0xFF6600,
@@ -710,6 +727,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         await asyncio.sleep(sleep_duration)
         await member.remove_roles(muted_role, reason=reason)
+
+        mute_db.delete_one({"user": member.id, "guild": ctx.guild.id})
 
     @cog_ext.cog_slash(
         name="tempmute",
@@ -747,9 +766,13 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def unmute(self, ctx, *, member: commands.MemberConverter):
+        deleted = mute_db.find_one_and_delete(
+            {"user": member.id, "guild": ctx.guild.id}
+        )
+
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-        if muted_role not in member.roles:
+        if muted_role not in member.roles and not deleted:
             await ctx.send("❌ That member isn't muted!")
             return
         elif ctx.guild.me.top_role <= muted_role:
@@ -1088,7 +1111,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
         ],
     )
-    async def snipe_slash(self, ctx: SlashContext, channel):
+    @commands.guild_only()
+    async def snipe_slash(self, ctx: SlashContext, channel=None):
         await self.snipe(ctx, channel)
 
 

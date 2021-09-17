@@ -128,14 +128,19 @@ class Errors(commands.Cog):
                     description=f"Error while invoking command:\n`{ctx.message.content}`",
                 ).add_field(name="Error:", value=error)
                 embed.set_footer(text=f"User ID: {ctx.author.id}")
-            except AttributeError:
-                embed = discord.Embed(
-                    title="Error",
-                    color=0xFF0000,
-                    description=f"Error while invoking command `/{ctx.name}`",
-                ).add_field(name="Error:", value=error)
 
-            await self.error_channel.send("<@&884078864760971284>", embed=embed)
+            except AttributeError:
+                embed = (
+                    discord.Embed(
+                        title="Error",
+                        color=0xFF0000,
+                        description=f"Error while invoking command `/{ctx.name}`",
+                    )
+                    .add_field(name="Error:", value=error)
+                    .set_footer(text=f"User ID: {ctx.author.id}")
+                )
+
+            await self.error_channel.send("<@&887918006376747008>", embed=embed)
             await ctx.send(
                 embed=error_embed,
                 components=[

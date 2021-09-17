@@ -52,6 +52,12 @@ class Utilities(
             elif "Must be between 2 and 32 in length" in str(e):
                 await ctx.send("❌ The emoji name must be 2 to 32 characters long.")
                 return
+            elif "Maximum number of emojis reached" in str(e):
+                await ctx.send("❌ This server has reached its emoji limit.")
+                return
+            else:
+                await ctx.send(str(e))
+                return
 
         await ctx.send(f"Emoji created! {emoji}")
 

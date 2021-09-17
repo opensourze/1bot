@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.6.5"
+__version__ = "0.6.6"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -284,7 +284,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="New `chess` command that lets you play chess (yes, actual chess) with a friend inside a voice channel. Try it!",
+            description='Mutes can no longer be bypassed! Until now, users were able to bypass a mute by rejoining the server. But now, mutes are logged in a database and 1Bot checks it whenever a user joins the server. If they were muted, it adds the muted role to them immediately. We\'ve also fixed a bunch of things in this update, reducing the "Unhandled Error" messages.',
         )
 
         await ctx.send(embed=changelog)
