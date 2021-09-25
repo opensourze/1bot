@@ -169,6 +169,12 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         embed.add_field(
             name="Boost level", value=f"Level {ctx.guild.premium_tier}", inline=False
         )
+        embed.add_field(
+            name="Text channels", value=len(guild.text_channels), inline=False
+        )
+        embed.add_field(
+            name="Voice channels", value=len(guild.voice_channels), inline=False
+        )
 
         await ctx.send(embed=embed)
 
