@@ -17,6 +17,18 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
         self.dt = DiscordTogether(client)
 
+    async def discord_together(self, ctx, option):
+        try:
+            author_vc = ctx.author.voice.channel.id
+            link = await self.dt.create_link(author_vc, option)
+
+            await ctx.send(
+                f"Click the **link itself** to start the activity. Your friends can then click the play button to join.\n\n(Expires in 24 hours)\n"
+                + str(link)
+            )
+        except AttributeError:
+            await ctx.send("❌ You need to be in a voice channel to use this command.")
+
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
@@ -32,7 +44,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(description="Get a random dog image and fact")
+    @cog_ext.cog_slash(name="dog", description="Get a random dog image and fact")
     async def dog_slash(self, ctx: SlashContext):
         await self.dog(ctx)
 
@@ -47,7 +59,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(description="Get a random cat image and fact")
+    @cog_ext.cog_slash(name="cat", description="Get a random cat image and fact")
     async def cat_slash(self, ctx: SlashContext):
         await self.cat(ctx)
 
@@ -80,16 +92,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     @commands.command(help="Watch YouTube together with friends", aliases=["yt"])
     @commands.guild_only()
     async def youtube(self, ctx):
-        try:
-            author_vc = ctx.author.voice.channel.id
-            link = await self.dt.create_link(author_vc, "youtube")
-
-            await ctx.send(
-                f"Click the **link itself** to start the activity. Your friends can then click the play button to join.\n\n(Expires in 24 hours)\n"
-                + str(link)
-            )
-        except AttributeError:
-            await ctx.send("❌ You need to be in a voice channel to use this command.")
+        await self.discord_together(ctx, "youtube")
 
     @cog_ext.cog_slash(
         name="youtube_together",
@@ -104,16 +107,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     )
     @commands.guild_only()
     async def chess(self, ctx):
-        try:
-            author_vc = ctx.author.voice.channel.id
-            link = await self.dt.create_link(author_vc, "chess")
-
-            await ctx.send(
-                f"Click the **link itself** to start the activity. Your friends can then click the play button to join.\n\n(Expires in 24 hours)\n"
-                + str(link)
-            )
-        except AttributeError:
-            await ctx.send("❌ You need to be in a voice channel to use this command.")
+        await self.discord_together(ctx, "chess")
 
     @cog_ext.cog_slash(
         name="chess_together",

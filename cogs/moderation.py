@@ -295,7 +295,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
                 return
         try:
             await member.edit(nick=nickname)
-            await ctx.send(f"`{member}`'s nickname has been changed to `{nickname}`.")
+            await ctx.send(f"✅ `{member}`'s nickname has been set to `{nickname}`.")
         except discord.Forbidden:
             await ctx.send(
                 "❌ I don't have permission to change that user's nickname.\n"
@@ -937,8 +937,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def ban_slash(self, ctx: SlashContext, member, reason=None):
-        await self.ban(ctx, member, reason=reason)
+    async def ban_slash(self, ctx: SlashContext, user, reason=None):
+        await self.ban(ctx, user, reason=reason)
 
     # Unban command
     @commands.command(
@@ -946,21 +946,21 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, *, member: str):
+    async def unban(self, ctx, *, user: str):
         banned_users = await ctx.guild.bans()
 
         try:
-            member_name, member_discriminator = member.split("#")
+            username, user_tag = user.split("#")
 
             for ban_entry in banned_users:
-                user = ban_entry.user
+                banned = ban_entry.user
 
-                if (user.name, user.discriminator) == (
-                    member_name,
-                    member_discriminator,
+                if (banned.name, banned.discriminator) == (
+                    username,
+                    user_tag,
                 ):
-                    await ctx.guild.unban(user)
-                    await ctx.send(f"Unbanned {user}")
+                    await ctx.guild.unban(banned)
+                    await ctx.send(f"✅ Unbanned {banned}")
                     return
 
         except ValueError:
@@ -969,7 +969,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
             return
 
-        await ctx.send(f"❌ Couldn't find a ban for {member}")
+        await ctx.send(f"❌ Couldn't find a ban for {user}")
 
     @cog_ext.cog_slash(
         name="unban",
@@ -992,8 +992,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def unban_slash(self, ctx: SlashContext, user, reason=None):
-        await self.unban(ctx, user, reason=reason)
+    async def unban_slash(self, ctx: SlashContext, user: str):
+        await self.unban(ctx, user=user)
 
     # Lockdown command
     @commands.command(

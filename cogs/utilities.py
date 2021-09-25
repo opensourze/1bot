@@ -229,7 +229,7 @@ class Utilities(
     # Lyrics command
     @commands.command(help="Get lyrics for a song", aliases=["ly"])
     async def lyrics(self, ctx, *, song):
-        with contextlib.suppress(KeyError):
+        with contextlib.suppress(AttributeError):
             await ctx.trigger_typing()
 
         json = requests.get(f"https://some-random-api.ml/lyrics?title={song}").json()
@@ -472,10 +472,12 @@ class Utilities(
         option_list = options.split("/")
 
         if len(option_list) > 10:
-            await ctx.send("❌ You cannot have more than 10 choices!")
+            await ctx.send("❌ You cannot have more than 10 choices.")
             return
         elif len(option_list) < 2:
-            await ctx.send("❌ You need to provide multiple options!")
+            await ctx.send(
+                "❌ You need to provide multiple options separated by slashes!"
+            )
             return
 
         embed = discord.Embed(

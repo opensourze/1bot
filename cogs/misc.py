@@ -69,7 +69,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         )
         info_embed.add_field(
             name="Developer",
-            value="[OpenSourze](https://twitter.com/opensourze)",
+            value="[OpenSourze](https://opensourze.netlify.app)",
             inline=False,
         )
         info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
@@ -170,10 +170,10 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             name="Boost level", value=f"Level {ctx.guild.premium_tier}", inline=False
         )
         embed.add_field(
-            name="Text channels", value=len(guild.text_channels), inline=False
+            name="Text channels", value=len(ctx.guild.text_channels), inline=False
         )
         embed.add_field(
-            name="Voice channels", value=len(guild.voice_channels), inline=False
+            name="Voice channels", value=len(ctx.guild.voice_channels), inline=False
         )
 
         await ctx.send(embed=embed)

@@ -129,11 +129,7 @@ async def reload(ctx):
     with suppress(commands.ExtensionNotLoaded):
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):
-                client.unload_extension(f"cogs.{filename[:-3]}")
-
-        for filename in os.listdir("./cogs"):
-            if filename.endswith(".py"):
-                client.load_extension(f"cogs.{filename[:-3]}")
+                client.reload_extension(f"cogs.{filename[:-3]}")
 
     await msg.edit(content="✅ Reloaded cogs")
 
