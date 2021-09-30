@@ -1,3 +1,5 @@
+# This file contains the customised help command
+
 import discord
 from discord.ext.commands import MinimalHelpCommand
 
@@ -22,7 +24,7 @@ class CustomHelpCommand(MinimalHelpCommand):
                 embed.add_field(
                     name=f"{cog.emoji} {cog.qualified_name}",
                     value=cog.description
-                    + f"\nRun `help {cog.qualified_name.lower()}`\n",
+                    + f"\nRun `{self.clean_prefix}help {cog.qualified_name.lower()}`\n",
                     inline=False,
                 )
 
@@ -31,22 +33,20 @@ class CustomHelpCommand(MinimalHelpCommand):
     async def send_cog_help(self, cog):
         destination = self.get_destination()
 
-        embed = discord.Embed(
-            title=f"{cog.qualified_name} Commands",
-            color=0xFF6600,
-            description="Run `1 help <command>` for more info on the command.\n\n"
-            + "Don't type the brackets while using any commands.\n"
-            + "If an option is in <angle brackets>, it is required. If it's in [square brackets], it's optional.\n"
-            + "If there is an equal sign (`=`), the text that comes after it is the default value for that option.",
+        embed = discord.Embed(title=f"{cog.qualified_name} Commands", color=0xFF6600)
+        embed.set_footer(
+            text=f"Run `{self.clean_prefix}help` followed by a command name for more info on that command."
         )
+
+        cmd_list = []
 
         for c in cog.get_commands():
             if not c.hidden:
-                embed.add_field(
-                    name=self.get_command_signature(c),
-                    value=c.brief or c.help,
-                    inline=False,
+                cmd_list.append(
+                    f"`{self.get_command_signature(c)}`\n{c.brief or c.help}"
                 )
+
+        embed.description = "\n\n".join(cmd_list)
 
         await destination.send(embed=embed, components=[self.buttons])
 

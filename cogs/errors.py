@@ -1,3 +1,5 @@
+# This file is a cog to handle command errors
+
 from contextlib import suppress
 
 import discord
@@ -57,8 +59,8 @@ class Errors(commands.Cog):
             await ctx.send("❌ Only the owner of the bot can use this command.")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
-                "❌ You haven't provided all the required options.\n"
-                + "Check the command list to know what options to provide.",
+                "❌ You haven't provided enough options.\n"
+                + f"Missing option: `{error.param.name}`.",
                 components=[self.error_btns],
             )
         elif isinstance(error, commands.TooManyArguments):
@@ -149,7 +151,6 @@ class Errors(commands.Cog):
                             create_button(
                                 label="Join the server",
                                 style=ButtonStyle.URL,
-                                emoji=self.client.get_emoji(885083336240926730),
                                 url="https://discord.gg/KRjZaV9DP8",
                             )
                         ]

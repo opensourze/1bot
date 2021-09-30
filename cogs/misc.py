@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.6.6"
+__version__ = "0.6.7"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -98,7 +98,20 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 
         message = await channel.send(embed=embed)
-        await ctx.send("✅ Your suggestion has been submitted to " + channel.mention)
+        await ctx.send(
+            "✅ Your suggestion has been submitted to 1Bot's server!",
+            components=[
+                create_actionrow(
+                    *[
+                        create_button(
+                            label="Join the server",
+                            style=ButtonStyle.URL,
+                            url="https://discord.gg/KRjZaV9DP8",
+                        )
+                    ]
+                )
+            ],
+        )
         await message.add_reaction("✅")
         await message.add_reaction("❌")
 
@@ -290,7 +303,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description='Mutes can no longer be bypassed! Until now, users were able to bypass a mute by rejoining the server. But now, mutes are logged in a database and 1Bot checks it whenever a user joins the server. If they were muted, it adds the muted role to them immediately. We\'ve also fixed a bunch of things in this update, reducing the "Unhandled Error" messages.',
+            description="A brand new `ascii`/`figlet` command - if you know what Figlet is, you'll know what this does. If you don't, this command basically sends the text you provide, but with ASCII art. We also made a bunch of little improvements to make 1Bot easier to use and less... buggy.",
         )
 
         await ctx.send(embed=changelog)

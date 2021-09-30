@@ -473,7 +473,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
-    async def clear(self, ctx, amount: int = 5):
+    async def clear(self, ctx, amount: int):
         await ctx.channel.purge(limit=amount + 1)
 
     @cog_ext.cog_slash(
@@ -659,7 +659,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         await self.mute(ctx, member, reason=reason)
 
     # tempmute command
-    time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+    time_dict = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 
     invalid_duration_msg = (
         "❌ **Invalid duration**! Here are some examples:\n\n"
@@ -671,7 +671,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
     async def time2seconds(self, send, time):
         try:
-            return int(time[:-1]) * self.time_convert[time[-1]]
+            return int(time[:-1]) * self.time_dict[time[-1]]
         except:
             await send(self.invalid_duration_msg)
             return False
@@ -688,7 +688,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         *,
         reason=None,
     ):
-        unit_tuple = tuple([unit for unit in self.time_convert.keys()])
+        unit_tuple = tuple([unit for unit in self.time_dict.keys()])
         sleep_duration = await self.time2seconds(ctx.send, duration.lower())
         if sleep_duration is False:
             return

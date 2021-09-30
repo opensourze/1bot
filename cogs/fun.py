@@ -8,6 +8,7 @@ from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 from discordTogether import DiscordTogether
+from pyfiglet import Figlet
 
 
 class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?"):
@@ -34,32 +35,30 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         print(f"{self.__class__.__name__} cog is ready")
 
     # dog command
-    @commands.command(help="Get a random dog image and fact", aliases=["doggo"])
+    @commands.command(help="Get a random dog image", aliases=["doggo"])
     async def dog(self, ctx):
-        json = requests.get("https://some-random-api.ml/animal/dog").json()
+        json = requests.get("https://some-random-api.ml/img/dog").json()
 
-        embed = discord.Embed(color=0xFF6600)
-        embed.add_field(name="Random Fact", value=json["fact"])
-        embed.set_image(url=json["image"])
+        embed = discord.Embed(title="Here's a doggo", color=0xFF6600)
+        embed.set_image(url=json["link"])
 
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="dog", description="Get a random dog image and fact")
+    @cog_ext.cog_slash(name="dog", description="Get a random dog image")
     async def dog_slash(self, ctx: SlashContext):
         await self.dog(ctx)
 
     # cat command
-    @commands.command(help="Get a random cat image and fact", aliases=["kitty"])
+    @commands.command(help="Get a random cat image", aliases=["kitty"])
     async def cat(self, ctx):
-        json = requests.get("https://some-random-api.ml/animal/cat").json()
+        json = requests.get("https://some-random-api.ml/img/cat").json()
 
-        embed = discord.Embed(color=0xFF6600)
-        embed.add_field(name="Random Fact", value=json["fact"])
-        embed.set_image(url=json["image"])
+        embed = discord.Embed(title="Here's a kitty", color=0xFF6600)
+        embed.set_image(url=json["link"])
 
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="cat", description="Get a random cat image and fact")
+    @cog_ext.cog_slash(name="cat", description="Get a random cat image")
     async def cat_slash(self, ctx: SlashContext):
         await self.cat(ctx)
 
@@ -89,7 +88,11 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await self.mock(ctx, text=text)
 
     # YouTube Together
-    @commands.command(help="Watch YouTube together with friends", aliases=["yt"])
+    @commands.command(
+        brief="Watch YouTube together with friends",
+        help="Connect to a voice channel and run this command to watch YouTube together with other server members without streaming!",
+        aliases=["yt"],
+    )
     @commands.guild_only()
     async def youtube(self, ctx):
         await self.discord_together(ctx, "youtube")
@@ -103,7 +106,9 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
     # Chess
     @commands.command(
-        help="Play chess with friends in a voice channel", aliases=["chesstogether"]
+        brief="Play chess with friends in a voice channel",
+        help="Connect to a voice channel and run this command to play chess together with other server members directly in the channel!",
+        aliases=["chesstogether"],
     )
     @commands.guild_only()
     async def chess(self, ctx):
@@ -127,7 +132,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             },
         )
 
-        if r.status_code != 200:
+        if not r.ok:
             await ctx.send(
                 "❌ The dad joke API has returned an error. Please try again later."
             )
@@ -307,6 +312,23 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     @cog_ext.cog_slash(name="coinflip", description="Flip a coin")
     async def flip_slash(self, ctx: SlashContext):
         await self.flip(ctx)
+
+    # Figlet/ASCII command
+    @commands.command(help="Return text in ASCII art", aliases=["ascii"])
+    async def figlet(self, ctx, *, text):
+        if len(text) > 20:
+            await ctx.send(
+                "❌ Your text is too long, please use text that is lesser than 20 characters."
+            )
+            return
+
+        ascii_text = Figlet(font="small").renderText(text)
+
+        await ctx.send(f"```\n{ascii_text}\n```")
+
+    @cog_ext.cog_slash(name="ascii", description="Return text in ASCII art")
+    async def figlet_slash(self, ctx, *, text):
+        await self.figlet(ctx, text=text)
 
 
 # Add cog
