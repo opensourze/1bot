@@ -34,8 +34,11 @@ class CustomHelpCommand(MinimalHelpCommand):
         destination = self.get_destination()
 
         embed = discord.Embed(title=f"{cog.qualified_name} Commands", color=0xFF6600)
-        embed.set_footer(
-            text=f"Run `{self.clean_prefix}help` followed by a command name for more info on that command."
+        embed.add_field(
+            name="Understanding the help command",
+            value="Commands are formatted in this manner:\n"
+            + f"{self.clean_prefix}command <Required option> [Optional option=Default value]\n\n",
+            inline=False,
         )
 
         cmd_list = []
@@ -64,6 +67,10 @@ class CustomHelpCommand(MinimalHelpCommand):
 
         aliases = command.aliases
         if aliases:
-            embed.add_field(name="Aliases", value=", ".join(aliases), inline=False)
+            embed.add_field(
+                name="Aliases",
+                value="You can also use this command as:\n" + ", ".join(aliases),
+                inline=False,
+            )
 
         await destination.send(embed=embed)
