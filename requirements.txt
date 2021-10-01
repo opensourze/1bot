@@ -8,3 +8,4 @@ temperature-converter-py
 buttons
 pillow
 discord-together
+pyfiglet
