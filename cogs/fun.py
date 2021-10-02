@@ -162,6 +162,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
     @cog_ext.cog_slash(name="bored", description="Get something to do if you're bored")
     async def bored_slash(self, ctx: SlashContext):
+        await ctx.defer()
         await self.bored(ctx)
 
     # Reddit/meme command

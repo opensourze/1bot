@@ -17,9 +17,10 @@ class Client(commands.AutoShardedBot):
 
         # Initialising AutoShardedBot
         super().__init__(
-            command_prefix=["1. ", "1."],
+            command_prefix=["1 ", "1"],
             case_sensitive=True,
             intents=intents,
+            owner_ids=[748791790798372964, 825292137338765333],
         )
 
         """
