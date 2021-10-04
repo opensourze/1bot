@@ -15,7 +15,7 @@ class Client(commands.AutoShardedBot):
         intents.guilds = True
         intents.members = True
 
-        # Initialising AutoShardedBot
+        # Initialise AutoShardedBot
         super().__init__(
             command_prefix=["1 ", "1"],
             case_sensitive=True,

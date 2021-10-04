@@ -333,17 +333,34 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
     @commands.command(help="Play a simple game of slots")
     async def slots(self, ctx):
-        responses = ["🍋" , "🍊", "🍉", ":seven:", ]
-        embed=discord.Embed(title="🎰 Slot Machine 🎰", description=random.choice(responses) + random.choice(responses) + random.choice(responses), color=0x176cd5)
-        embed.set_footer(text="You need triple 7's to win.")
+        responses = [
+            "🍋",
+            "🍊",
+            "🍉",
+            "7️⃣",
+        ]
+        embed = discord.Embed(
+            title="🎰 Slot Machine 🎰",
+            description="[ "
+            + f"{random.choice(responses)} {random.choice(responses)} {random.choice(responses)}"
+            + " ]",
+            color=0xFF6600,
+        )
+        if embed.description != ":seven: :seven: :seven:":
+            embed.set_footer(text="You need triple 7's to win.")
+        else:
+            embed.add_field(
+                name="🎉 You win! Congrats!",
+                value="It's pretty hard to win this, you know?",
+            )
+
         await ctx.send(embed=embed)
-        
+
     @cog_ext.cog_slash(name="slots", description="Play a simple game of slots")
-    async def slots(self, ctx):
-        responses = ["🍋" , "🍊", "🍉", ":seven:", ]
-        embed=discord.Embed(title="🎰 Slot Machine 🎰", description=random.choice(responses) + random.choice(responses) + random.choice(responses), color=0x176cd5)
-        embed.set_footer(text="You need triple 7's to win.")
-        await ctx.send(embed=embed)
+    async def slots_slash(self, ctx):
+        await self.slots(ctx)
+
+
 # Add cog
 def setup(client):
     client.add_cog(Fun(client))
