@@ -331,7 +331,19 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def figlet_slash(self, ctx, *, text):
         await self.figlet(ctx, text=text)
 
-
+    @commands.command(help="Play a simple game of slots")
+    async def slots(self, ctx):
+        responses = ["🍋" , "🍊", "🍉", ":seven:", ]
+        embed=discord.Embed(title="🎰 Slot Machine 🎰", description=random.choice(responses) + random.choice(responses) + random.choice(responses), color=0x176cd5)
+        embed.set_footer(text="You need triple 7's to win.")
+        await ctx.send(embed=embed)
+        
+    @cog_ext.cog_slash(name="slots", description="Play a simple game of slots")
+    async def slots(self, ctx):
+        responses = ["🍋" , "🍊", "🍉", ":seven:", ]
+        embed=discord.Embed(title="🎰 Slot Machine 🎰", description=random.choice(responses) + random.choice(responses) + random.choice(responses), color=0x176cd5)
+        embed.set_footer(text="You need triple 7's to win.")
+        await ctx.send(embed=embed)
 # Add cog
 def setup(client):
     client.add_cog(Fun(client))
