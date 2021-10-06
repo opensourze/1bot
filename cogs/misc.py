@@ -7,7 +7,7 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.6.7"
+__version__ = "0.6.8"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -189,6 +189,8 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             name="Voice channels", value=len(ctx.guild.voice_channels), inline=False
         )
 
+        embed.set_footer(text=f"Shard {ctx.guild.shard_id}")
+
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
@@ -303,7 +305,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="A brand new `ascii`/`figlet` command - if you know what Figlet is, you'll know what this does. If you don't, this command basically sends the text you provide, but with ASCII art. We also made a bunch of little improvements to make 1Bot easier to use and less... buggy.",
+            description="Added a new `slots` command.",
         )
 
         await ctx.send(embed=changelog)

@@ -346,12 +346,12 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             + " ]",
             color=0xFF6600,
         )
-        if embed.description != ":seven: :seven: :seven:":
+        if embed.description != "[ 7️⃣ 7️⃣ 7️⃣ ]":
             embed.set_footer(text="You need triple 7's to win.")
         else:
             embed.add_field(
                 name="🎉 You win! Congrats!",
-                value="It's pretty hard to win this, you know?",
+                value="It's pretty hard to win this!",
             )
 
         await ctx.send(embed=embed)
