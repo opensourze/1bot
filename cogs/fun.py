@@ -13,7 +13,7 @@ from pyfiglet import Figlet
 
 class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?"):
     def __init__(self, client):
-        self.client = client
+        self.client: commands.Bot = client
         self.emoji = "<:fun:884088990146367528>"
 
         self.dt = DiscordTogether(client)

@@ -7,12 +7,12 @@ from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
 
-__version__ = "0.6.8"
+__version__ = "0.6.9"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     def __init__(self, client):
-        self.client = client
+        self.client: commands.Bot = client
         self.emoji = "<:miscellaneous:884088957057523733>"
 
     @commands.Cog.listener()
@@ -305,7 +305,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="Added a new `slots` command.",
+            description="Added a bot warning/ban system - if you spam suggestions or errored commands or anything else like that, you'll receive a warning, and if continued, you'll be banned from using 1Bot entirely.",
         )
 
         await ctx.send(embed=changelog)

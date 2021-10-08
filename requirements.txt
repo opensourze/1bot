@@ -9,3 +9,4 @@ buttons
 pillow
 discord-together
 pyfiglet
+certifi

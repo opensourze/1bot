@@ -9,10 +9,11 @@ from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 from pymongo import MongoClient
+from certifi import where
 
 dotenv.load_dotenv()
 
-cluster = MongoClient(environ["MONGO_URL"])
+cluster = MongoClient(environ["MONGO_URL"], tlsCAFile=where())
 warns = cluster["1bot"]["warns"]
 mute_db = cluster["1bot"]["muted"]
 
@@ -66,9 +67,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         elif member.guild_permissions.administrator:
             await ctx.send("❌ I can't warn an administrator.")
             return
-
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
 
         inserted_warn = warns.insert_one(
             {
@@ -125,12 +123,10 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
     # Warnings command
     @commands.command(help="View the warnings for a member", aliases=["warns"])
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     async def warnings(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
-
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
 
         warn_filter = {"user": member.id, "guild": ctx.guild.id}
 
@@ -214,9 +210,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
                 f"❌ Couldn't find a warning for {member.username} with that ID."
             )
         else:
-            with suppress(AttributeError):
-                await ctx.trigger_typing()
-
             warns.delete_one(result)
 
             await ctx.send(
@@ -255,9 +248,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     async def clearwarns(self, ctx, *, member: commands.MemberConverter):
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
-
         deleted = warns.delete_many({"user": member.id, "guild": ctx.guild.id})
 
         await ctx.send(f"✅ Deleted {deleted.deleted_count} warnings for {str(member)}.")

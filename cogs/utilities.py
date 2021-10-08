@@ -16,7 +16,7 @@ class Utilities(
     description="A set of useful utility commands.",
 ):
     def __init__(self, client):
-        self.client = client
+        self.client: commands.Bot = client
         self.emoji = "<:utilities:884088853609193544>"
 
     @commands.Cog.listener()

@@ -110,6 +110,16 @@ class Errors(commands.Cog):
             error
         ) or "Incorrect padding" in str(error):
             await ctx.send("❌ That base64 code is invalid. Are you sure it's base64?")
+        elif isinstance(error, commands.CheckFailure):
+            if "The global check functions for command " in str(error):
+                try:
+                    await ctx.author.send(
+                        "❌ You cannot use 1Bot's commands as you are globally banned."
+                    )
+                except:
+                    pass
+
+        # ERROR REPORTING SYSTEM #
         else:
 
             error_embed = discord.Embed(
