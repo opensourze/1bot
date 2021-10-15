@@ -26,7 +26,7 @@ slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 @commands.is_owner()
 async def botwarn(ctx, id: int, *, message):
     if id in client.owner_ids:
-        return await ctx.send("you can't ban an owner smh")
+        return await ctx.send("you can't warn an owner smh")
     try:
         user: discord.User = client.get_user(id)
 
@@ -52,6 +52,8 @@ async def botwarn(ctx, id: int, *, message):
 @client.command(hidden=True)
 @commands.is_owner()
 async def botban(ctx, id: int, *, reason):
+    if id in client.owner_ids:
+        return await ctx.send("you can't warn an owner smh")
     try:
         user: discord.User = client.get_user(id)
 

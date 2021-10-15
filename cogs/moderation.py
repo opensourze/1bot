@@ -29,6 +29,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
+        # Set permissions for muted role when a channel is created
         muted_role = discord.utils.get(channel.guild.roles[::-1], name="Muted")
 
         if muted_role:
@@ -36,6 +37,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        # Preventing mute bypass
         if mute_db.find_one({"user": member.id, "guild": member.guild.id}):
             muted_role = discord.utils.get(member.guild.roles[::-1], name="Muted")
 
@@ -912,13 +914,13 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         options=[
             create_option(
                 name="member",
-                description="The user to ban",
+                description="The member to ban",
                 required=True,
                 option_type=6,
             ),
             create_option(
                 name="reason",
-                description="Why do you want to ban this user? (Optional)",
+                description="Why do you want to ban this member? (Optional)",
                 required=False,
                 option_type=3,
             ),
@@ -927,8 +929,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def ban_slash(self, ctx: SlashContext, user, reason=None):
-        await self.ban(ctx, user, reason=reason)
+    async def ban_slash(self, ctx: SlashContext, member, reason=None):
+        await self.ban(ctx, member, reason=reason)
 
     # Unban command
     @commands.command(

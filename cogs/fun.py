@@ -62,31 +62,6 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def cat_slash(self, ctx: SlashContext):
         await self.cat(ctx)
 
-    # Reverse command
-    @commands.command(aliases=["rev"], help="Reverse the given text")
-    async def reverse(self, ctx, *, text: str):
-        await ctx.send(text[::-1])
-
-    @cog_ext.cog_slash(name="reverse", description="Reverse the given text")
-    async def reverse_slash(self, ctx: SlashContext, *, text: str):
-        await ctx.send(text[::-1])
-
-    # Mock text command
-    @commands.command(help="Mock text (alternating upper and lower case)")
-    async def mock(self, ctx, *, text):
-        mock_text = "".join(
-            [char.upper() if i % 2 else char.lower() for i, char in enumerate(text)]
-        )
-
-        await ctx.send(mock_text)
-
-    @cog_ext.cog_slash(
-        name="mock",
-        description="Mock text (alternating upper and lower case)",
-    )
-    async def mock_slash(self, ctx: SlashContext, *, text):
-        await self.mock(ctx, text=text)
-
     # YouTube Together
     @commands.command(
         brief="Watch YouTube together with friends",

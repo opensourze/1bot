@@ -57,30 +57,35 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     async def info(self, ctx):
         cmd_list = [c for c in self.client.commands if not c.hidden]
 
-        info_embed = discord.Embed(title="`1Bot` information", color=0xFF6600)
-        info_embed.add_field(name="Bot version", value=f"v{__version__}", inline=False)
-        info_embed.add_field(
+        embed = discord.Embed(title="`1Bot` information", color=0xFF6600)
+        embed.add_field(name="Bot version", value=f"v{__version__}", inline=False)
+        embed.add_field(
             name="Command count", value=f"{len(cmd_list)} commands", inline=False
         )
-        info_embed.add_field(
+        embed.add_field(
             name="Source code",
             value="View the bot's source code on [GitHub](https://github.com/opensourze/1bot)",
             inline=False,
         )
-        info_embed.add_field(
+        embed.add_field(
             name="Developer",
             value="[OpenSourze](https://opensourze.netlify.app)",
             inline=False,
         )
-        info_embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
-        info_embed.add_field(
-            name="Pycord version", value=discord.__version__, inline=False
+        embed.add_field(
+            name="Servers", value=f"{len(self.client.guilds)} servers", inline=False
         )
-        info_embed.add_field(
+        embed.add_field(
+            name="Users",
+            value=f"{sum([len(guild.members)for guild in self.client.guilds])} users",
+            inline=False,
+        )
+        embed.add_field(name="Pycord version", value=discord.__version__, inline=False)
+        embed.add_field(
             name="Python version", value=platform.python_version(), inline=False
         )
-        info_embed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=info_embed, components=[self.info_btns])
+        embed.set_thumbnail(url=self.client.user.avatar_url)
+        await ctx.send(embed=embed, components=[self.info_btns])
 
     @cog_ext.cog_slash(name="info", description="View the bot's information")
     async def info_slash(self, ctx: SlashContext):
@@ -221,7 +226,9 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             name="Joined this server",
             value=f"<t:{round(member.joined_at.timestamp())}:R>",
         )
-        embed.add_field(name="Nickname", value=member.display_name)
+        members = sorted(ctx.guild.members, key=lambda m: m.joined_at)
+        embed.add_field(name="Join position", value=str(members.index(member) + 1))
+        embed.add_field(name="Display name", value=member.display_name)
         if len(" ".join(roles)) <= 1024:
             embed.add_field(
                 name=f"Roles ({role_length})",
@@ -240,6 +247,8 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             embed.add_field(name="Is this user a bot?", value="Yes, beep boop")
         else:
             embed.add_field(name="Is this user a bot?", value="No - normal human user")
+
+        embed.set_footer(text=f"User ID: {member.id}")
 
         await ctx.send(embed=embed)
 

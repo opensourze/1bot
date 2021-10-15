@@ -129,7 +129,7 @@ class Utilities(
         name="search_github", description="Search for repositories on GitHub"
     )
     async def github_slash(self, ctx: SlashContext, *, query):
-        await self.githubsearch(ctx, query=query)
+        await self.github(ctx, query=query)
 
     # PyPI command
     @commands.command(help="Get info for a PyPI module")
