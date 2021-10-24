@@ -21,25 +21,23 @@ bans = cluster["1bot"]["bans"]
 client = Client()
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 
-# Command to warn a user from 1Bot
+# Command to message a user from 1Bot
 @client.command(hidden=True)
 @commands.is_owner()
-async def botwarn(ctx, id: int, *, message):
+async def messageuser(ctx, id: int, *, message):
     if id in client.owner_ids:
-        return await ctx.send("you can't warn an owner smh")
+        return await ctx.send(
+            "You can't send messages to an owner through 1Bot. why not talk to them directly smh"
+        )
     try:
         user: discord.User = client.get_user(id)
 
         embed = discord.Embed(
-            title="Global warning",
-            colour=0xFF0000,
-            description="You have received a warning from 1Bot's team.",
+            title="My developers have sent you a message!",
+            colour=0xFF6600,
         )
 
         embed.add_field(name="Message", value=message)
-        embed.set_footer(
-            text="If we feel like, we can ban you from using 1Bot entirely; on all servers and DMs."
-        )
 
         await user.send(embed=embed)
         await ctx.send(f"✅ Warned user `{user.name}` with this embed.", embed=embed)
@@ -48,35 +46,26 @@ async def botwarn(ctx, id: int, *, message):
         await ctx.send(f"❌ **Error:**\n\n{e}")
 
 
-# Command to ban a user from 1Bot
-@client.command(hidden=True)
+# Command to ban a user from submitting suggestions
+@client.command(hidden=True, aliases=["suggestionban", "suggestionblock"])
 @commands.is_owner()
-async def botban(ctx, id: int, *, reason):
+async def block(ctx, id: int, *, reason):
     if id in client.owner_ids:
-        return await ctx.send("you can't warn an owner smh")
+        return await ctx.send("you can't block an owner dummy")
     try:
         user: discord.User = client.get_user(id)
 
         embed = discord.Embed(
-            title="You've been BANNED from 1Bot!",
+            title="You've been blocked from sending suggestions!",
             color=0xFF0000,
-            description=f"You've been banned from using 1Bot on **all servers and DMs.**",
+            description=f"You've been banned from submitting suggestions as we have noticed that you are spamming them.",
         )
         embed.add_field(name="Reason", value=reason, inline=False)
-        embed.add_field(
-            name="Appeal",
-            value="Remember, if you spam these socials, you'll be blocked there too.\n"
-            + "[Twitter](https://twitter.com/opensourze)\n"
-            + "[Keybase](https://keybase.io/opensourze)\n"
-            + "[GitHub](https://github.com/opensourze/1bot/issues/new) (use the `Ban appeal` label)\n"
-            + "[Reddit](https://reddit.com/user/opensourze)",
-            inline=False,
-        )
 
         bans.insert_one({"_id": id})
 
         await user.send(embed=embed)
-        await ctx.send(f"✅ Banned user `{user.name}` with this embed.", embed=embed)
+        await ctx.send(f"✅ Blocked user `{user.name}` with this embed:", embed=embed)
 
     except Exception as e:
         await ctx.send(f"❌ **Error:**\n\n{e}")

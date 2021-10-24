@@ -1,13 +1,19 @@
 import platform
+from os import environ
 
 import discord
+from certifi import where
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
+from pymongo import MongoClient
 
-__version__ = "0.6.9"
+cluster = MongoClient(environ["MONGO_URL"], tlsCAFile=where())
+banned = cluster["1bot"]["bans"]
+
+__version__ = "0.6.10"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -94,6 +100,11 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     # Suggest command
     @commands.command(help="Submit a suggestion for the bot")
     async def suggest(self, ctx, *, suggestion):
+        result = banned.find_one({"_id": ctx.author.id})
+
+        if result:
+            return await ctx.send("❌ You are blocked from submitting suggestions.")
+
         # Get 1Bot support server's suggestions channel
         channel = self.client.get_channel(884095439190786059)
 
@@ -314,7 +325,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="Added a bot warning/ban system - if you spam suggestions or errored commands or anything else like that, you'll receive a warning, and if continued, you'll be banned from using 1Bot entirely.",
+            description="When you use a moderation someone with 1Bot, it now shows you who used the command in the audit log.",
         )
 
         await ctx.send(embed=changelog)

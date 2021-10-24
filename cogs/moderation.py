@@ -33,7 +33,10 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         muted_role = discord.utils.get(channel.guild.roles[::-1], name="Muted")
 
         if muted_role:
-            await channel.set_permissions(muted_role, send_messages=False, speak=False)
+            with suppress(discord.errors.Forbidden):
+                await channel.set_permissions(
+                    muted_role, send_messages=False, speak=False
+                )
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -619,7 +622,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         ):
             return
 
-        await member.add_roles(muted_role, reason=reason)
+        await member.add_roles(
+            muted_role, reason=f"Muted by {ctx.author}. Reason: {reason}"
+        )
 
         existing_mute = mute_db.find_one({"user": member.id, "guild": ctx.guild.id})
         if not existing_mute:
@@ -698,7 +703,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         ):
             return
 
-        await member.add_roles(muted_role, reason=reason)
+        await member.add_roles(
+            muted_role, reason=f"Muted by {ctx.author}. Reason: {reason}"
+        )
 
         existing_mute = mute_db.find_one({"user": member.id, "guild": ctx.guild.id})
         if not existing_mute:
@@ -718,7 +725,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         await ctx.send(embed=embed)
 
         await asyncio.sleep(sleep_duration)
-        await member.remove_roles(muted_role, reason=reason)
+        await member.remove_roles(muted_role, reason="Automatic unmute")
 
         mute_db.delete_one({"user": member.id, "guild": ctx.guild.id})
 
@@ -779,7 +786,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
             return
 
-        await member.remove_roles(muted_role)
+        await member.remove_roles(muted_role, reason=f"Unmuted by {ctx.author}.")
 
         embed = discord.Embed(
             title="✅ Member unmuted",
@@ -834,7 +841,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
         except:
             pass
-        await ctx.guild.kick(member, reason=reason)
+        await ctx.guild.kick(member, reason=f"Kicked by {ctx.author}. Reason: {reason}")
 
         embed = discord.Embed(
             title="✅ Member kicked",
@@ -899,7 +906,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         except:
             pass
 
-        await ctx.guild.ban(user, reason=reason)
+        await ctx.guild.ban(user, reason=f"Banned by {ctx.author}. Reason: {reason}")
 
         embed = discord.Embed(
             title="✅ Member banned",
@@ -951,7 +958,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
                     username,
                     user_tag,
                 ):
-                    await ctx.guild.unban(banned)
+                    await ctx.guild.unban(banned, reason=f"Unbanned by {ctx.author}.")
                     await ctx.send(f"✅ Unbanned {banned}")
                     return
 
@@ -971,12 +978,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
                 name="user",
                 description="The user to unban (username + tag)",
                 required=True,
-                option_type=3,
-            ),
-            create_option(
-                name="reason",
-                description="Why do you want to unban this user? (Optional)",
-                required=False,
                 option_type=3,
             ),
         ],
@@ -999,7 +1000,11 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def lockdown(self, ctx, channel: discord.TextChannel = None):
         # If channel is None, fall back to the channel where the command is being invoked
         channel = channel or ctx.channel
-        await channel.set_permissions(ctx.guild.default_role, send_messages=False)
+        await channel.set_permissions(
+            ctx.guild.default_role,
+            send_messages=False,
+            reason=f"Channel locked down by {ctx.author}",
+        )
         await channel.set_permissions(ctx.guild.me, send_messages=True)
 
         embed = discord.Embed(
@@ -1037,7 +1042,11 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.bot_has_permissions(manage_channels=True)
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
-        await channel.set_permissions(ctx.guild.default_role, send_messages=None)
+        await channel.set_permissions(
+            ctx.guild.default_role,
+            send_messages=None,
+            reason=f"Channel unlocked by {ctx.author}",
+        )
 
         embed = discord.Embed(
             title="✅ Channel removed from lockdown",

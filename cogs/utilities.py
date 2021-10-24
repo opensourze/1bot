@@ -73,6 +73,10 @@ class Utilities(
         try:
             # try fetching the replied message
             message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+            if message is None:
+                return await ctx.send(
+                    "❌ This message could not be fetched, or it might not have text content."
+                )
         except (discord.NotFound, AttributeError):  # if the message is not a reply
             if not message_id:
                 await ctx.send(

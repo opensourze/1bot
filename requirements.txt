@@ -5,7 +5,6 @@ requests
 discord-py-slash-command
 python-dotenv
 temperature-converter-py
-buttons
 pillow
 discord-together
 pyfiglet
