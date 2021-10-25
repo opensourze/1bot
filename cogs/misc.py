@@ -13,7 +13,7 @@ from pymongo import MongoClient
 cluster = MongoClient(environ["MONGO_URL"], tlsCAFile=where())
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.6.10"
+__version__ = "0.7.0"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -325,7 +325,9 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="When you use a moderation someone with 1Bot, it now shows you who used the command in the audit log.",
+            description="This is a pretty major reliability update so that 1Bot feels even less frustrating."
+            + "-  The emoji command now supports URLs! That means there's now a /emoji command too and now we can say 1Bot has 100% support for Slash Commands."
+            + '- The lyrics command is now "paginated" - which means lyrics will be separated into pages which you can navigate by using reactions. This is so that long lyrics don\'t flood the channel but you still get the full lyrics.',
         )
 
         await ctx.send(embed=changelog)

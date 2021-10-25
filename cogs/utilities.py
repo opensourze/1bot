@@ -1,7 +1,7 @@
 import asyncio
 import base64
-import contextlib
 import os
+from contextlib import suppress
 
 import discord
 import requests
@@ -9,6 +9,7 @@ from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 from temperature_converter_py import fahrenheit_to_celsius
+from utils import Pager
 
 
 class Utilities(
@@ -24,42 +25,87 @@ class Utilities(
         print(f"{self.__class__.__name__} cog is ready")
 
     # Emoji command
-    @commands.command(aliases=["createemoji", "addemoji", "emote"])
+    @commands.command(
+        name="emoji",
+        aliases=["createemoji", "addemoji", "emote"],
+        help="Create a custom emoji on this server",
+    )
     @commands.has_permissions(manage_emojis=True)
     @commands.bot_has_permissions(manage_emojis=True)
-    async def emoji(self, ctx, *, emoji_name: str):
-        if not ctx.message.attachments:
-            await ctx.send(f"❌ You need to attach an image to create an emoji!")
-            return
+    async def emoji_cmd(self, ctx, emoji_name: str, *, image_link: str = None):
+        with suppress(AttributeError):
+            if not ctx.message.attachments and not image_link:
+                return await ctx.send(
+                    f"❌ You need to attach an image or provide an image link to create an emoji."
+                )
 
         try:
-            emoji = await ctx.guild.create_custom_emoji(
-                name=emoji_name, image=await ctx.message.attachments[0].read()
+            if image_link:
+                image = requests.get(image_link).content
+            else:
+                image = await ctx.message.attachments[0].read()
+
+            created_emoji = await ctx.guild.create_custom_emoji(
+                name=emoji_name, image=image
             )
 
         # errors
         except discord.HTTPException as e:
             if "File cannot be larger than 256" in str(e):
                 await ctx.send(
-                    "❌ The image is too big; please attach an image that is smaller than 256 kb."
+                    "❌ That image is too big for an emoji. Use an image that is smaller than 256 kb (you can try <https://squoosh.app> to compress it)."
                 )
-                return
             elif "String value did not match validation regex" in str(e):
                 await ctx.send(
-                    "❌ Invalid emoji name, you might have some unsupported special characters or spaces in the name!"
+                    "❌ Invalid emoji name; you have unsupported characters and/or spaces in the name."
                 )
-                return
             elif "Must be between 2 and 32 in length" in str(e):
                 await ctx.send("❌ The emoji name must be 2 to 32 characters long.")
-                return
             elif "Maximum number of emojis reached" in str(e):
-                await ctx.send("❌ This server has reached its emoji limit.")
-                return
-            else:
-                await ctx.send(str(e))
-                return
+                await ctx.send(
+                    "❌ This server has reached its emoji limit.\n"
+                    + "You'll have to boost the server to the next level to get more emoji slots!"
+                )
 
-        await ctx.send(f"Emoji created! {emoji}")
+            return
+        except Exception as e:
+            errs = requests.exceptions
+            if isinstance(
+                e,
+                (
+                    errs.MissingSchema,
+                    errs.InvalidSchema,
+                    errs.ConnectionError,
+                    UnboundLocalError,
+                ),
+            ):
+                return await ctx.send(
+                    "❌ Invalid URL provided. Make sure the URL only contains the image you want!"
+                )
+
+        await ctx.send(f"Emoji created! {created_emoji}")
+
+    @cog_ext.cog_slash(
+        name="emoji",
+        description="Create a custom emoji on this server",
+        options=[
+            create_option(
+                name="emoji_name",
+                description="The name of the emoji",
+                required=True,
+                option_type=3,
+            ),
+            create_option(
+                name="image_link",
+                description="The URL of the image to create an emoji from.",
+                required=True,
+                option_type=3,
+            ),
+        ],
+    )
+    @commands.has_permissions(manage_emojis=True)
+    async def emoji_slash(self, ctx: SlashContext, emoji_name, image_link):
+        await self.emoji_cmd(ctx, emoji_name, image_link=image_link)
 
     # Raw text command
     @commands.command(
@@ -202,12 +248,12 @@ class Utilities(
                 url="https://www.npmjs.com/package/" + package,
             )
 
-            with contextlib.suppress(KeyError):
+            with suppress(KeyError):
                 embed.add_field(name="Homepage", value=json["homepage"], inline=False)
 
             embed.add_field(name="Author", value=json["author"]["name"])
 
-            with contextlib.suppress(KeyError):
+            with suppress(KeyError):
                 embed.add_field(
                     name="GitHub repository",
                     # Remove "git+" and ".git" from the url
@@ -221,7 +267,7 @@ class Utilities(
                 ),
                 inline=False,
             )
-            with contextlib.suppress(KeyError):
+            with suppress(KeyError):
                 embed.add_field(name="License", value=json["license"], inline=False)
 
             await ctx.send(embed=embed)
@@ -233,29 +279,36 @@ class Utilities(
     # Lyrics command
     @commands.command(help="Get lyrics for a song", aliases=["ly"])
     async def lyrics(self, ctx, *, song):
-        with contextlib.suppress(AttributeError):
+        with suppress(AttributeError):
             await ctx.trigger_typing()
 
         json = requests.get(f"https://some-random-api.ml/lyrics?title={song}").json()
 
-        with contextlib.suppress(KeyError):
+        with suppress(KeyError):
             if json["error"]:
                 await ctx.send("❌ " + json["error"])
                 return
 
-        embed = discord.Embed(title=json["title"], color=0xFF6600)
-        embed.set_author(
-            name="Click to view lyrics in your browser", url=json["links"]["genius"]
+        pager = Pager(
+            title=json["title"],
+            thumbnail=json["thumbnail"]["genius"],
+            timeout=100,
+            entries=[
+                json["lyrics"][i : i + 700] for i in range(0, len(json["lyrics"]), 700)
+            ],
+            length=1,
+            colour=0xFF6600,
         )
-        embed.set_thumbnail(url=json["thumbnail"]["genius"])
 
-        # Max length for descriptions is 4096 characters
-        if len(json["lyrics"]) > 4096:
-            embed.description = json["lyrics"][:4093] + "..."
-        else:
-            embed.description = json["lyrics"]
+        # # Max length for descriptions is 4096 characters
+        # if len(json["lyrics"]) > 4096:
+        #     embed.description = json["lyrics"][:4093] + "..."
+        # else:
+        #     embed.description = json["lyrics"]
 
-        await ctx.send(embed=embed)
+        # await ctx.send(embed=embed)
+
+        await pager.start(ctx)
 
     @cog_ext.cog_slash(name="lyrics", description="Get lyrics for a song")
     async def lyrics_slash(self, ctx: SlashContext, *, song):
@@ -311,7 +364,7 @@ class Utilities(
             await ctx.send(
                 "❌ City not found. Provide only the city name, **or:**\n"
                 + "The city name with the state code and country code separated by commas.\n"
-                + "E.g.: `washington,wa,us` or just `washington`."
+                + "E.g.: `los angeles,ca,us` or just `los angeles`."
             )
         else:
             weather_description = json["weather"][0]["description"].capitalize()
@@ -453,7 +506,7 @@ class Utilities(
                 embed.set_footer(text=footer)
 
             await msg1.delete()
-            with contextlib.suppress(AttributeError):
+            with suppress(AttributeError):
                 await ctx.message.delete()
 
             await ctx.channel.send(embed=embed)

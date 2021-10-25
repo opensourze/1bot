@@ -4,12 +4,14 @@ from os import environ
 
 import discord
 import dotenv
-from bson.objectid import ObjectId, InvalidId
+from bson.objectid import InvalidId, ObjectId
+from certifi import where
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 from pymongo import MongoClient
-from certifi import where
+
+from utils import mute_check, time2seconds
 
 dotenv.load_dotenv()
 
@@ -35,7 +37,10 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         if muted_role:
             with suppress(discord.errors.Forbidden):
                 await channel.set_permissions(
-                    muted_role, send_messages=False, speak=False
+                    muted_role,
+                    send_messages=False,
+                    speak=False,
+                    reason="Automatic permission update for the Muted role.",
                 )
 
     @commands.Cog.listener()
@@ -551,12 +556,16 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
-    async def slowmode(self, ctx, seconds: int):
+    async def slowmode(self, ctx, time: str):
+        seconds = await time2seconds(ctx.send, time.lower())
+        if seconds is False:
+            return
+
         if seconds < 0:
             await ctx.send("❌ Slowmode must be a positive number")
             return
         elif seconds > 21600:
-            await ctx.send("❌ Slowmode must be less than 21600 seconds (6 hours)")
+            await ctx.send("❌ Slowmode must be less than 6 hours")
         else:
             await ctx.channel.edit(slowmode_delay=seconds)
 
@@ -571,40 +580,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def slowmode_slash(self, ctx: SlashContext, seconds: int):
         await self.slowmode(ctx, seconds=seconds)
 
-    # This function returns False if the bot cannot mute the member
-    async def mute_checker(self, ctx, bot_role, member, muted_role):
-        if member == ctx.author:
-            await ctx.send("❌ You can't mute yourself!")
-            return False
-
-        if member == self.client.user:
-            await ctx.send("❌ I can't mute myself!")
-            return False
-
-        if bot_role <= member.top_role:
-            await ctx.send(
-                "❌ The user has a higher role or the same top role as mine.\n"
-                + "Please move my role higher!"
-            )
-            return False
-
-        if not muted_role:
-            await ctx.send(
-                ":information_source: Couldn't find a Muted role in this server. Creating a new one..."
-            )
-            muted_role = await ctx.guild.create_role(name="Muted", color=0x919191)
-
-            for channel in ctx.guild.channels:
-                await channel.set_permissions(
-                    muted_role, send_messages=False, speak=False
-                )
-
-        if bot_role <= muted_role:
-            await ctx.send(
-                "❌ My role is too low. I can only mute users if my role is higher than the Muted role!"
-            )
-            return False
-
     # Mute command
     @commands.command(
         help="Remove the permission for a member to send messages or speaking on voice",
@@ -616,10 +591,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
         muted_role = discord.utils.get(ctx.guild.roles[::-1], name="Muted")
 
-        if (
-            await self.mute_checker(ctx, ctx.guild.me.top_role, member, muted_role)
-            == False
-        ):
+        if await mute_check(ctx, ctx.guild.me.top_role, member, muted_role) == False:
             return
 
         await member.add_roles(
@@ -655,9 +627,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def mute_slash(self, ctx: SlashContext, member, reason=None):
         await self.mute(ctx, member, reason=reason)
 
-    # tempmute command
-    time_dict = {"s": 1, "m": 60, "h": 3600, "d": 86400}
-
+    # Tempmute command
     invalid_duration_msg = (
         "❌ **Invalid duration**! Here are some examples:\n\n"
         + '`1tempmute @Big Wumpus 2d Spam`- 2 days, with reason "Spam"\n'
@@ -665,13 +635,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         + "`1tempmute Wumpus 20m`- 20 minutes without any reason\n"
         + "\nYou can also use `s` for seconds."
     )
-
-    async def time2seconds(self, send, time):
-        try:
-            return int(time[:-1]) * self.time_dict[time[-1]]
-        except:
-            await send(self.invalid_duration_msg)
-            return False
 
     @commands.command(help="Temporarily mute a member", aliases=["tmute"])
     @commands.guild_only()
@@ -685,22 +648,13 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         *,
         reason=None,
     ):
-        unit_tuple = tuple([unit for unit in self.time_dict.keys()])
-        sleep_duration = await self.time2seconds(ctx.send, duration.lower())
+        sleep_duration = await time2seconds(ctx.send, duration.lower())
         if sleep_duration is False:
-            return
-
-        # If duration does not end with one of the units or is not a number, send an error
-        if not duration.lower().endswith(unit_tuple) or not duration[0].isdigit():
-            await ctx.send(self.invalid_duration_msg)
             return
 
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-        if (
-            await self.mute_checker(ctx, ctx.guild.me.top_role, member, muted_role)
-            == False
-        ):
+        if await mute_check(ctx, ctx.guild.me.top_role, member, muted_role) == False:
             return
 
         await member.add_roles(

@@ -71,13 +71,13 @@ async def block(ctx, id: int, *, reason):
         await ctx.send(f"❌ **Error:**\n\n{e}")
 
 
-# Loop through py files in cogs directory and load them
-for file in os.listdir("./cogs"):
-    if file.endswith(".py"):
-        client.load_extension(f"cogs.{file[:-3]}")
+if __name__ == "__main__":
+    # Loop through py files in cogs directory and load them
+    for file in os.listdir("./cogs"):
+        if file.endswith(".py"):
+            client.load_extension(f"cogs.{file[:-3]}")
 
-# Load Jishaku
-client.load_extension("jishaku")
+    # Load Jishaku
+    client.load_extension("jishaku")
 
-
-client.run(os.environ["TOKEN"])
+    client.run(os.environ["TOKEN"])
