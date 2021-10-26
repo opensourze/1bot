@@ -4,7 +4,7 @@
 
 ## 1Bot - One Discord bot for everything
 
-1Bot can help keep your server safe with moderation tools, help you out with its utility commands, or make you laugh.
+1Bot can help and keep your server safe with moderation tools, help you out with its utility commands, or make you laugh.
 
 - [Add the bot to your server](https://dsc.gg/1bot)
 - [Website + command list](https://1bot.netlify.app)
