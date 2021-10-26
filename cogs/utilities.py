@@ -113,7 +113,7 @@ class Utilities(
         help="Get the raw, unformatted text of the message you replied to. You can also use a message ID.",
         brief="Get raw text of the message you replied to.",
     )
-    async def raw(self, ctx, message_id: int = None):
+    async def raw(self, ctx, message_id: str = None):
         message = None  # gets reassigned after message is fetched
 
         try:
