@@ -1046,21 +1046,30 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         snipe_channel = snipe_channel or ctx.channel
 
         try:
-            content, author, channel, timestamp = self.client.sniped_messages[
-                ctx.guild.id
-            ][snipe_channel.id]
+            sniped_msg = self.client.sniped_messages[ctx.guild.id][snipe_channel.id]
         except:
             await ctx.send(
                 "❌ I couldn't find a deleted message in this channel in my logs."
             )
             return
 
-        embed = discord.Embed(description=content, color=0xFF6600, timestamp=timestamp)
-        embed.set_author(name=str(author), icon_url=author.avatar_url)
-        embed.add_field(name="Deleted message found in", value=channel.mention)
+        embed = discord.Embed(
+            description=sniped_msg.content or "This message has no content.",
+            color=0xFF6600,
+            timestamp=sniped_msg.created_at,
+        )
+        embed.set_author(
+            name=str(sniped_msg.author), icon_url=sniped_msg.author.avatar_url
+        )
 
-        if not content:
-            embed.title = "Note: This deleted message does not have any text content."
+        if sniped_msg.attachments:
+            attachment_links = ""
+            for i in range(len(sniped_msg.attachments)):
+                attachment_links += (
+                    f"[Attachment {i+1}]({sniped_msg.attachments[i].url})\n"
+                )
+
+            embed.add_field(name="Attachments", value=attachment_links, inline=False)
 
         await ctx.send(embed=embed)
 

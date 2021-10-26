@@ -26,7 +26,7 @@ class Errors(commands.Cog):
                 ),
                 create_button(
                     style=ButtonStyle.URL,
-                    url=f"https://discord.gg/KRjZaV9DP8",
+                    url=f"https://discord.gg/JGcnKxEPsW",
                     label="Support Server",
                     emoji=self.client.get_emoji(885083336240926730),
                 ),
@@ -161,7 +161,7 @@ class Errors(commands.Cog):
                             create_button(
                                 label="Join the server",
                                 style=ButtonStyle.URL,
-                                url="https://discord.gg/KRjZaV9DP8",
+                                url="https://discord.gg/JGcnKxEPsW",
                             )
                         ]
                     )

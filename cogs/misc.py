@@ -122,7 +122,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
                         create_button(
                             label="Join the server",
                             style=ButtonStyle.URL,
-                            url="https://discord.gg/KRjZaV9DP8",
+                            url="https://discord.gg/JGcnKxEPsW",
                         )
                     ]
                 )

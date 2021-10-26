@@ -48,7 +48,7 @@ class Client(commands.AutoShardedBot):
                     label="Support Server",
                     style=ButtonStyle.URL,
                     emoji=self.get_emoji(885083336240926730),
-                    url="https://discord.gg/KRjZaV9DP8",
+                    url="https://discord.gg/JGcnKxEPsW",
                 ),
                 create_button(
                     style=ButtonStyle.URL,
@@ -96,22 +96,8 @@ class Client(commands.AutoShardedBot):
             return
 
         try:
-            self.sniped_messages[message.guild.id].update(
-                {
-                    message.channel.id: (
-                        message.content,
-                        message.author,
-                        message.channel,
-                        message.created_at,
-                    )
-                }
-            )
+            # Update the guild's dict with the sniped message
+            self.sniped_messages[message.guild.id].update({message.channel.id: message})
         except KeyError:
-            self.sniped_messages[message.guild.id] = {
-                message.channel.id: (
-                    message.content,
-                    message.author,
-                    message.channel,
-                    message.created_at,
-                )
-            }
+            # Creates a new dict for the guild if it isn't stored
+            self.sniped_messages[message.guild.id] = {message.channel.id: message}
