@@ -11,12 +11,12 @@ class Pager(Paginator):
 
 
 # This function returns False if the bot cannot mute the member
-async def mute_check(self, ctx, bot_role, member, muted_role):
+async def mute_check(client_id, ctx, bot_role, member, muted_role):
     if member == ctx.author:
         await ctx.send("❌ You can't mute yourself!")
         return False
 
-    if member == self.client.user:
+    if member.id == client_id:
         await ctx.send("❌ I can't mute myself!")
         return False
 

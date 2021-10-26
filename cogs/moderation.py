@@ -591,7 +591,12 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
         muted_role = discord.utils.get(ctx.guild.roles[::-1], name="Muted")
 
-        if await mute_check(ctx, ctx.guild.me.top_role, member, muted_role) == False:
+        if (
+            await mute_check(
+                self.client.user.id, ctx, ctx.guild.me.top_role, member, muted_role
+            )
+            == False
+        ):
             return
 
         await member.add_roles(
@@ -654,7 +659,12 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-        if await mute_check(ctx, ctx.guild.me.top_role, member, muted_role) == False:
+        if (
+            await mute_check(
+                self.client.user.id, ctx, ctx.guild.me.top_role, member, muted_role
+            )
+            == False
+        ):
             return
 
         await member.add_roles(
