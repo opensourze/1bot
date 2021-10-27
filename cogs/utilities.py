@@ -151,7 +151,7 @@ class Utilities(
                 name="message_id",
                 description="The ID of the message to get raw text from",
                 required=True,
-                option_type=4,
+                option_type=3,
             )
         ],
     )
