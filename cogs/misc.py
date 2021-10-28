@@ -13,7 +13,7 @@ from pymongo import MongoClient
 cluster = MongoClient(environ["MONGO_URL"], tlsCAFile=where())
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -141,26 +141,31 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         brief="Get a user's avatar",
         aliases=["av", "pfp"],
     )
-    async def avatar(self, ctx, *, user: commands.MemberConverter = None):
-        user = user or ctx.author  # Set to author if user is None
-        avatar_embed = discord.Embed(color=0xFF6600, title=f"{user.name}'s avatar")
-        avatar_embed.set_image(url=f"{user.avatar_url}")
-        await ctx.send(embed=avatar_embed)
+    async def avatar(self, ctx, *, member: commands.MemberConverter = None):
+        member = member or ctx.author  # Set to author if user is None
+
+        embed = discord.Embed(color=0xFF6600, title=f"{member.name}'s avatar")
+        embed.set_image(url=f"{member.avatar_url}")
+        embed.add_field(
+            name="Download avatar",
+            value=f"[Click to download this avatar]({member.avatar_url})",
+        )
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="avatar",
         description="Get a user's avatar",
         options=[
             create_option(
-                name="user",
+                name="member",
                 description="Which user's avatar do you want to see?",
                 required=True,
                 option_type=6,
             )
         ],
     )
-    async def avatar_slash(self, ctx: SlashContext, *, user):
-        await self.avatar(ctx, user=user)
+    async def avatar_slash(self, ctx: SlashContext, *, member):
+        await self.avatar(ctx, member=member)
 
     # Server Info command
     @commands.command(
@@ -268,7 +273,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         description="View information about a user",
         options=[
             create_option(
-                name="user",
+                name="member",
                 description="Which user's information do you want to see?",
                 option_type=6,
                 required=True,
@@ -325,9 +330,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="This is a pretty major reliability update so that 1Bot feels even less frustrating."
-            + "-  The emoji command now supports URLs! That means there's now a /emoji command too and now we can say 1Bot has 100% support for Slash Commands."
-            + '- The lyrics command is now "paginated" - which means lyrics will be separated into pages which you can navigate by using reactions. This is so that long lyrics don\'t flood the channel but you still get the full lyrics.',
+            description="- The snipe command now shows filenames of the attachments (with links to them) of the sniped message if there were any.\n- Mute commands now ask you to use the unmute command instead of removing the Muted role to ensure the mute is removed from the database.\n- The avatar command now adds a link to download the avatar image.",
         )
 
         await ctx.send(embed=changelog)

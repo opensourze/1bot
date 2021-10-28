@@ -97,7 +97,25 @@ class Client(commands.AutoShardedBot):
 
         try:
             # Update the guild's dict with the sniped message
-            self.sniped_messages[message.guild.id].update({message.channel.id: message})
+            self.sniped_messages[message.guild.id].update(
+                {
+                    message.channel.id: {
+                        "content": message.content,
+                        "author": str(message.author),
+                        "author_avatar": message.author.avatar_url,
+                        "timestamp": message.created_at,
+                        "attachments": message.attachments,
+                    }
+                }
+            )
         except KeyError:
             # Creates a new dict for the guild if it isn't stored
-            self.sniped_messages[message.guild.id] = {message.channel.id: message}
+            self.sniped_messages[message.guild.id] = {
+                message.channel.id: {
+                    "content": message.content,
+                    "author": str(message.author),
+                    "author_avatar": message.author.avatar_url,
+                    "timestamp": message.created_at,
+                    "attachments": message.attachments,
+                }
+            }

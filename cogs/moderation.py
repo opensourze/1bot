@@ -611,7 +611,13 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             title="✅ Member muted",
             color=0xFF6600,
             description=f"{member.mention} was muted by {ctx.author.mention}",
-        ).add_field(name="Reason", value=reason)
+        )
+        embed.add_field(name="Reason", value=reason)
+        embed.add_field(
+            name="Note",
+            value="Please use the `unmute` command to unmute the member instead of removing the Muted role. This ensures that the mute is removed from the database and the member can rejoin without getting auto-muted.",
+            inline=False,
+        )
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
@@ -681,15 +687,19 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             description=f"{member.mention} was temporarily muted by {ctx.author.mention}",
         )
         embed.add_field(name="Reason", value=reason)
-        if not duration[-1].isalpha():
-            embed.add_field(name="Auto-unmute after", value=str(duration) + " seconds")
-        else:
-            embed.add_field(name="Auto-unmute after", value=duration)
+        embed.add_field(name="Auto-unmute after", value=duration)
+        embed.add_field(
+            name="Note",
+            value="Please use the `unmute` command to unmute the member instead of removing the Muted role. This ensures that the mute is removed from the database so the member can rejoin without getting auto-muted.",
+            inline=False,
+        )
 
         await ctx.send(embed=embed)
 
         await asyncio.sleep(sleep_duration)
-        await member.remove_roles(muted_role, reason="Automatic unmute")
+        await member.remove_roles(
+            muted_role, reason="Temporary mute duration reached - automatically unmuted"
+        )
 
         mute_db.delete_one({"user": member.id, "guild": ctx.guild.id})
 
@@ -699,7 +709,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         options=[
             create_option(
                 name="member",
-                description="The member to tempmute",
+                description="The member to mute",
                 required=True,
                 option_type=6,
             ),
@@ -1054,20 +1064,18 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             return
 
         embed = discord.Embed(
-            description=sniped_msg.content or "This message has no content.",
+            description=sniped_msg["content"] or "This message has no text content.",
             color=0xFF6600,
-            timestamp=sniped_msg.created_at,
+            timestamp=sniped_msg["timestamp"],
         )
         embed.set_author(
-            name=str(sniped_msg.author), icon_url=sniped_msg.author.avatar_url
+            name=sniped_msg["author"], icon_url=sniped_msg["author_avatar"]
         )
 
-        if sniped_msg.attachments:
+        if sniped_msg["attachments"]:
             attachment_links = ""
-            for i in range(len(sniped_msg.attachments)):
-                attachment_links += (
-                    f"[Attachment {i+1}]({sniped_msg.attachments[i].url})\n"
-                )
+            for attachment in sniped_msg["attachments"]:
+                attachment_links += f"[{attachment.filename}]({attachment.url})\n"
 
             embed.add_field(name="Attachments", value=attachment_links, inline=False)
 
