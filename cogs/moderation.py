@@ -822,6 +822,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             color=0xFF6600,
             description=f"{member.mention} was kicked by {ctx.author.mention}",
         ).add_field(name="Reason", value=reason)
+
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
@@ -1073,7 +1074,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         )
 
         if sniped_msg["attachments"]:
-            attachment_links = ""
+            attachment_links = "These links may expire after a while, please download the attachments if you want to keep them.\n\n"
             for attachment in sniped_msg["attachments"]:
                 attachment_links += f"[{attachment.filename}]({attachment.url})\n"
 

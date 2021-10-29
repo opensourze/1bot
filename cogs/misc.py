@@ -185,32 +185,46 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         embed.add_field(
             name="Server created",
             value=f"<t:{round(ctx.guild.created_at.timestamp())}:R>",
-            inline=False,
         )
         embed.add_field(
-            name="Region", value=str(ctx.guild.region).capitalize(), inline=False
+            name="Region",
+            value=str(ctx.guild.region).capitalize(),
         )
         embed.add_field(
-            name="Total member count", value=ctx.guild.member_count, inline=False
+            name="Total member count",
+            value=ctx.guild.member_count,
         )
         embed.add_field(
-            name="Humans", value=f"{len(humans)} human members", inline=False
-        )
-        embed.add_field(name="Bots", value=f"{len(bots)} bots", inline=False)
-        embed.add_field(
-            name="Emojis", value=f"{len(ctx.guild.emojis)} emojis", inline=False
+            name="Humans",
+            value=f"{len(humans)} human members",
         )
         embed.add_field(
-            name="Boost level", value=f"Level {ctx.guild.premium_tier}", inline=False
+            name="Bots",
+            value=f"{len(bots)} bots",
         )
         embed.add_field(
-            name="Text channels", value=len(ctx.guild.text_channels), inline=False
+            name="Emojis",
+            value=f"{len(ctx.guild.emojis)} emojis",
         )
         embed.add_field(
-            name="Voice channels", value=len(ctx.guild.voice_channels), inline=False
+            name="Roles",
+            value=f"{len(ctx.guild.roles)} roles",
+        )
+        embed.add_field(
+            name="Boost level",
+            value=f"Level {ctx.guild.premium_tier}",
+        )
+        embed.add_field(name="Categories", value=f"{len(ctx.guild.categories)}")
+        embed.add_field(
+            name="Text channels",
+            value=len(ctx.guild.text_channels),
+        )
+        embed.add_field(
+            name="Voice channels",
+            value=len(ctx.guild.voice_channels),
         )
 
-        embed.set_footer(text=f"Shard {ctx.guild.shard_id}")
+        embed.set_footer(text=f"Shard {ctx.guild.shard_id} | Server ID {ctx.guild.id}")
 
         await ctx.send(embed=embed)
 
@@ -330,7 +344,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="- The snipe command now shows filenames of the attachments (with links to them) of the sniped message if there were any.\n- Mute commands now ask you to use the unmute command instead of removing the Muted role to ensure the mute is removed from the database.\n- The avatar command now adds a link to download the avatar image.",
+            description="New `kiok, ben, warm` and `mule` commands for real moderators. The serverinfo command now has even more info.",
         )
 
         await ctx.send(embed=changelog)

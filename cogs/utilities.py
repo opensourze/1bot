@@ -300,14 +300,6 @@ class Utilities(
             colour=0xFF6600,
         )
 
-        # # Max length for descriptions is 4096 characters
-        # if len(json["lyrics"]) > 4096:
-        #     embed.description = json["lyrics"][:4093] + "..."
-        # else:
-        #     embed.description = json["lyrics"]
-
-        # await ctx.send(embed=embed)
-
         await pager.start(ctx)
 
     @cog_ext.cog_slash(name="lyrics", description="Get lyrics for a song")

@@ -62,6 +62,146 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def cat_slash(self, ctx: SlashContext):
         await self.cat(ctx)
 
+    #### Fake mod commands ####
+
+    # Kiok
+    @commands.command(help="A fake kick command")
+    @commands.guild_only()
+    async def kiok(self, ctx, member: commands.MemberConverter, *, reason=None):
+        embed = discord.Embed(
+            title="✅ Member kioked",
+            color=0xFF6600,
+            description=f"{member.mention} was kioked by {ctx.author.mention}",
+        ).add_field(name="Reason", value=reason)
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="kiok",
+        description="A fake kick command",
+        options=[
+            create_option(
+                name="member",
+                description='The member to "kiok"',
+                required=True,
+                option_type=6,
+            ),
+            create_option(
+                name="reason",
+                description='Why you want to "kiok" this member',
+                required=False,
+                option_type=3,
+            ),
+        ],
+    )
+    @commands.guild_only()
+    async def kiok_slash(self, ctx: SlashContext, member, *, reason=None):
+        await self.kiok(ctx, member, reason=reason)
+
+    # Ben
+    @commands.command(help="A fake ban command")
+    @commands.guild_only()
+    async def ben(self, ctx, member: commands.MemberConverter, *, reason=None):
+        embed = discord.Embed(
+            title="✅ Member benned",
+            color=0xFF6600,
+            description=f"{member.mention} was benned by {ctx.author.mention}",
+        ).add_field(name="Reason", value=reason)
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="ben",
+        description="A fake ban command",
+        options=[
+            create_option(
+                name="member",
+                description='The member to "ben"',
+                required=True,
+                option_type=6,
+            ),
+            create_option(
+                name="reason",
+                description='Why you want to "ben" this member',
+                required=False,
+                option_type=3,
+            ),
+        ],
+    )
+    @commands.guild_only()
+    async def ben_slash(self, ctx: SlashContext, member, *, reason=None):
+        await self.ben(ctx, member, reason=reason)
+
+    # Warm
+    @commands.command(help="A fake warn command")
+    @commands.guild_only()
+    async def warm(self, ctx, member: commands.MemberConverter, *, reason=None):
+        embed = discord.Embed(
+            title="✅ Member warmed",
+            description=f"{member.mention} has been warmed by {ctx.author.mention}",
+            color=0xFF6600,
+        )
+        embed.add_field(name="Reason", value=reason)
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="warm",
+        description="A fake warn command",
+        options=[
+            create_option(
+                name="member",
+                description='The member to "warm"',
+                required=True,
+                option_type=6,
+            ),
+            create_option(
+                name="reason",
+                description='Why you want to "warm" this member',
+                required=False,
+                option_type=3,
+            ),
+        ],
+    )
+    @commands.guild_only()
+    async def warm_slash(self, ctx: SlashContext, member, *, reason=None):
+        await self.warm(ctx, member, reason=reason)
+
+    # Mule
+    @commands.command(help="A fake mute command")
+    @commands.guild_only()
+    async def mule(self, ctx, member: commands.MemberConverter, *, reason=None):
+        embed = discord.Embed(
+            title="✅ Member muled",
+            color=0xFF6600,
+            description=f"{member.mention} was muled by {ctx.author.mention}",
+        )
+        embed.add_field(name="Reason", value=reason)
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="mule",
+        description="A fake mute command",
+        options=[
+            create_option(
+                name="member",
+                description='The member to "mule"',
+                required=True,
+                option_type=6,
+            ),
+            create_option(
+                name="reason",
+                description='Why you want to "mule" this member',
+                required=False,
+                option_type=3,
+            ),
+        ],
+    )
+    @commands.guild_only()
+    async def mule_slash(self, ctx: SlashContext, member, *, reason=None):
+        await self.mule(ctx, member, reason=reason)
+
     # YouTube Together
     @commands.command(
         brief="Watch YouTube together with friends",
