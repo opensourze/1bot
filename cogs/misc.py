@@ -78,13 +78,10 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             value="[OpenSourze](https://opensourze.netlify.app)",
             inline=False,
         )
-        embed.add_field(
-            name="Servers", value=f"{len(self.client.guilds)} servers", inline=False
-        )
+        embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
         embed.add_field(
             name="Users",
             value=f"{sum([len(guild.members)for guild in self.client.guilds])} users",
-            inline=False,
         )
         embed.add_field(name="Pycord version", value=discord.__version__, inline=False)
         embed.add_field(
@@ -181,7 +178,10 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         embed = discord.Embed(title=f"{ctx.guild.name} information", color=0xFF6600)
 
         embed.set_thumbnail(url=ctx.guild.icon_url)
-        embed.add_field(name="Owner", value=ctx.guild.owner.mention, inline=False)
+        embed.add_field(
+            name="Owner",
+            value=ctx.guild.owner.mention,
+        )
         embed.add_field(
             name="Server created",
             value=f"<t:{round(ctx.guild.created_at.timestamp())}:R>",
