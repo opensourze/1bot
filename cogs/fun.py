@@ -236,6 +236,23 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def chess_slash(self, ctx: SlashContext):
         await self.chess(ctx)
 
+    # Betrayal.io
+    @commands.command(
+        brief="Play Betrayal.io with friends in a voice channel",
+        help="Connect to a voice channel and run this command to play Betrayal.io with other server members directly in the channel!",
+        aliases=["betrayalio"],
+    )
+    @commands.guild_only()
+    async def betrayal(self, ctx):
+        await self.discord_together(ctx, "betrayal")
+
+    @cog_ext.cog_slash(
+        name="betrayalio_together",
+        description="Play Betrayal.io with friends in a voice channel",
+    )
+    async def betrayal_slash(self, ctx: SlashContext):
+        await self.betrayal(ctx)
+
     # Dad joke command
     @commands.command(help="Get a random dad joke")
     async def dadjoke(self, ctx):
@@ -248,10 +265,9 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         )
 
         if not r.ok:
-            await ctx.send(
+            return await ctx.send(
                 "❌ The dad joke API has returned an error. Please try again later."
             )
-            return
 
         json = r.json()
 

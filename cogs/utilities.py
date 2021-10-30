@@ -131,9 +131,9 @@ class Utilities(
                 return
             else:
                 try:
-                    message = await ctx.channel.fetch_message(message_id)
-                except discord.NotFound:
-                    await ctx.send(
+                    message = await ctx.fetch_message(message_id)
+                except:
+                    return await ctx.send(
                         "❌ The message you provided was not found in this channel!"
                     )
 

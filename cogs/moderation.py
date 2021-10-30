@@ -22,7 +22,7 @@ mute_db = cluster["1bot"]["muted"]
 
 class Moderation(commands.Cog, description="All the moderation commands you need."):
     def __init__(self, client):
-        self.client = client
+        self.client: commands.Bot = client
         self.emoji = "<:moderation:885461924777693184>"
 
     @commands.Cog.listener()

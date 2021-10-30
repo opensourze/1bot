@@ -25,6 +25,7 @@ class Client(commands.AutoShardedBot):
             case_insensitive=True,
             intents=intents,
             owner_ids=[748791790798372964, 825292137338765333, 856609450236313660],
+            allowed_mentions=discord.AllowedMentions(everyone=False),
         )
 
         """
@@ -80,12 +81,13 @@ class Client(commands.AutoShardedBot):
             [
                 "1 help | you can run my commands in DMs too!",
                 "1 help | 1bot.netlify.app",
+                "1 help | Do I have the best snipe command ever?",
             ]
         )
 
         while not self.is_closed():
             await self.change_presence(activity=discord.Game(name=next(statuses)))
-            await sleep(8)
+            await sleep(10)
 
     # Store message details when it is deleted
 

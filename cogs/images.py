@@ -11,7 +11,7 @@ from PIL import Image
 
 class Images(commands.Cog, description="Generate fun images!"):
     def __init__(self, client):
-        self.client = client
+        self.client: commands.Bot = client
         self.emoji = "<:images:884089121633611836>"
 
     @commands.Cog.listener()
@@ -63,7 +63,10 @@ class Images(commands.Cog, description="Generate fun images!"):
 
     # Clyde
     @commands.command(help="Generate an image of Clyde saying something")
-    async def clyde(self, ctx, *, text="you didn't give me anything to say"):
+    async def clyde(self, ctx, *, text: commands.clean_content):
+        if len(text) > 70:
+            return await ctx.send("❌ Your text is too long, please use shorter text!")
+
         with suppress(AttributeError):
             await ctx.trigger_typing()
 
@@ -140,7 +143,10 @@ class Images(commands.Cog, description="Generate fun images!"):
     @commands.command(
         aliases=["cmm"], help="Ask people to change your mind about something"
     )
-    async def changemymind(self, ctx, *, text):
+    async def changemymind(self, ctx, *, text: commands.clean_content):
+        if len(text) > 78:
+            return await ctx.send("❌ Your text is too long, please use shorter text!")
+
         with suppress(AttributeError):
             await ctx.trigger_typing()
 
@@ -167,7 +173,10 @@ class Images(commands.Cog, description="Generate fun images!"):
 
     # Tweet
     @commands.command(help="Generate an image of a tweet", aliases=["twitter"])
-    async def tweet(self, ctx, *, text="I don't know how to use 1Bot image commands"):
+    async def tweet(self, ctx, *, text: commands.clean_content):
+        if len(text) > 75:
+            return await ctx.send("❌ Your text is too long, please use shorter text!")
+
         with suppress(AttributeError):
             await ctx.trigger_typing()
 

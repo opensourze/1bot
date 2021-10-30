@@ -40,13 +40,16 @@ class CustomHelpCommand(MinimalHelpCommand):
             + f"{self.clean_prefix}command <Required option> [Optional option=Default value]\n\n",
             inline=False,
         )
+        embed.set_footer(
+            f"Run {self.clean_prefix}help <command> for more info on that command."
+        )
 
         cmd_list = []
 
         for c in cog.get_commands():
             if not c.hidden:
                 cmd_list.append(
-                    f"`{self.get_command_signature(c)}`\n{c.brief or c.help}"
+                    f"`{self.get_command_signature(c).strip()}`: {c.brief or c.help}"
                 )
 
         embed.description = "\n\n".join(cmd_list)
