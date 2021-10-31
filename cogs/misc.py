@@ -45,7 +45,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
                     style=ButtonStyle.URL,
                     label="Upvote me",
                     emoji=self.client.get_emoji(885466072373948416),
-                    url="https://discordbotlist.com/bots/1bot/upvote",
+                    url="https://top.gg/bot/884080176416309288",
                 ),
             ]
         )
@@ -294,16 +294,17 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         await self.userinfo(ctx, member=member)
 
     # Upvote command
-    @commands.command(help="Upvote me on DiscordBotList", aliases=["vote"])
+    @commands.command(help="Upvote me on Top.gg", aliases=["vote"])
     async def upvote(self, ctx):
-        await ctx.send(
-            "If you like this bot, upvote it to help it grow!\n"
-            + "You can upvote every 12 hours.\n\n"
-            + "https://discordbotlist.com/bots/1bot/upvote/\n\n"
-            + "Thank you!"
+        embed = discord.Embed(
+            title="Upvote 1Bot",
+            description="Help 1Bot grow by upvoting it on Top.gg!\n\nLink to upvote: **https://top.gg/bot/884080176416309288**",
+            colour=0xFF6600,
         )
+        embed.set_footer(text="You can upvote every 12 hours. Thank you!")
+        await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="upvote", description="Upvote me on DiscordBotList")
+    @cog_ext.cog_slash(name="upvote", description="Upvote me on Top.gg")
     async def upvote_slash(self, ctx: SlashContext):
         await self.upvote(ctx)
 

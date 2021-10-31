@@ -11,6 +11,6 @@
 - [Add the bot to your server](https://dsc.gg/1bot)
 - [Website (with command list)](https://1bot.netlify.app)
 - [Support and Updates Server](https://discord.gg/JGcnKxEPsW)
-- [DiscordBotList page (upvote 1Bot!)](https://discordbotlist.com/bots/1bot)
+- [Top.gg page (upvote 1Bot!)](https://top.gg/bot/884080176416309288)
 
 ## 1Bot is NOT meant to be a self-hosted bot. The code is not optimised for customisation/self-hosting.
