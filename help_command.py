@@ -41,7 +41,7 @@ class CustomHelpCommand(MinimalHelpCommand):
             inline=False,
         )
         embed.set_footer(
-            f"Run {self.clean_prefix}help <command> for more info on that command."
+            text=f"Run {self.clean_prefix}help <command> for more info on that command."
         )
 
         cmd_list = []

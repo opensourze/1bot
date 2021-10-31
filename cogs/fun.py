@@ -1,9 +1,12 @@
 import os
 import random
 from asyncio import sleep
+from contextlib import suppress
+from urllib.parse import quote
 
 import discord
 import requests
+import xkcd
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
@@ -33,6 +36,49 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog is ready")
+
+    # xkcd command
+    @commands.command(help="Get the latest/random xkcd comic")
+    async def xkcd(self, ctx, *, type="latest"):
+        with suppress(AttributeError):
+            await ctx.trigger_typing()
+
+        if type.lower() == "random":
+            comic = xkcd.getRandomComic()
+        elif type.lower() == "latest":
+            comic = xkcd.getLatestComic()
+        else:
+            return await ctx.send(
+                "❌ Please use `random` or `latest`! Leaving it blank will give you the latest comic."
+            )
+
+        embed = discord.Embed(
+            title=f"Comic {comic.number}: {comic.title}",
+            url=comic.link,
+            color=0xFF6600,
+            description=f"[Click here if you need an explanation]({comic.getExplanation()})",
+        )
+        embed.set_footer(text=comic.getAltText())
+        embed.set_image(url=comic.getImageLink())
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="xkcd",
+        description="Get the latest/random xkcd comic",
+        options=[
+            create_option(
+                name="type",
+                description="Whether to get a random comic or the latest one. Default is latest",
+                required=False,
+                option_type=3,
+                choices=["Random", "Latest"],
+            )
+        ],
+    )
+    async def xkcd_slash(self, ctx: SlashContext, *, type="Latest"):
+        await ctx.defer()
+        await self.xkcd(ctx, type=type)
 
     # dog command
     @commands.command(help="Get a random dog image", aliases=["doggo"])
@@ -362,7 +408,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     )
     async def gif(self, ctx, *, query):
         json = requests.get(
-            f"https://g.tenor.com/v1/search?q={query}&key={os.getenv('TENORKEY')}&contentfilter=medium"
+            f"https://g.tenor.com/v1/search?q={quote(query)}&contentfilter=medium&key={os.environ['TENORKEY']}"
         ).json()
 
         # Send first result

@@ -13,7 +13,7 @@ from pymongo import MongoClient
 cluster = MongoClient(environ["MONGO_URL"], tlsCAFile=where())
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.7.1"
+__version__ = "0.7.2"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -344,7 +344,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             color=0xFF6600,
-            description="New `kiok, ben, warm` and `mule` commands for real moderators. The serverinfo command now has even more info.",
+            description="- Added a new `xkcd` command.\nUse `xkcd` to get the latest xkcd comic or use `xkcd random` to get a random comic.\n\nAlso fixed an error caused by running the gif command with some special characters like the hashtag.",
         )
 
         await ctx.send(embed=changelog)
