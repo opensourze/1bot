@@ -26,10 +26,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         self.emoji = "<:moderation:885461924777693184>"
 
     @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{self.__class__.__name__} cog is ready")
-
-    @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
         # Set permissions for muted role when a channel is created
         muted_role = discord.utils.get(channel.guild.roles[::-1], name="Muted")

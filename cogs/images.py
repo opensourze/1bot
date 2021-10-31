@@ -14,10 +14,6 @@ class Images(commands.Cog, description="Generate fun images!"):
         self.client: commands.Bot = client
         self.emoji = "<:images:884089121633611836>"
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{self.__class__.__name__} cog is ready")
-
     neko_url = "https://nekobot.xyz/api/imagegen?type="
 
     # amogus

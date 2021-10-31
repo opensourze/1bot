@@ -2,7 +2,10 @@
 
 from asyncio import sleep
 from itertools import cycle
+
+from chalk import Chalk
 import discord
+from animation import Wait
 from discord.ext import commands
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_components import create_actionrow, create_button
@@ -12,9 +15,21 @@ load_dotenv()
 
 from help_command import CustomHelpCommand
 
+# The strings that animate before 1Bot is ready
+starting_steps = [
+    "Starting 1Bot   ",
+    "Starting 1Bot.  ",
+    "Starting 1Bot.. ",
+    "Starting 1Bot...",
+]
+
 
 class Client(commands.AutoShardedBot):
     def __init__(self):
+        # "Starting 1Bot..." animation
+        self.starting = Wait(animation=starting_steps)
+        self.starting.start()
+
         intents = discord.Intents.default()
         intents.guilds = True
         intents.members = True
@@ -34,8 +49,8 @@ class Client(commands.AutoShardedBot):
         self._BotBase__cogs = commands.core._CaseInsensitiveDict()
 
     async def on_ready(self):
-        print("-----\nThe bot is now online")
-        print(f"{len(self.guilds)} servers\n-----")
+        green = Chalk("green")
+        print(green(f"{self.user.name} is now ready"))
 
         buttons = create_actionrow(
             *[
@@ -63,6 +78,8 @@ class Client(commands.AutoShardedBot):
         self.help_command = CustomHelpCommand(buttons)
         self.loop.create_task(self.change_status())
 
+        self.starting.stop()
+
     # Send prefix when mentioned
     async def on_message(self, message):
         if (
@@ -81,7 +98,7 @@ class Client(commands.AutoShardedBot):
             [
                 "1 help | you can run my commands in DMs too!",
                 "1 help | 1bot.netlify.app",
-                "1 help | Do I have the best snipe command ever?",
+                f"1 help | In {len(self.guilds)} servers, {75 - len(self.guilds)} to go!",
             ]
         )
 

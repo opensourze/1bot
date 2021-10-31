@@ -1,7 +1,5 @@
 # This is the file to run. It also contains the commands to warn/ban users from 1Bot
 
-print("Bot written by @opensourze")
-
 import os
 
 import discord

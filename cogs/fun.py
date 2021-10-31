@@ -1,7 +1,6 @@
 import os
 import random
 from asyncio import sleep
-from contextlib import suppress
 from urllib.parse import quote
 
 import discord
@@ -33,16 +32,9 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         except AttributeError:
             await ctx.send("❌ You need to be in a voice channel to use this command.")
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{self.__class__.__name__} cog is ready")
-
     # xkcd command
     @commands.command(help="Get the latest/random xkcd comic")
     async def xkcd(self, ctx, *, type="latest"):
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
-
         if type.lower() == "random":
             comic = xkcd.getRandomComic()
         elif type.lower() == "latest":

@@ -11,3 +11,4 @@ pyfiglet
 certifi
 buttons
 xkcd
+terminal-animation

@@ -21,10 +21,6 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         self.client: commands.Bot = client
         self.emoji = "<:miscellaneous:884088957057523733>"
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{self.__class__.__name__} cog is ready")
-
         self.info_btns = create_actionrow(
             *[
                 create_button(

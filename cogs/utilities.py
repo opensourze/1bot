@@ -20,10 +20,6 @@ class Utilities(
         self.client: commands.Bot = client
         self.emoji = "<:utilities:884088853609193544>"
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{self.__class__.__name__} cog is ready")
-
     # Emoji command
     @commands.command(
         name="emoji",
@@ -326,7 +322,10 @@ class Utilities(
 
     @base64.command(help="Decode base64 into text", aliases=["d"])
     async def decode(self, ctx, *, code):
-        await ctx.send(base64.b64decode(code.encode()).decode())
+        try:
+            await ctx.send(base64.b64decode(code.encode()).decode())
+        except:
+            await ctx.send("❌ Invalid code! Are you sure that's base64?")
 
     @cog_ext.cog_subcommand(
         base="base64", name="encode", description="Encode text into base64"

@@ -106,10 +106,6 @@ class Errors(commands.Cog):
             error
         ) or "Unsupported image type" in str(error):
             await ctx.send("❌ I don't think that's a valid image!")
-        elif "Invalid base64-encoded string" in str(
-            error
-        ) or "Incorrect padding" in str(error):
-            await ctx.send("❌ That base64 code is invalid. Are you sure it's base64?")
         elif isinstance(error, commands.CheckFailure):
             if "The global check functions for command " in str(error):
                 try:
