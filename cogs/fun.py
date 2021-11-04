@@ -9,7 +9,6 @@ import xkcd
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
-from discord_together import DiscordTogether
 from pyfiglet import Figlet
 
 
@@ -18,17 +17,16 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         self.client: commands.Bot = client
         self.emoji = "<:fun:884088990146367528>"
 
-        self.dt = DiscordTogether(client)
-
     async def discord_together(self, ctx, option):
         try:
             author_vc = ctx.author.voice.channel.id
-            link = await self.dt.create_link(author_vc, option)
+            link = await self.client.dt.create_link(author_vc, option)
 
             await ctx.send(
                 f"Click the **link itself** to start the activity. Your friends can then click the play button to join.\n\n(Expires in 24 hours)\n"
                 + str(link)
             )
+
         except AttributeError:
             await ctx.send("❌ You need to be in a voice channel to use this command.")
 
@@ -47,7 +45,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         embed = discord.Embed(
             title=f"Comic {comic.number}: {comic.title}",
             url=comic.link,
-            color=0xFF6600,
+            colour=0xFF6600,
             description=f"[Click here if you need an explanation]({comic.getExplanation()})",
         )
         embed.set_footer(text=comic.getAltText())
@@ -77,7 +75,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def dog(self, ctx):
         json = requests.get("https://some-random-api.ml/img/dog").json()
 
-        embed = discord.Embed(title="Here's a doggo", color=0xFF6600)
+        embed = discord.Embed(title="Here's a doggo", colour=0xFF6600)
         embed.set_image(url=json["link"])
 
         await ctx.send(embed=embed)
@@ -91,7 +89,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def cat(self, ctx):
         json = requests.get("https://some-random-api.ml/img/cat").json()
 
-        embed = discord.Embed(title="Here's a kitty", color=0xFF6600)
+        embed = discord.Embed(title="Here's a kitty", colour=0xFF6600)
         embed.set_image(url=json["link"])
 
         await ctx.send(embed=embed)
@@ -108,7 +106,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def kiok(self, ctx, member: commands.MemberConverter, *, reason=None):
         embed = discord.Embed(
             title="✅ Member kioked",
-            color=0xFF6600,
+            colour=0xFF6600,
             description=f"{member.mention} was kioked by {ctx.author.mention}",
         ).add_field(name="Reason", value=reason)
 
@@ -142,7 +140,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def ben(self, ctx, member: commands.MemberConverter, *, reason=None):
         embed = discord.Embed(
             title="✅ Member benned",
-            color=0xFF6600,
+            colour=0xFF6600,
             description=f"{member.mention} was benned by {ctx.author.mention}",
         ).add_field(name="Reason", value=reason)
 
@@ -177,7 +175,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         embed = discord.Embed(
             title="✅ Member warmed",
             description=f"{member.mention} has been warmed by {ctx.author.mention}",
-            color=0xFF6600,
+            colour=0xFF6600,
         )
         embed.add_field(name="Reason", value=reason)
 
@@ -211,7 +209,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def mule(self, ctx, member: commands.MemberConverter, *, reason=None):
         embed = discord.Embed(
             title="✅ Member muled",
-            color=0xFF6600,
+            colour=0xFF6600,
             description=f"{member.mention} was muled by {ctx.author.mention}",
         )
         embed.add_field(name="Reason", value=reason)
@@ -365,7 +363,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
                 )
                 meme_embed = discord.Embed(
                     title=title,
-                    color=0xFF6600,
+                    colour=0xFF6600,
                     url=json["postLink"],
                     description=f"r/{json['subreddit']}",
                 )
@@ -513,7 +511,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             description="[ "
             + f"{random.choice(responses)} {random.choice(responses)} {random.choice(responses)}"
             + " ]",
-            color=0xFF6600,
+            colour=0xFF6600,
         )
         if embed.description != "[ 7️⃣ 7️⃣ 7️⃣ ]":
             embed.set_footer(text="You need triple 7's to win.")

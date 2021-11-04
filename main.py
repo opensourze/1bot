@@ -55,7 +55,7 @@ async def block(ctx, id: int, *, reason):
 
         embed = discord.Embed(
             title="You've been blocked from sending suggestions!",
-            color=0xFF0000,
+            colour=0xFF0000,
             description=f"You've been banned from submitting suggestions as we have noticed that you are spamming them.",
         )
         embed.add_field(name="Reason", value=reason, inline=False)
@@ -72,7 +72,7 @@ async def block(ctx, id: int, *, reason):
 if __name__ == "__main__":
     # Loop through py files in cogs directory and load them
     for file in os.listdir("./cogs"):
-        if file.endswith(".py"):
+        if file.endswith(".py"):  # and not "errors" in file:
             client.load_extension(f"cogs.{file[:-3]}")
 
     # Load Jishaku

@@ -2,13 +2,15 @@
 
 from asyncio import sleep
 from itertools import cycle
+from os import environ
 
-from chalk import Chalk
 import discord
 from animation import Wait
+from chalk import Chalk
 from discord.ext import commands
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_components import create_actionrow, create_button
+from discord_together import DiscordTogether
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -49,8 +51,9 @@ class Client(commands.AutoShardedBot):
         self._BotBase__cogs = commands.core._CaseInsensitiveDict()
 
     async def on_ready(self):
+        self.starting.stop()
         green = Chalk("green")
-        print(green(f"{self.user.name} is now ready"))
+        print(green(f"{self.user.name} is now ready"), end=None)
 
         buttons = create_actionrow(
             *[
@@ -78,7 +81,7 @@ class Client(commands.AutoShardedBot):
         self.help_command = CustomHelpCommand(buttons)
         self.loop.create_task(self.change_status())
 
-        self.starting.stop()
+        self.dt = await DiscordTogether(environ["TOKEN"])
 
     # Send prefix when mentioned
     async def on_message(self, message):
@@ -96,9 +99,9 @@ class Client(commands.AutoShardedBot):
     async def change_status(self):
         statuses = cycle(
             [
-                "1 help | you can run my commands in DMs too!",
-                "1 help | 1bot.netlify.app",
-                f"1 help | In {len(self.guilds)} servers, {75 - len(self.guilds)} to go!",
+                "1help | You can run my commands in DMs too!",
+                "1help | 1bot.netlify.app",
+                '1help | Join the official server, "Planet 1Bot" - link in my About Me!',
             ]
         )
 

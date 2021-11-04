@@ -12,7 +12,7 @@ class CustomHelpCommand(MinimalHelpCommand):
     async def send_bot_help(self, mapping):
         destination = self.get_destination()
 
-        embed = discord.Embed(title="1Bot Commands", color=0xFF6600)
+        embed = discord.Embed(title="1Bot Commands", colour=0xFF6600)
 
         for cog, commands in mapping.items():
             command_signatures = [
@@ -33,11 +33,10 @@ class CustomHelpCommand(MinimalHelpCommand):
     async def send_cog_help(self, cog):
         destination = self.get_destination()
 
-        embed = discord.Embed(title=f"{cog.qualified_name} Commands", color=0xFF6600)
+        embed = discord.Embed(title=f"{cog.qualified_name} Commands", colour=0xFF6600)
         embed.add_field(
-            name="Understanding the help command",
-            value="Commands are formatted in this manner:\n"
-            + f"{self.clean_prefix}command <Required option> [Optional option=Default value]\n\n",
+            name="Commands are formatted in this manner:",
+            value=f"{self.clean_prefix}command <Required option> [Optional option=Default value]\n\n",
             inline=False,
         )
         embed.set_footer(
@@ -61,12 +60,9 @@ class CustomHelpCommand(MinimalHelpCommand):
 
         embed = discord.Embed(
             title=self.get_command_signature(command),
-            color=0xFF6600,
-            description="Don't type the brackets while using commands.\n"
-            + "If an option is in <angle brackets>, it is required. If it's in [square brackets], it's optional."
-            + "If there is an equal sign (`=`), the text that comes after it is the default value for that option.\n",
+            colour=0xFF6600,
         )
-        embed.add_field(name="Description", value=command.help)
+        embed.add_field(name="Command description", value=command.help)
 
         aliases = command.aliases
         if aliases:
