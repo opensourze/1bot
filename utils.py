@@ -31,7 +31,7 @@ async def mute_check(client_id, ctx, bot_role, member, muted_role):
         await ctx.send(
             ":information_source: Couldn't find a Muted role in this server. Creating a new one..."
         )
-        muted_role = await ctx.guild.create_role(name="Muted", color=0x919191)
+        muted_role = await ctx.guild.create_role(name="Muted", colour=0x919191)
 
         for channel in ctx.guild.channels:
             await channel.set_permissions(muted_role, send_messages=False, speak=False)

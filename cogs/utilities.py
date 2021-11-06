@@ -192,7 +192,7 @@ class Utilities(
 
         embed = discord.Embed(
             title=json["info"]["name"],
-            color=0xFF6600,
+            colour=self.client.colour,
             url=json["info"]["package_url"],
         )
 
@@ -240,7 +240,7 @@ class Utilities(
             embed = discord.Embed(
                 title=json["name"],
                 description=json["description"],
-                color=0xD50000,
+                colour=0xD50000,
                 url="https://www.npmjs.com/package/" + package,
             )
 
@@ -293,7 +293,7 @@ class Utilities(
                 json["lyrics"][i : i + 700] for i in range(0, len(json["lyrics"]), 700)
             ],
             length=1,
-            colour=0xFF6600,
+            colour=self.client.colour,
         )
 
         await pager.start(ctx)
@@ -311,7 +311,7 @@ class Utilities(
             title="Base64 commands",
             description="Run `1 base64 e {text}` to convert the text into base64.\n"
             + "Run `1 base64 d {base64}` to decode base64 code.\n",
-            color=0xFF6600,
+            colour=self.client.colour,
         ).set_footer(text="Don't include the brackets while running commands!")
 
         await ctx.send(embed=embed)
@@ -369,7 +369,7 @@ class Utilities(
             weather_embed = discord.Embed(
                 title=f"Weather in {json['name']}",  # "Weather in <city name>"
                 description=weather_description,
-                color=0xFF6600,
+                colour=self.client.colour,
             )
             weather_embed.set_thumbnail(url=icon_url)
 
@@ -530,7 +530,7 @@ class Utilities(
 
         embed = discord.Embed(
             title=question,
-            colour=0xFF6600,
+            colour=self.client.colour,
             description="\n\n".join(
                 [
                     f"{numbers[i]} {option_list[i]}"  # number emoji + option

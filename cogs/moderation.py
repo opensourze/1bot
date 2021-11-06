@@ -90,14 +90,14 @@ class Moderation(commands.Cog, description="All the moderation commands you need
                 embed=discord.Embed(
                     title=f"Warned in {ctx.guild.name}",
                     description=f"You have been warned.",
-                    color=0xFF6600,
+                    colour=self.client.colour,
                 ).add_field(name="Reason", value=reason)
             )
 
         warned_embed = discord.Embed(
             title="✅ Member warned",
             description=f"{member.mention} has been warned by {ctx.author.mention}",
-            color=0xFF6600,
+            colour=self.client.colour,
         )
         warned_embed.add_field(name="Reason", value=reason)
         warned_embed.add_field(name="Unique warning ID", value=warn_id)
@@ -142,7 +142,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             title=f"Warnings for {member}",
             description=f"This member has **{warn_count}** warnings in total.\n"
             + f"Showing max 15 warnings.",
-            color=0xFF6600,
+            colour=self.client.colour,
         )
 
         warnings = warns.find(warn_filter)
@@ -221,7 +221,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             await ctx.send(
                 embed=discord.Embed(
                     title="✅ Warning deleted",
-                    color=0xFF6600,
+                    colour=self.client.colour,
                     description=f"Warning for {member.mention} with reason `{result['reason']}` has been deleted.",
                 )
             )
@@ -334,7 +334,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             + "Run `1 role a {member} {role}` to add the role to the provided member.\n"
             + "Run `1 role d {role}` to delete the role.\n"
             + "Run `1 role r {member} {role}` to remove the role from the member.",
-            color=0xFF6600,
+            colour=self.client.colour,
         )
         embed.add_field(
             name="PS:",
@@ -495,7 +495,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.command(help="Clear a channel", aliases=["clearall", "clearchannel"])
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    @commands.bot_has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True, add_reactions=True)
     async def nuke(self, ctx, *, channel: discord.TextChannel = None):
         with suppress(discord.NotFound):
             channel = channel or ctx.channel
@@ -605,7 +605,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         embed = discord.Embed(
             title="✅ Member muted",
-            color=0xFF6600,
+            colour=self.client.colour,
             description=f"{member.mention} was muted by {ctx.author.mention}",
         )
         embed.add_field(name="Reason", value=reason)
@@ -679,7 +679,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         embed = discord.Embed(
             title="✅ Member muted",
-            color=0xFF6600,
+            colour=self.client.colour,
             description=f"{member.mention} was temporarily muted by {ctx.author.mention}",
         )
         embed.add_field(name="Reason", value=reason)
@@ -760,7 +760,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         embed = discord.Embed(
             title="✅ Member unmuted",
-            color=0xFF6600,
+            colour=self.client.colour,
             description=f"{member.mention} was unmuted by {ctx.author.mention}",
         )
         await ctx.send(embed=embed)
@@ -815,7 +815,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         embed = discord.Embed(
             title="✅ Member kicked",
-            color=0xFF6600,
+            colour=self.client.colour,
             description=f"{member.mention} was kicked by {ctx.author.mention}",
         ).add_field(name="Reason", value=reason)
 
@@ -881,7 +881,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         embed = discord.Embed(
             title="✅ Member banned",
-            color=0xFF6600,
+            colour=self.client.colour,
             description=f"{user.mention} was banned by {ctx.author.mention}",
         ).add_field(name="Reason", value=reason)
         await ctx.send(embed=embed)
@@ -980,7 +980,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         embed = discord.Embed(
             title="✅ Channel locked down",
-            color=0xFF6600,
+            colour=self.client.colour,
             description=f"{channel.mention} was locked down by {ctx.author.mention}.\n"
             + "Members cannot send messages in the channel now.",
         )
@@ -1021,7 +1021,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         embed = discord.Embed(
             title="✅ Channel removed from lockdown",
-            color=0xFF6600,
+            colour=self.client.colour,
             description=f"{channel.mention} was unlocked by {ctx.author.mention}",
         )
         await ctx.send(embed=embed)
@@ -1062,7 +1062,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         embed = discord.Embed(
             description=sniped_msg["content"] or "This message has no text content.",
-            color=0xFF6600,
+            colour=self.client.colour,
             timestamp=sniped_msg["timestamp"],
         )
         embed.set_author(

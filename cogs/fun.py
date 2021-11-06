@@ -45,7 +45,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         embed = discord.Embed(
             title=f"Comic {comic.number}: {comic.title}",
             url=comic.link,
-            colour=0xFF6600,
+            colour=self.client.colour,
             description=f"[Click here if you need an explanation]({comic.getExplanation()})",
         )
         embed.set_footer(text=comic.getAltText())
@@ -75,7 +75,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def dog(self, ctx):
         json = requests.get("https://some-random-api.ml/img/dog").json()
 
-        embed = discord.Embed(title="Here's a doggo", colour=0xFF6600)
+        embed = discord.Embed(title="Here's a doggo", colour=self.client.colour)
         embed.set_image(url=json["link"])
 
         await ctx.send(embed=embed)
@@ -89,7 +89,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def cat(self, ctx):
         json = requests.get("https://some-random-api.ml/img/cat").json()
 
-        embed = discord.Embed(title="Here's a kitty", colour=0xFF6600)
+        embed = discord.Embed(title="Here's a kitty", colour=self.client.colour)
         embed.set_image(url=json["link"])
 
         await ctx.send(embed=embed)
@@ -106,7 +106,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def kiok(self, ctx, member: commands.MemberConverter, *, reason=None):
         embed = discord.Embed(
             title="✅ Member kioked",
-            colour=0xFF6600,
+            colour=self.client.colour,
             description=f"{member.mention} was kioked by {ctx.author.mention}",
         ).add_field(name="Reason", value=reason)
 
@@ -140,7 +140,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def ben(self, ctx, member: commands.MemberConverter, *, reason=None):
         embed = discord.Embed(
             title="✅ Member benned",
-            colour=0xFF6600,
+            colour=self.client.colour,
             description=f"{member.mention} was benned by {ctx.author.mention}",
         ).add_field(name="Reason", value=reason)
 
@@ -175,7 +175,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         embed = discord.Embed(
             title="✅ Member warmed",
             description=f"{member.mention} has been warmed by {ctx.author.mention}",
-            colour=0xFF6600,
+            colour=self.client.colour,
         )
         embed.add_field(name="Reason", value=reason)
 
@@ -209,7 +209,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def mule(self, ctx, member: commands.MemberConverter, *, reason=None):
         embed = discord.Embed(
             title="✅ Member muled",
-            colour=0xFF6600,
+            colour=self.client.colour,
             description=f"{member.mention} was muled by {ctx.author.mention}",
         )
         embed.add_field(name="Reason", value=reason)
@@ -363,7 +363,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
                 )
                 meme_embed = discord.Embed(
                     title=title,
-                    colour=0xFF6600,
+                    colour=self.client.colour,
                     url=json["postLink"],
                     description=f"r/{json['subreddit']}",
                 )
@@ -499,6 +499,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await self.figlet(ctx, text=text)
 
     @commands.command(help="Play a simple game of slots")
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def slots(self, ctx):
         responses = [
             "🍋",
@@ -511,7 +512,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             description="[ "
             + f"{random.choice(responses)} {random.choice(responses)} {random.choice(responses)}"
             + " ]",
-            colour=0xFF6600,
+            colour=self.client.colour,
         )
         if embed.description != "[ 7️⃣ 7️⃣ 7️⃣ ]":
             embed.set_footer(text="You need triple 7's to win.")
@@ -524,6 +525,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(name="slots", description="Play a simple game of slots")
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def slots_slash(self, ctx):
         await self.slots(ctx)
 

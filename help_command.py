@@ -3,6 +3,8 @@
 import discord
 from discord.ext.commands import MinimalHelpCommand
 
+main_colour = 0xFF7000
+
 
 class CustomHelpCommand(MinimalHelpCommand):
     def __init__(self, buttons):
@@ -12,7 +14,7 @@ class CustomHelpCommand(MinimalHelpCommand):
     async def send_bot_help(self, mapping):
         destination = self.get_destination()
 
-        embed = discord.Embed(title="1Bot Commands", colour=0xFF6600)
+        embed = discord.Embed(title="1Bot Commands", colour=main_colour)
 
         for cog, commands in mapping.items():
             command_signatures = [
@@ -33,7 +35,9 @@ class CustomHelpCommand(MinimalHelpCommand):
     async def send_cog_help(self, cog):
         destination = self.get_destination()
 
-        embed = discord.Embed(title=f"{cog.qualified_name} Commands", colour=0xFF6600)
+        embed = discord.Embed(
+            title=f"{cog.qualified_name} Commands", colour=main_colour
+        )
         embed.add_field(
             name="Commands are formatted in this manner:",
             value=f"{self.clean_prefix}command <Required option> [Optional option=Default value]\n\n",
@@ -60,7 +64,7 @@ class CustomHelpCommand(MinimalHelpCommand):
 
         embed = discord.Embed(
             title=self.get_command_signature(command),
-            colour=0xFF6600,
+            colour=main_colour,
         )
         embed.add_field(name="Command description", value=command.help)
 

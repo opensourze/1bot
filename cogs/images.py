@@ -70,7 +70,7 @@ class Images(commands.Cog, description="Generate fun images!"):
 
         if json["success"]:
             embed = (
-                discord.Embed(color=0x5865F2)
+                discord.Embed(colour=0x5865F2)
                 .set_author(
                     name="Hello. Beep boop.",
                     icon_url="https://images.discordapp.net/avatars/373199180161613824/fd9aabc3a14053d0351980bbea67a4f5.png?size=512",
@@ -112,7 +112,7 @@ class Images(commands.Cog, description="Generate fun images!"):
 
         if json["success"]:
             embed = discord.Embed(
-                color=0xFF6600, title="Please prove that you're not a robot."
+                colour=self.client.colour, title="Please prove that you're not a robot."
             ).set_image(url=json["message"])
 
             await ctx.send(embed=embed)
@@ -150,7 +150,7 @@ class Images(commands.Cog, description="Generate fun images!"):
 
         if json["success"]:
             embed = (
-                discord.Embed(color=0xFF6600)
+                discord.Embed(colour=self.client.colour)
                 .set_author(name=f"Change {ctx.author.name}'s mind")
                 .set_image(url=json["message"])
             )
@@ -182,7 +182,7 @@ class Images(commands.Cog, description="Generate fun images!"):
 
         if json["success"]:
             embed = discord.Embed(
-                color=0x1DA1F2, title=f"{ctx.author.name}'s tweet"
+                colour=0x1DA1F2, title=f"{ctx.author.name}'s tweet"
             ).set_image(url=json["message"])
 
             await ctx.send(embed=embed)

@@ -32,7 +32,7 @@ async def messageuser(ctx, id: int, *, message):
 
         embed = discord.Embed(
             title="My developers have sent you a message!",
-            colour=0xFF6600,
+            colour=client.colour,
         )
 
         embed.add_field(name="Message", value=message)
@@ -72,7 +72,7 @@ async def block(ctx, id: int, *, reason):
 if __name__ == "__main__":
     # Loop through py files in cogs directory and load them
     for file in os.listdir("./cogs"):
-        if file.endswith(".py"):  # and not "errors" in file:
+        if file.endswith(".py"):
             client.load_extension(f"cogs.{file[:-3]}")
 
     # Load Jishaku

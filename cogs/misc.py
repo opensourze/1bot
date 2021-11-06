@@ -61,7 +61,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     async def info(self, ctx):
         cmd_list = [c for c in self.client.commands if not c.hidden]
 
-        embed = discord.Embed(title="`1Bot` information", colour=0xFF6600)
+        embed = discord.Embed(title="`1Bot` information", colour=self.client.colour)
         embed.add_field(name="Bot version", value=f"v{__version__}", inline=False)
         embed.add_field(
             name="Command count", value=f"{len(cmd_list)} commands", inline=False
@@ -104,7 +104,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         channel = self.client.get_channel(884095439190786059)
 
         embed = discord.Embed(
-            title="Suggestion", description=suggestion, colour=0xFF6600
+            title="Suggestion", description=suggestion, colour=self.client.colour
         )
         embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 
@@ -139,7 +139,9 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     async def avatar(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author  # Set to author if user is None
 
-        embed = discord.Embed(colour=0xFF6600, title=f"{member.name}'s avatar")
+        embed = discord.Embed(
+            colour=self.client.colour, title=f"{member.name}'s avatar"
+        )
         embed.set_image(url=f"{member.avatar_url}")
         embed.add_field(
             name="Download avatar",
@@ -173,7 +175,9 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         humans = [mem for mem in ctx.guild.members if not mem.bot]
         bots = [mem for mem in ctx.guild.members if mem.bot]
 
-        embed = discord.Embed(title=f"{ctx.guild.name} information", colour=0xFF6600)
+        embed = discord.Embed(
+            title=f"{ctx.guild.name} information", colour=self.client.colour
+        )
 
         embed.set_thumbnail(url=ctx.guild.icon_url)
         embed.add_field(
@@ -242,7 +246,9 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         humans = [mem for mem in ctx.guild.members if not mem.bot]
         bots = [mem for mem in ctx.guild.members if mem.bot]
 
-        embed = discord.Embed(title=f"{ctx.guild.name} member info", colour=0xFF6600)
+        embed = discord.Embed(
+            title=f"{ctx.guild.name} member info", colour=self.client.colour
+        )
         embed.set_thumbnail(url=ctx.guild.icon_url)
         embed.add_field(
             name="Humans",
@@ -336,7 +342,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         embed = discord.Embed(
             title="Upvote 1Bot",
             description="Help 1Bot grow by upvoting it on Top.gg!\n\nLink to upvote: **https://top.gg/bot/884080176416309288/vote**",
-            colour=0xFF6600,
+            colour=self.client.colour,
         )
         embed.set_footer(text="You can upvote every 12 hours. Thank you!")
         await ctx.send(embed=embed)
@@ -377,7 +383,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     async def changelog(self, ctx):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
-            colour=0xFF6600,
+            colour=self.client.colour,
             description="Added a `membercount` command because we all check our server's member count quite often.",
         )
 

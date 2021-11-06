@@ -38,7 +38,7 @@ class Client(commands.AutoShardedBot):
 
         # Initialise AutoShardedBot
         super().__init__(
-            command_prefix=["1 ", "1"],
+            command_prefix=["1. ", "1."],
             case_insensitive=True,
             intents=intents,
             owner_ids=[748791790798372964, 825292137338765333, 856609450236313660],
@@ -49,6 +49,8 @@ class Client(commands.AutoShardedBot):
         The line below makes the help command case insensitive so that you can run 'help fun' or 'help Fun'.
         """
         self._BotBase__cogs = commands.core._CaseInsensitiveDict()
+
+    colour = 0xFF7000
 
     async def on_ready(self):
         self.starting.stop()
