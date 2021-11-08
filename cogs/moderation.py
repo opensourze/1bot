@@ -1,21 +1,17 @@
 import asyncio
 from contextlib import suppress
-from os import environ
 
 import discord
 import dotenv
 from bson.objectid import InvalidId, ObjectId
-from certifi import where
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
-from pymongo import MongoClient
-
-from utils import mute_check, time2seconds
+from utils import mute_check, time2seconds, cluster
 
 dotenv.load_dotenv()
 
-cluster = MongoClient(environ["MONGO_URL"], tlsCAFile=where())
+# Store MongoDB collections in vars
 warns = cluster["1bot"]["warns"]
 mute_db = cluster["1bot"]["muted"]
 

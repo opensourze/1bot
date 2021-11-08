@@ -1,5 +1,5 @@
-from contextlib import suppress
 from io import BytesIO
+from urllib.parse import quote
 
 import discord
 import requests
@@ -14,8 +14,6 @@ class Images(commands.Cog, description="Generate fun images!"):
         self.client: commands.Bot = client
         self.emoji = "<:images:884089121633611836>"
 
-    neko_url = "https://nekobot.xyz/api/imagegen?type="
-
     # amogus
     @commands.command(
         help="Amogus, but with a member's profile picture", aliases=["sus", "amongus"]
@@ -27,7 +25,7 @@ class Images(commands.Cog, description="Generate fun images!"):
                 img = member.avatar_url_as(size=256)
             else:
                 img = ctx.message.attachments[0]
-        except AttributeError:  # ctx.message is None on slash commands
+        except AttributeError:
             member = member or ctx.author
             img = member.avatar_url_as(size=256)
 
@@ -38,9 +36,9 @@ class Images(commands.Cog, description="Generate fun images!"):
 
         # Paste the avatar/attachment onto the amogus image
         amogus.paste(av, (698, 209))
-        amogus.save("amogus.png")
+        amogus.save("image-outputs/amogus.png")
 
-        await ctx.send(file=discord.File("amogus.png"))
+        await ctx.send(file=discord.File("image-outputs/amogus.png"))
 
     @cog_ext.cog_slash(
         name="amogus",
@@ -57,142 +55,154 @@ class Images(commands.Cog, description="Generate fun images!"):
     async def amogus_slash(self, ctx: SlashContext, member):
         await self.amogus(ctx, member=member)
 
-    # Clyde
-    @commands.command(help="Generate an image of Clyde saying something")
-    async def clyde(self, ctx, *, text: commands.clean_content):
-        if len(text) > 70:
-            return await ctx.send("❌ Your text is too long, please use shorter text!")
+    # Tweet
+    @commands.command(help="Generate an image of you tweeting something")
+    async def tweet(self, ctx, *, text: str):
+        avatar = ctx.author.avatar_url_as(format="png")
 
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
+        embed = discord.Embed(
+            title=f"{ctx.author.display_name}'s Tweet", colour=0x1DA1F2
+        )
+        embed.set_image(
+            url=f"https://some-random-api.ml/canvas/tweet?comment={quote(text)}&avatar={avatar}&username={ctx.author.name}&displayname={ctx.author.display_name}"
+        )
 
-        json = requests.get(url=f"{self.neko_url}clyde&text={text}").json()
-
-        if json["success"]:
-            embed = (
-                discord.Embed(colour=0x5865F2)
-                .set_author(
-                    name="Hello. Beep boop.",
-                    icon_url="https://images.discordapp.net/avatars/373199180161613824/fd9aabc3a14053d0351980bbea67a4f5.png?size=512",
-                )
-                .set_image(url=json["message"])
-            )
-
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"❌ Error: {json['message']}")
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
-        name="clyde",
-        description="Generate an image of Clyde saying something",
-        options=[
-            create_option(
-                name="text",
-                description="The text you want to make Clyde say",
-                required=True,
-                option_type=3,
-            )
-        ],
+        name="tweet", description="Generate an image of you tweeting something"
     )
-    async def clyde_slash(self, ctx: SlashContext, text):
-        await ctx.defer()
-        await self.clyde(ctx, text=text)
+    async def tweet_slash(self, ctx: SlashContext, *, text):
+        await self.tweet(ctx, text=text)
 
-    # Captcha
-    @commands.command(help="Please select all squares with.. your profile picture.")
-    async def captcha(self, ctx, *, member: commands.MemberConverter = None):
-        member = member or ctx.author
+    # YouTube comment
+    @commands.command(
+        help="Generate an image of a YouTube comment by you",
+        aliases=["ytcomment", "comment"],
+    )
+    async def youtubecomment(self, ctx, *, comment: str):
+        avatar = ctx.author.avatar_url_as(format="png")
 
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
+        embed = discord.Embed(
+            title=f"{ctx.author.display_name}'s YouTube comment", colour=0xC4302B
+        )
+        embed.set_image(
+            url=f"https://some-random-api.ml/canvas/youtube-comment?comment={quote(comment)}&username={ctx.author.display_name}&avatar={avatar}"
+        )
 
-        json = requests.get(
-            url=f"{self.neko_url}captcha&url={member.avatar_url}&username={member.name}"
-        ).json()
-
-        if json["success"]:
-            embed = discord.Embed(
-                colour=self.client.colour, title="Please prove that you're not a robot."
-            ).set_image(url=json["message"])
-
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"❌ Error: {json['message']}")
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
-        name="captcha",
-        description="Please select all squares with.. your profile picture",
+        name="youtubecomment",
+        description="Generate an image of a YouTube comment by you",
+    )
+    async def ytcomment_slash(self, ctx: SlashContext, *, comment: str):
+        await self.youtubecomment(ctx, comment=comment)
+
+    # Wasted
+    @commands.command(
+        help="Add a Wasted overlay to an avatar or an attached image",
+        brief="Add a Wasted overlay to an avatar or image",
+    )
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    async def wasted(
+        self, ctx: SlashContext, *, member: commands.MemberConverter = None
+    ):
+        try:
+            if not ctx.message.attachments:
+                member = member or ctx.author
+                img = member.avatar_url_as(format="png")
+            else:
+                img = ctx.message.attachments[0].url
+        except AttributeError:
+            member = member or ctx.author
+            img = member.avatar_url_as(format="png")
+
+        embed = discord.Embed(title="wasted.", colour=self.client.colour)
+        embed.set_image(url=f"https://some-random-api.ml/canvas/wasted?avatar={img}")
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="wasted",
+        description="Add a Wasted overlay to someone's avatar",
         options=[
             create_option(
                 name="member",
-                description="Whose avatar do you want to use for the captcha?",
-                required=True,
+                description="The member whose avatar to add the overlay on",
+                required=False,
                 option_type=6,
             )
         ],
     )
-    async def captcha_slash(self, ctx: SlashContext, member):
-        await ctx.defer()
-        await self.captcha(ctx, member=member)
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    async def wasted_slash(self, ctx: SlashContext, member):
+        await self.wasted(ctx, member=member)
 
-    # Change my mind
-    @commands.command(
-        aliases=["cmm"], help="Ask people to change your mind about something"
-    )
-    async def changemymind(self, ctx, *, text: commands.clean_content):
-        if len(text) > 78:
-            return await ctx.send("❌ Your text is too long, please use shorter text!")
+    # Triggered
+    @commands.command(help="Create a triggered gif with someone's avatar")
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    async def triggered(self, ctx, *, member: commands.MemberConverter = None):
+        member = member or ctx.author
+        avatar = member.avatar_url_as(format="png")
+        url = f"https://some-random-api.ml/canvas/triggered?avatar={avatar}"
 
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
+        r = requests.get(url)
+        image = Image.open(BytesIO(r.content))
+        image.save("image-outputs/triggered.gif", save_all=True)
 
-        json = requests.get(url=f"{self.neko_url}changemymind&text={text}").json()
+        file = discord.File("image-outputs/triggered.gif")
 
-        if json["success"]:
-            embed = (
-                discord.Embed(colour=self.client.colour)
-                .set_author(name=f"Change {ctx.author.name}'s mind")
-                .set_image(url=json["message"])
-            )
-
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"❌ Error: {json['message']}")
+        await ctx.send(file=file)
 
     @cog_ext.cog_slash(
-        name="changemymind",
-        description="Ask people to change your mind about something",
+        name="triggered",
+        description="Create a triggered gif with someone's avatar",
+        options=[
+            create_option(
+                name="member",
+                description="The member whose avatar to add the triggered overlay to",
+                required=False,
+                option_type=6,
+            )
+        ],
     )
-    async def changemymind_slash(self, ctx: SlashContext, *, text):
-        await ctx.defer()
-        await self.changemymind(ctx, text=text)
+    async def triggered_slash(self, ctx: SlashContext, member):
+        await self.triggered(ctx, member=member)
 
-    # Tweet
-    @commands.command(help="Generate an image of a tweet", aliases=["twitter"])
-    async def tweet(self, ctx, *, text: commands.clean_content):
-        if len(text) > 75:
-            return await ctx.send("❌ Your text is too long, please use shorter text!")
+    # Blurple
+    @commands.command(help="Filter an avatar/image with Discord's blurple colour")
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    async def blurple(self, ctx, *, member: commands.MemberConverter = None):
+        try:
+            if not ctx.message.attachments:
+                member = member or ctx.author
+                img = member.avatar_url_as(format="png")
+            else:
+                img = ctx.message.attachments[0].url
+        except AttributeError:
+            member = member or ctx.author
+            img = member.avatar_url_as(format="png")
 
-        with suppress(AttributeError):
-            await ctx.trigger_typing()
+        embed = discord.Embed(title=f"Blurple {member.name}", colour=0x5865F2)
+        embed.set_image(url=f"https://some-random-api.ml/canvas/blurple2?avatar={img}")
 
-        json = requests.get(
-            url=f"{self.neko_url}tweet&text={text}&username={ctx.author.name}"
-        ).json()
+        await ctx.send(embed=embed)
 
-        if json["success"]:
-            embed = discord.Embed(
-                colour=0x1DA1F2, title=f"{ctx.author.name}'s tweet"
-            ).set_image(url=json["message"])
-
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"❌ Error: {json['message']}")
-
-    @cog_ext.cog_slash(name="tweet", description="Generate an image of a tweet")
-    async def tweet_slash(self, ctx: SlashContext, *, text):
-        await ctx.defer()
-        await self.tweet(ctx, text=text)
+    @cog_ext.cog_slash(
+        name="blurple",
+        description="Filter someone's avatar with Discord's blurple",
+        options=[
+            create_option(
+                name="member",
+                description="The member whose avatar to blurplify",
+                required=False,
+                option_type=6,
+            )
+        ],
+    )
+    async def blurple_slash(self, ctx: SlashContext, member):
+        await self.blurple(ctx, member=member)
 
 
 def setup(client):

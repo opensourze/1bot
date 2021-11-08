@@ -1,5 +1,14 @@
+import os
+
 import discord
+from dotenv import load_dotenv
+from certifi import where
 from discord.ext.buttons import Paginator
+from pymongo import MongoClient
+
+load_dotenv()
+
+cluster = MongoClient(os.environ["MONGO_URL"], tlsCAFile=where())
 
 
 class Pager(Paginator):

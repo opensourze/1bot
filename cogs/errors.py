@@ -122,7 +122,7 @@ class Errors(commands.Cog):
                 title="❌ Unhandled error",
                 description="Oops, looks like that command returned an unknown error. The error has been automatically reported to the developers in our server and will be fixed soon.\n"
                 + "Meanwhile, **do not spam the same command**.",
-                color=0xFF0000,
+                colour=0xFF0000,
             )
             error_embed.add_field(
                 name="Join our server to track this error",
@@ -132,7 +132,7 @@ class Errors(commands.Cog):
             try:
                 embed = discord.Embed(
                     title="Error",
-                    color=0xFF0000,
+                    colour=0xFF0000,
                     description=f"Error while invoking command:\n`{ctx.message.content}`",
                 ).add_field(name="Error:", value=error)
                 embed.set_footer(text=f"User ID: {ctx.author.id}")
@@ -141,7 +141,7 @@ class Errors(commands.Cog):
                 embed = (
                     discord.Embed(
                         title="Error",
-                        color=0xFF0000,
+                        colour=0xFF0000,
                         description=f"Error while invoking command `/{ctx.name}`",
                     )
                     .add_field(name="Error:", value=error)

@@ -1,19 +1,16 @@
 import platform
-from os import environ
 
 import discord
-from certifi import where
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_components import create_actionrow, create_button
-from pymongo import MongoClient
+from utils import cluster
 
-cluster = MongoClient(environ["MONGO_URL"], tlsCAFile=where())
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -56,12 +53,14 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     @commands.command(
         help="View the bot's information",
         brief="View 1Bot's information",
-        aliases=["information", "botinfo"],
+        aliases=["stats", "information", "botinfo"],
     )
     async def info(self, ctx):
         cmd_list = [c for c in self.client.commands if not c.hidden]
 
-        embed = discord.Embed(title="`1Bot` information", colour=self.client.colour)
+        embed = discord.Embed(
+            title="1Bot Stats and Information", colour=self.client.colour
+        )
         embed.add_field(name="Bot version", value=f"v{__version__}", inline=False)
         embed.add_field(
             name="Command count", value=f"{len(cmd_list)} commands", inline=False
@@ -384,7 +383,10 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             colour=self.client.colour,
-            description="Added a `membercount` command because we all check our server's member count quite often.",
+            description="The image category has undergone a big redo.\n\n"
+            + "- `changemymind`, `clyde` and `captcha` commands have been removed, as the API we used for those commands was faulty. I'm trying to bring back the `changemymind` and `clyde` commands, though.\n"
+            + "- The `tweet` command now shows your avatar in the tweet."
+            + "- Added `ytcomment`, `triggered`, `wasted` and `blurple` commands. Wasted and Blurple support attached images.",
         )
 
         await ctx.send(embed=changelog)

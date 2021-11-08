@@ -1,20 +1,18 @@
-# This is the file to run. It also contains the commands to warn/ban users from 1Bot
+"This is the file to run. It contains the commands to warn/ban users from 1Bot and background tasks."
 
 import os
 
 import discord
 import dotenv
-from certifi import where
 from discord.ext import commands
 from discord_slash import SlashCommand
-from pymongo import MongoClient
 
 from client import Client
+from utils import cluster
+
+bans = cluster["1bot"]["bans"]
 
 dotenv.load_dotenv()
-
-cluster = MongoClient(os.environ["MONGO_URL"], tlsCAFile=where())
-bans = cluster["1bot"]["bans"]
 
 client = Client()
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
@@ -24,9 +22,7 @@ slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
 @commands.is_owner()
 async def messageuser(ctx, id: int, *, message):
     if id in client.owner_ids:
-        return await ctx.send(
-            "You can't send messages to an owner through 1Bot. why not talk to them directly smh"
-        )
+        return await ctx.send("You can't send messages to an owner through 1Bot.")
     try:
         user: discord.User = client.get_user(id)
 
@@ -38,7 +34,7 @@ async def messageuser(ctx, id: int, *, message):
         embed.add_field(name="Message", value=message)
 
         await user.send(embed=embed)
-        await ctx.send(f"✅ Warned user `{user.name}` with this embed.", embed=embed)
+        await ctx.send(f"✅ Messaged user `{user.name}` with this embed.", embed=embed)
 
     except Exception as e:
         await ctx.send(f"❌ **Error:**\n\n{e}")
@@ -49,7 +45,7 @@ async def messageuser(ctx, id: int, *, message):
 @commands.is_owner()
 async def block(ctx, id: int, *, reason):
     if id in client.owner_ids:
-        return await ctx.send("you can't block an owner dummy")
+        return await ctx.send("You can't block an owner.")
     try:
         user: discord.User = client.get_user(id)
 

@@ -1,4 +1,4 @@
-"""This file contains the client along with most events."""
+# This file contains the client along with most events.
 
 from asyncio import sleep
 from itertools import cycle
