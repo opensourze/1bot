@@ -41,7 +41,7 @@ class Client(commands.AutoShardedBot):
             command_prefix=["1. ", "1."],
             case_insensitive=True,
             intents=intents,
-            owner_ids=[748791790798372964, 825292137338765333, 856609450236313660],
+            owner_ids=[748791790798372964, 856609450236313660],
             allowed_mentions=discord.AllowedMentions(everyone=False),
         )
 
@@ -62,19 +62,19 @@ class Client(commands.AutoShardedBot):
                 create_button(
                     label="Command list",
                     style=ButtonStyle.URL,
-                    emoji=self.get_emoji(885086857484992553),
+                    emoji=self.get_emoji(907549965444849675),
                     url="https://1bot.netlify.app/commands",
                 ),
                 create_button(
                     label="Support Server",
                     style=ButtonStyle.URL,
-                    emoji=self.get_emoji(885083336240926730),
+                    emoji=self.get_emoji(907550097368301578),
                     url="https://discord.gg/JGcnKxEPsW",
                 ),
                 create_button(
                     style=ButtonStyle.URL,
                     label="Add me",
-                    emoji=self.get_emoji(885088268314611732),
+                    emoji=self.get_emoji(907549597105278976),
                     url="https://dsc.gg/1bot",
                 ),
             ]

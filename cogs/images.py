@@ -12,7 +12,7 @@ from PIL import Image
 class Images(commands.Cog, description="Generate fun images!"):
     def __init__(self, client):
         self.client: commands.Bot = client
-        self.emoji = "<:images:884089121633611836>"
+        self.emoji = "<:images:907549693364543538>"
 
     # amogus
     @commands.command(
@@ -58,13 +58,18 @@ class Images(commands.Cog, description="Generate fun images!"):
     # Tweet
     @commands.command(help="Generate an image of you tweeting something")
     async def tweet(self, ctx, *, text: str):
+        if len(text) >= 1000:
+            return await ctx.send(
+                "❌ Your text is too long, please use text shorter than 1000 characters!"
+            )
+
         avatar = ctx.author.avatar_url_as(format="png")
 
         embed = discord.Embed(
             title=f"{ctx.author.display_name}'s Tweet", colour=0x1DA1F2
         )
         embed.set_image(
-            url=f"https://some-random-api.ml/canvas/tweet?comment={quote(text)}&avatar={avatar}&username={ctx.author.name}&displayname={ctx.author.display_name}"
+            url=f"https://some-random-api.ml/canvas/tweet?comment={quote(text)}&avatar={avatar}&username={quote(ctx.author.name)}&displayname={quote(ctx.author.display_name)}"
         )
 
         await ctx.send(embed=embed)
@@ -81,13 +86,18 @@ class Images(commands.Cog, description="Generate fun images!"):
         aliases=["ytcomment", "comment"],
     )
     async def youtubecomment(self, ctx, *, comment: str):
+        if len(comment) >= 1000:
+            return await ctx.send(
+                "❌ Your text is too long, please use text shorter than 1000 characters!"
+            )
+
         avatar = ctx.author.avatar_url_as(format="png")
 
         embed = discord.Embed(
             title=f"{ctx.author.display_name}'s YouTube comment", colour=0xC4302B
         )
         embed.set_image(
-            url=f"https://some-random-api.ml/canvas/youtube-comment?comment={quote(comment)}&username={ctx.author.display_name}&avatar={avatar}"
+            url=f"https://some-random-api.ml/canvas/youtube-comment?comment={quote(comment)}&username={quote(ctx.author.display_name)}&avatar={avatar}"
         )
 
         await ctx.send(embed=embed)

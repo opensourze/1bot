@@ -19,7 +19,7 @@ mute_db = cluster["1bot"]["muted"]
 class Moderation(commands.Cog, description="All the moderation commands you need."):
     def __init__(self, client):
         self.client: commands.Bot = client
-        self.emoji = "<:moderation:885461924777693184>"
+        self.emoji = "<:moderation:907549753598955550>"
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
@@ -474,8 +474,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         options=[
             create_option(
                 name="amount",
-                description="Number of messages to delete (default = 5)",
-                required=False,
+                description="Number of messages to delete",
+                required=True,
                 option_type=4,
             )
         ],
@@ -483,7 +483,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
-    async def clear_slash(self, ctx: SlashContext, amount: int = 5):
+    async def clear_slash(self, ctx: SlashContext, amount: int):
         await self.clear(ctx, amount=amount - 1)
         await ctx.send(f"✅ I have cleared {amount} messages", delete_after=2)
 

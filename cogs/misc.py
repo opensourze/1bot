@@ -16,7 +16,7 @@ __version__ = "0.7.3"
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     def __init__(self, client):
         self.client: commands.Bot = client
-        self.emoji = "<:miscellaneous:884088957057523733>"
+        self.emoji = "<:miscellaneous:907550152775073802>"
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -31,7 +31,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
                 create_button(
                     style=ButtonStyle.URL,
                     label="Website",
-                    emoji=self.client.get_emoji(885099687252750337),
+                    emoji=self.client.get_emoji(907550015063461898),
                     url="https://1bot.netlify.app/",
                 ),
                 create_button(
@@ -43,7 +43,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
                 create_button(
                     style=ButtonStyle.URL,
                     label="Upvote me",
-                    emoji=self.client.get_emoji(885466072373948416),
+                    emoji=self.client.get_emoji(907550047959412736),
                     url="https://top.gg/bot/884080176416309288/vote",
                 ),
             ]

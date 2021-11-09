@@ -15,7 +15,7 @@ from pyfiglet import Figlet
 class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?"):
     def __init__(self, client):
         self.client: commands.Bot = client
-        self.emoji = "<:fun:884088990146367528>"
+        self.emoji = "<:fun:907549655934586900>"
 
     async def discord_together(self, ctx, option):
         try:
@@ -484,11 +484,10 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     # Figlet/ASCII command
     @commands.command(help="Return text in ASCII art", aliases=["ascii"])
     async def figlet(self, ctx, *, text):
-        if len(text) > 20:
-            await ctx.send(
-                "❌ Your text is too long, please use text that is lesser than 20 characters."
+        if len(text) >= 16:
+            return await ctx.send(
+                "❌ Your text is too long, please use text that is lesser than 16 characters."
             )
-            return
 
         ascii_text = Figlet(font="small").renderText(text)
 

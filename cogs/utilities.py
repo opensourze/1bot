@@ -12,13 +12,31 @@ from temperature_converter_py import fahrenheit_to_celsius
 from utils import Pager
 
 
-class Utilities(
-    commands.Cog,
-    description="A set of useful utility commands.",
-):
+class Utilities(commands.Cog, description="A set of useful utility commands."):
     def __init__(self, client):
         self.client: commands.Bot = client
-        self.emoji = "<:utilities:884088853609193544>"
+        self.emoji = "<:utilities:907550185629040680>"
+
+    # Calc command
+    @commands.command(
+        help="Run a math operation with two numbers. Separate the numbers and the operation by spaces.",
+        brief="A simple calculator with two numbers",
+        aliases=["calculate", "calculator"],
+    )
+    async def calc(self, ctx, num_1: float, operation: str, num_2: float):
+        o = operation.lower()
+
+        if o == "+" or o == "plus":
+            await ctx.send(num_1 + num_2)
+        if o == "-" or o == "minus":
+            await ctx.send(num_1 - num_2)
+        if o == "*" or o == "times" or o == "x":
+            await ctx.send(num_1 * num_2)
+        if o == "/" or o == "by":
+            try:
+                await ctx.send(num_1 / num_2)
+            except ZeroDivisionError:
+                await ctx.send("❌ You can't divide by zero!")
 
     # Emoji command
     @commands.command(
@@ -79,7 +97,7 @@ class Utilities(
                     "❌ Invalid URL provided. Make sure the URL only contains the image you want!"
                 )
 
-        await ctx.send(f"Emoji created! {created_emoji}")
+        await ctx.send(f"✅ Emoji created! {created_emoji}")
 
     @cog_ext.cog_slash(
         name="emoji",
@@ -156,19 +174,19 @@ class Utilities(
 
     # Search repositories
     @commands.command(
-        help="Search for GitHub repositories",
+        help="Search for a GitHub repository",
         aliases=["searchrepo", "githubsearch"],
     )
-    async def github(self, ctx, *, query):
+    async def github(self, ctx, *, search_query):
         json = requests.get(
-            f"https://api.github.com/search/repositories?q={query}"
+            f"https://api.github.com/search/repositories?q={search_query}"
         ).json()
 
         if json["total_count"] == 0:
             await ctx.send("No matching repositories found")
         else:
             await ctx.send(
-                f"First result for '{query}':\n{json['items'][0]['html_url']}"
+                f"First result for '{search_query}':\n{json['items'][0]['html_url']}"
             )
 
     @cog_ext.cog_slash(

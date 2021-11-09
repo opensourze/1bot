@@ -121,7 +121,7 @@ class Errors(commands.Cog):
             error_embed = discord.Embed(
                 title="❌ Unhandled error",
                 description="Oops, looks like that command returned an unknown error. The error has been automatically reported to the developers in our server and will be fixed soon.\n"
-                + "Meanwhile, **do not spam the same command**.",
+                + "Meanwhile, **please do not repeatedly run the same command**.",
                 colour=0xFF0000,
             )
             error_embed.add_field(
