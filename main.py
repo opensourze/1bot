@@ -3,8 +3,9 @@
 import os
 
 import discord
+import topgg
 import dotenv
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord_slash import SlashCommand
 
 from client import Client
@@ -16,6 +17,7 @@ dotenv.load_dotenv()
 
 client = Client()
 slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
+client.topggpy = topgg.DBLClient(client, os.environ["TOPGG_TOKEN"])
 
 # Command to message a user from 1Bot
 @client.command(hidden=True)
@@ -64,6 +66,14 @@ async def block(ctx, id: int, *, reason):
     except Exception as e:
         await ctx.send(f"❌ **Error:**\n\n{e}")
 
+
+# Update Top.gg stats every 30 minutes
+@tasks.loop(minutes=30)
+async def update_stats():
+    await client.topggpy.post_guild_count()
+
+
+update_stats.start()
 
 if __name__ == "__main__":
     # Loop through py files in cogs directory and load them

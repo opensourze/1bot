@@ -25,7 +25,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
                 create_button(
                     style=ButtonStyle.URL,
                     label="Add me",
-                    emoji=self.client.get_emoji(885088268314611732),
+                    emoji=self.client.get_emoji(907549597105278976),
                     url="https://dsc.gg/1bot",
                 ),
                 create_button(
@@ -36,7 +36,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
                 ),
                 create_button(
                     style=ButtonStyle.URL,
-                    emoji=self.client.get_emoji(885083336240926730),
+                    emoji=self.client.get_emoji(907550097368301578),
                     label="Support Server",
                     url="https://discord.gg/JGcnKxEPsW",
                 ),
