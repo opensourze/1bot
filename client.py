@@ -57,7 +57,14 @@ class Client(commands.AutoShardedBot):
         green = Chalk("green")
         print(green(f"{self.user.name} is now ready"), end=None)
 
-        buttons = create_actionrow(
+        # Storing all the buttons needed
+        support_btn = create_button(
+            label="Support Server",
+            style=ButtonStyle.URL,
+            emoji=self.get_emoji(907550097368301578),
+            url="https://discord.gg/JGcnKxEPsW",
+        )
+        help_buttons = create_actionrow(
             *[
                 create_button(
                     label="Command list",
@@ -65,12 +72,7 @@ class Client(commands.AutoShardedBot):
                     emoji=self.get_emoji(907549965444849675),
                     url="https://1bot.netlify.app/commands",
                 ),
-                create_button(
-                    label="Support Server",
-                    style=ButtonStyle.URL,
-                    emoji=self.get_emoji(907550097368301578),
-                    url="https://discord.gg/JGcnKxEPsW",
-                ),
+                support_btn,
                 create_button(
                     style=ButtonStyle.URL,
                     label="Add me",
@@ -79,8 +81,44 @@ class Client(commands.AutoShardedBot):
                 ),
             ]
         )
+        self.help_command = CustomHelpCommand(help_buttons)
 
-        self.help_command = CustomHelpCommand(buttons)
+        self.info_btns = create_actionrow(
+            *[
+                create_button(
+                    style=ButtonStyle.URL,
+                    label="Add me",
+                    emoji=self.get_emoji(907549597105278976),
+                    url="https://dsc.gg/1bot",
+                ),
+                create_button(
+                    style=ButtonStyle.URL,
+                    label="Website",
+                    emoji=self.get_emoji(907550015063461898),
+                    url="https://1bot.netlify.app/",
+                ),
+                support_btn,
+                create_button(
+                    style=ButtonStyle.URL,
+                    label="Upvote me",
+                    emoji=self.get_emoji(907550047959412736),
+                    url="https://top.gg/bot/884080176416309288/vote",
+                ),
+            ]
+        )
+        self.error_channel = await self.fetch_channel(884095331678167111)
+        self.error_btns = create_actionrow(
+            *[
+                create_button(
+                    style=ButtonStyle.URL,
+                    url=f"https://1bot.netlify.app/commands",
+                    label="Command list",
+                    emoji=self.get_emoji(907549965444849675),
+                ),
+                support_btn,
+            ]
+        )
+
         self.loop.create_task(self.change_status())
 
         self.dt = await DiscordTogether(environ["TOKEN"])
@@ -114,6 +152,18 @@ class Client(commands.AutoShardedBot):
     # Store message details when it is deleted
 
     sniped_messages = {}
+    esniped_messages = {}
+
+    def sniped_message_to_dict(self, message):
+        return {
+            "content": message.content,
+            "author": str(message.author),
+            "author_avatar": message.author.avatar_url,
+            "timestamp": message.created_at,
+            "attachments": [
+                {"url": a.url, "filename": a.filename} for a in message.attachments
+            ],
+        }
 
     async def on_message_delete(self, message):
         if not message.guild:
@@ -122,24 +172,23 @@ class Client(commands.AutoShardedBot):
         try:
             # Update the guild's dict with the sniped message
             self.sniped_messages[message.guild.id].update(
-                {
-                    message.channel.id: {
-                        "content": message.content,
-                        "author": str(message.author),
-                        "author_avatar": message.author.avatar_url,
-                        "timestamp": message.created_at,
-                        "attachments": message.attachments,
-                    }
-                }
+                {message.channel.id: self.sniped_message_to_dict(message)}
             )
         except KeyError:
             # Creates a new dict for the guild if it isn't stored
             self.sniped_messages[message.guild.id] = {
-                message.channel.id: {
-                    "content": message.content,
-                    "author": str(message.author),
-                    "author_avatar": message.author.avatar_url,
-                    "timestamp": message.created_at,
-                    "attachments": message.attachments,
-                }
+                message.channel.id: self.sniped_message_to_dict(message)
+            }
+
+    async def on_message_edit(self, before, after):
+        if not before.guild:
+            return
+
+        try:
+            self.esniped_messages[before.guild.id].update(
+                {before.channel.id: self.sniped_message_to_dict(before)}
+            )
+        except KeyError:
+            self.esniped_messages[before.guild.id] = {
+                before.channel.id: self.sniped_message_to_dict(before)
             }

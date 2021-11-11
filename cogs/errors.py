@@ -4,34 +4,12 @@ from contextlib import suppress
 
 import discord
 from discord.ext import commands
-from discord_slash.model import ButtonStyle
-from discord_slash.utils.manage_components import create_actionrow, create_button
 
 
 class Errors(commands.Cog):
     def __init__(self, client):
         self.client: commands.Bot = client
         self.emoji = ""
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        self.error_channel = await self.client.fetch_channel(884095331678167111)
-        self.error_btns = create_actionrow(
-            *[
-                create_button(
-                    style=ButtonStyle.URL,
-                    url=f"https://1bot.netlify.app/commands",
-                    label="Command list",
-                    emoji=self.client.get_emoji(885086857484992553),
-                ),
-                create_button(
-                    style=ButtonStyle.URL,
-                    url=f"https://discord.gg/JGcnKxEPsW",
-                    label="Support Server",
-                    emoji=self.client.get_emoji(885083336240926730),
-                ),
-            ]
-        )
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -47,7 +25,7 @@ class Errors(commands.Cog):
                 + "Missing permissions: "
                 + f"`{', '.join([err.capitalize().replace('_', ' ') for err in error.missing_perms])}`\n\n"
                 + "Please add these permissions to my role ('1Bot') in your server settings.",
-                components=[self.error_btns],
+                components=[self.client.error_btns],
             )
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(
@@ -61,13 +39,13 @@ class Errors(commands.Cog):
             await ctx.send(
                 "❌ You haven't provided enough options.\n"
                 + f"Missing option: `{error.param.name}`.",
-                components=[self.error_btns],
+                components=[self.client.error_btns],
             )
         elif isinstance(error, commands.TooManyArguments):
             await ctx.send(
                 "❌ You've passed extra options to the command!\n"
                 + "Check the command list to know what options to provide.",
-                components=[self.error_btns],
+                components=[self.client.error_btns],
             )
         elif isinstance(error, commands.ChannelNotFound):
             await ctx.send(f'❌ I couldn\'t find the channel "{error.argument}".')
@@ -86,7 +64,7 @@ class Errors(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             await ctx.send(
                 "❌ You haven't provided the correct types of options, please check the help command or command list.",
-                components=[self.error_btns],
+                components=[self.client.error_btns],
             )
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("❌ This command can't be used in direct messages.")
@@ -126,7 +104,7 @@ class Errors(commands.Cog):
             )
             error_embed.add_field(
                 name="Join our server to track this error",
-                value="If you would like to see more about this error and our progress on fixing it, join the server by clicking the button below.",
+                value="If you would like to see more about this error and our progress on fixing it, join our server.",
             )
 
             try:
@@ -148,21 +126,8 @@ class Errors(commands.Cog):
                     .set_footer(text=f"User ID: {ctx.author.id}")
                 )
 
-            await self.error_channel.send("<@&887918006376747008>", embed=embed)
-            await ctx.send(
-                embed=error_embed,
-                components=[
-                    create_actionrow(
-                        *[
-                            create_button(
-                                label="Join the server",
-                                style=ButtonStyle.URL,
-                                url="https://discord.gg/JGcnKxEPsW",
-                            )
-                        ]
-                    )
-                ],
-            )
+            await self.client.error_channel.send("<@&887918006376747008>", embed=embed)
+            await ctx.send(embed=error_embed)
 
     @commands.Cog.listener()
     async def on_slash_command_error(self, ctx, error):

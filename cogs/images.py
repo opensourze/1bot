@@ -1,3 +1,4 @@
+from contextlib import suppress
 from io import BytesIO
 from urllib.parse import quote
 
@@ -151,8 +152,11 @@ class Images(commands.Cog, description="Generate fun images!"):
 
     # Triggered
     @commands.command(help="Create a triggered gif with someone's avatar")
-    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def triggered(self, ctx, *, member: commands.MemberConverter = None):
+        with suppress(AttributeError):
+            await ctx.trigger_typing()
+
         member = member or ctx.author
         avatar = member.avatar_url_as(format="png")
         url = f"https://some-random-api.ml/canvas/triggered?avatar={avatar}"
@@ -177,7 +181,9 @@ class Images(commands.Cog, description="Generate fun images!"):
             )
         ],
     )
-    async def triggered_slash(self, ctx: SlashContext, member):
+    @commands.cooldown(1, 10, commands.BucketType.channel)
+    async def triggered_slash(self, ctx: SlashContext, member=None):
+        await ctx.defer()
         await self.triggered(ctx, member=member)
 
     # Blurple

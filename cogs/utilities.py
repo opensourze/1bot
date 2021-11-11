@@ -27,16 +27,50 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
         o = operation.lower()
 
         if o == "+" or o == "plus":
-            await ctx.send(num_1 + num_2)
+            return await ctx.send(str(num_1 + num_2))
         if o == "-" or o == "minus":
-            await ctx.send(num_1 - num_2)
+            return await ctx.send(str(num_1 - num_2))
         if o == "*" or o == "times" or o == "x":
-            await ctx.send(num_1 * num_2)
+            return await ctx.send(str(num_1 * num_2))
         if o == "/" or o == "by":
             try:
-                await ctx.send(num_1 / num_2)
+                return await ctx.send(str(num_1 / num_2))
             except ZeroDivisionError:
                 await ctx.send("❌ You can't divide by zero!")
+        else:
+            await ctx.send(
+                "❌ Invalid operation. Use one of these for the operation: `+, plus, -, minus, *, x, /`"
+            )
+
+    @cog_ext.cog_slash(
+        name="calculate",
+        description="Run a math operation with two numbers",
+        options=[
+            create_option(
+                name="num_1",
+                description="The first number (can be decimal)",
+                required=True,
+                option_type=3,
+            ),
+            create_option(
+                name="operation",
+                description="Choose between: + - x /",
+                required=True,
+                option_type=3,
+            ),
+            create_option(
+                name="num_2",
+                description="The second number (can be decimal)",
+                required=True,
+                option_type=3,
+            ),
+        ],
+    )
+    async def calc_slash(self, ctx: SlashContext, num_1, operation, num_2):
+        try:
+            await self.calc(ctx, float(num_1), operation, float(num_2))
+        except:
+            await ctx.send("❌ Please use valid numbers!")
 
     # Emoji command
     @commands.command(

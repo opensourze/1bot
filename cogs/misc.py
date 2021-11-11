@@ -3,51 +3,18 @@ import platform
 import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
-from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option
-from discord_slash.utils.manage_components import create_actionrow, create_button
 from utils import cluster
 
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.7.3"
+__version__ = "0.8"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     def __init__(self, client):
         self.client: commands.Bot = client
         self.emoji = "<:miscellaneous:907550152775073802>"
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        self.info_btns = create_actionrow(
-            *[
-                create_button(
-                    style=ButtonStyle.URL,
-                    label="Add me",
-                    emoji=self.client.get_emoji(907549597105278976),
-                    url="https://dsc.gg/1bot",
-                ),
-                create_button(
-                    style=ButtonStyle.URL,
-                    label="Website",
-                    emoji=self.client.get_emoji(907550015063461898),
-                    url="https://1bot.netlify.app/",
-                ),
-                create_button(
-                    style=ButtonStyle.URL,
-                    emoji=self.client.get_emoji(907550097368301578),
-                    label="Support Server",
-                    url="https://discord.gg/JGcnKxEPsW",
-                ),
-                create_button(
-                    style=ButtonStyle.URL,
-                    label="Upvote me",
-                    emoji=self.client.get_emoji(907550047959412736),
-                    url="https://top.gg/bot/884080176416309288/vote",
-                ),
-            ]
-        )
 
     # Bot info command
     @commands.command(
@@ -85,7 +52,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             name="Python version", value=platform.python_version(), inline=False
         )
         embed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=embed, components=[self.info_btns])
+        await ctx.send(embed=embed, components=[self.client.info_btns])
 
     @cog_ext.cog_slash(name="info", description="View the bot's information")
     async def info_slash(self, ctx: SlashContext):
@@ -109,18 +76,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
 
         message = await channel.send(embed=embed)
         await ctx.send(
-            "✅ Your suggestion has been submitted to 1Bot's server!",
-            components=[
-                create_actionrow(
-                    *[
-                        create_button(
-                            label="Join the server",
-                            style=ButtonStyle.URL,
-                            url="https://discord.gg/JGcnKxEPsW",
-                        )
-                    ]
-                )
-            ],
+            "✅ Your suggestion has been submitted to 1Bot's server! A link to the server can be found in my About Me, or the `info command`.",
         )
         await message.add_reaction("✅")
         await message.add_reaction("❌")
@@ -142,10 +98,6 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             colour=self.client.colour, title=f"{member.name}'s avatar"
         )
         embed.set_image(url=f"{member.avatar_url}")
-        embed.add_field(
-            name="Download avatar",
-            value=f"[Click to download this avatar]({member.avatar_url})",
-        )
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
@@ -383,10 +335,13 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             colour=self.client.colour,
-            description="The image category has undergone a big redo.\n\n"
-            + "- `changemymind`, `clyde` and `captcha` commands have been removed, as the API we used for those commands was faulty. I'm trying to bring back the `changemymind` and `clyde` commands, though.\n"
-            + "- The `tweet` command now shows your avatar in the tweet."
-            + "- Added `ytcomment`, `triggered`, `wasted` and `blurple` commands. Wasted and Blurple support attached images.",
+            description="Whoo, 1Bot is growing.\n\n"
+            + "- Added an editsnipe command (aka `esnipe`) due to popular request.\n"
+            + "- Added a duration limit of 6 days to the tmute command **temporarily** - it will be increased soon.\n"
+            + "- Added a `calc` command that can perform a simple math operation with two numbers."
+            + "- Optimised 1Bot to consume slightly lesser resources as it's growing fast now.\n"
+            + "- You might've noticed the tmute command sometimes doesn't unmute automatically, that was because we had a lot of server restarts. I've reorganised everything so that I don't have to restart too many times.\n"
+            + "- Fixed a bunch of errors.",
         )
 
         await ctx.send(embed=changelog)

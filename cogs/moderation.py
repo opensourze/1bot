@@ -326,10 +326,10 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def role(self, ctx):
         embed = discord.Embed(
             title="Role commands",
-            description="Run `1 role c {rolename}` to create a role with the provided name.\n"
-            + "Run `1 role a {member} {role}` to add the role to the provided member.\n"
-            + "Run `1 role d {role}` to delete the role.\n"
-            + "Run `1 role r {member} {role}` to remove the role from the member.",
+            description="Run `1 role c/create {rolename}` to create a role with the provided name.\n"
+            + "Run `1 role a/add/give {member} {role}` to add the role to the provided member.\n"
+            + "Run `1 role d/delete {role}` to delete the role.\n"
+            + "Run `1 role r/remove/take {member} {role}` to remove the role from the member.",
             colour=self.client.colour,
         )
         embed.add_field(
@@ -356,7 +356,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         await role.delete()
         await ctx.send(f"✅ Role `{role.name}` has been deleted")
 
-    @role.command(help="Add a role to a member", aliases=["a"])
+    @role.command(help="Add a role to a member", aliases=["a", "give"])
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
@@ -366,7 +366,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         await member.add_roles(role)
         await ctx.send(f"✅ Role `{role}` has been added to `{member.name}`.")
 
-    @role.command(help="Remove a role from a member", aliases=["r"])
+    @role.command(help="Remove a role from a member", aliases=["r", "take"])
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
@@ -654,6 +654,10 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         sleep_duration = await time2seconds(ctx.send, duration.lower())
         if sleep_duration is False:
             return
+        if sleep_duration > 5184000:
+            return await ctx.send(
+                "❌ Sorry, you currently can't T-mute for longer than 6 days. You can use the `mute` command and perform a manual unmute."
+            )
 
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
@@ -1068,7 +1072,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         if sniped_msg["attachments"]:
             attachment_links = "These links may expire after a while, please download the attachments if you want to keep them.\n\n"
             for attachment in sniped_msg["attachments"]:
-                attachment_links += f"[{attachment.filename}]({attachment.url})\n"
+                attachment_links += f"[{attachment['filename']}]({attachment['url']})\n"
 
             embed.add_field(name="Attachments", value=attachment_links, inline=False)
 
@@ -1089,6 +1093,56 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     async def snipe_slash(self, ctx: SlashContext, channel=None):
         await self.snipe(ctx, channel)
+
+    # ESnipe command
+    @commands.command(
+        help="Get the last edited message in the current channel", aliases=["esnipe"]
+    )
+    @commands.guild_only()
+    async def editsnipe(self, ctx, snipe_channel: commands.TextChannelConverter = None):
+        snipe_channel = snipe_channel or ctx.channel
+
+        try:
+            esniped_msg = self.client.esniped_messages[ctx.guild.id][snipe_channel.id]
+        except:
+            await ctx.send(
+                "❌ I couldn't find an edited message in this channel in my logs."
+            )
+            return
+
+        embed = discord.Embed(
+            description=esniped_msg["content"] or "This message has no text content.",
+            colour=self.client.colour,
+            timestamp=esniped_msg["timestamp"],
+        )
+        embed.set_author(
+            name=esniped_msg["author"], icon_url=esniped_msg["author_avatar"]
+        )
+
+        if esniped_msg["attachments"]:
+            attachment_links = "These links may expire after a while, please download the attachments if you want to keep them.\n\n"
+            for attachment in esniped_msg["attachments"]:
+                attachment_links += f"[{attachment['filename']}]({attachment['url']})\n"
+
+            embed.add_field(name="Attachments", value=attachment_links, inline=False)
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="editsnipe",
+        description="Find the last edited message in a channel",
+        options=[
+            create_option(
+                name="channel",
+                description="The channel you want to get the edited message from",
+                option_type=7,
+                required=False,
+            )
+        ],
+    )
+    @commands.guild_only()
+    async def editsnipe_slash(self, ctx: SlashContext, channel=None):
+        await self.editsnipe(ctx, channel)
 
 
 # Add cog
