@@ -1047,8 +1047,9 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         await self.unlock(ctx, channel=channel)
 
     # Snipe command
-    @commands.command(help="Shows the last deleted message in the current channel")
+    @commands.command(help="Get the last deleted message in any channel")
     @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def snipe(self, ctx, snipe_channel: discord.TextChannel = None):
         snipe_channel = snipe_channel or ctx.channel
 
@@ -1080,7 +1081,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
     @cog_ext.cog_slash(
         name="snipe",
-        description="Find the last deleted message in a channel",
+        description="Get the last deleted message in a channel",
         options=[
             create_option(
                 name="channel",
@@ -1091,12 +1092,13 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         ],
     )
     @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def snipe_slash(self, ctx: SlashContext, channel=None):
         await self.snipe(ctx, channel)
 
-    # ESnipe command
+    # Edit snipe command
     @commands.command(
-        help="Get the last edited message in the current channel", aliases=["esnipe"]
+        help="Get the last edited message in any channel", aliases=["esnipe"]
     )
     @commands.guild_only()
     async def editsnipe(self, ctx, snipe_channel: commands.TextChannelConverter = None):

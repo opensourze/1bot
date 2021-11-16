@@ -70,7 +70,10 @@ async def block(ctx, id: int, *, reason):
 # Update Top.gg stats every 30 minutes
 @tasks.loop(minutes=30)
 async def update_stats():
-    await client.topggpy.post_guild_count()
+    try:
+        await client.topggpy.post_guild_count()
+    except:
+        pass
 
 
 update_stats.start()

@@ -567,6 +567,11 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
     @commands.command(help="Create a poll")
     @commands.guild_only()
     async def poll(self, ctx, question, *, options):
+        if len(question) > 256:
+            return await ctx.send(
+                "❌ Your question is too long. Try again with a question shorter than 256 characters!"
+            )
+
         numbers = ("1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟")
 
         option_list = options.split("/")

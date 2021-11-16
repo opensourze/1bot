@@ -98,80 +98,44 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def cat_slash(self, ctx: SlashContext):
         await self.cat(ctx)
 
-    #### Fake mod commands ####
-
-    # Kiok
-    @commands.command(help="A fake kick command")
-    @commands.guild_only()
-    async def kiok(self, ctx, member: commands.MemberConverter, *, reason=None):
-        embed = discord.Embed(
-            title="✅ Member kioked",
-            colour=self.client.colour,
-            description=f"{member.mention} was kioked by {ctx.author.mention}",
-        ).add_field(name="Reason", value=reason)
-
-        await ctx.send(embed=embed)
-
-    @cog_ext.cog_slash(
-        name="kiok",
-        description="A fake kick command",
-        options=[
-            create_option(
-                name="member",
-                description='The member to "kiok"',
-                required=True,
-                option_type=6,
-            ),
-            create_option(
-                name="reason",
-                description='Why you want to "kiok" this member',
-                required=False,
-                option_type=3,
-            ),
-        ],
-    )
-    @commands.guild_only()
-    async def kiok_slash(self, ctx: SlashContext, member, *, reason=None):
-        await self.kiok(ctx, member, reason=reason)
-
-    # Ben
+    # Bean
     @commands.command(help="A fake ban command")
     @commands.guild_only()
-    async def ben(self, ctx, member: commands.MemberConverter, *, reason=None):
+    async def bean(self, ctx, member: commands.MemberConverter, *, reason=None):
         embed = discord.Embed(
-            title="✅ Member benned",
+            title="✅ Member beaned",
             colour=self.client.colour,
-            description=f"{member.mention} was benned by {ctx.author.mention}",
+            description=f"{member.mention} was beaned by {ctx.author.mention}",
         ).add_field(name="Reason", value=reason)
 
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
-        name="ben",
+        name="bean",
         description="A fake ban command",
         options=[
             create_option(
                 name="member",
-                description='The member to "ben"',
+                description='The member to "bean"',
                 required=True,
                 option_type=6,
             ),
             create_option(
                 name="reason",
-                description='Why you want to "ben" this member',
+                description='Why you want to "bean" this member',
                 required=False,
                 option_type=3,
             ),
         ],
     )
     @commands.guild_only()
-    async def ben_slash(self, ctx: SlashContext, member, *, reason=None):
-        await self.ben(ctx, member, reason=reason)
+    async def bean_slash(self, ctx: SlashContext, member, *, reason=None):
+        await self.bean(ctx, member, reason=reason)
 
     # Warm
     @commands.command(help="A fake warn command")
     @commands.guild_only()
-    async def warm(self, ctx, member: commands.MemberConverter, *, reason=None):
+    async def warm(self, ctx, member: commands.MemberConverter, *, reason: str):
         embed = discord.Embed(
             title="✅ Member warmed",
             description=f"{member.mention} has been warmed by {ctx.author.mention}",
@@ -194,7 +158,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             create_option(
                 name="reason",
                 description='Why you want to "warm" this member',
-                required=False,
+                required=True,
                 option_type=3,
             ),
         ],
@@ -202,41 +166,6 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     @commands.guild_only()
     async def warm_slash(self, ctx: SlashContext, member, *, reason=None):
         await self.warm(ctx, member, reason=reason)
-
-    # Mule
-    @commands.command(help="A fake mute command")
-    @commands.guild_only()
-    async def mule(self, ctx, member: commands.MemberConverter, *, reason=None):
-        embed = discord.Embed(
-            title="✅ Member muled",
-            colour=self.client.colour,
-            description=f"{member.mention} was muled by {ctx.author.mention}",
-        )
-        embed.add_field(name="Reason", value=reason)
-
-        await ctx.send(embed=embed)
-
-    @cog_ext.cog_slash(
-        name="mule",
-        description="A fake mute command",
-        options=[
-            create_option(
-                name="member",
-                description='The member to "mule"',
-                required=True,
-                option_type=6,
-            ),
-            create_option(
-                name="reason",
-                description='Why you want to "mule" this member',
-                required=False,
-                option_type=3,
-            ),
-        ],
-    )
-    @commands.guild_only()
-    async def mule_slash(self, ctx: SlashContext, member, *, reason=None):
-        await self.mule(ctx, member, reason=reason)
 
     # YouTube Together
     @commands.command(
@@ -415,7 +344,8 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     @commands.command(
         help="Ask the magic 8-ball a question", name="8ball", aliases=["eightball"]
     )
-    async def eightball(self, ctx, *, question):
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def eightball(self, ctx, *, question: str):
         # responses from wikipedia
         responses = [
             # Affirmative
@@ -442,16 +372,17 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             "Outlook not so good.",
             "Very doubtful.",
         ]
-
         random_response = random.choice(responses)
 
         message = await ctx.send(
-            f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*'
+            f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*',
+            allowed_mentions=discord.AllowedMentions(users=False),
         )
         await sleep(2)
         # Edit message and add response after two seconds
         await message.edit(
-            content=f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*\n**{random_response}**'
+            content=f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*\n**{random_response}**',
+            allowed_mentions=discord.AllowedMentions(users=False),
         )
 
     @cog_ext.cog_slash(
@@ -466,6 +397,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             )
         ],
     )
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def eightball_slash(self, ctx: SlashContext, question):
         await self.eightball(ctx, question=question)
 
@@ -483,6 +415,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
     # Figlet/ASCII command
     @commands.command(help="Return text in ASCII art", aliases=["ascii"])
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def figlet(self, ctx, *, text):
         if len(text) >= 16:
             return await ctx.send(
@@ -494,6 +427,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await ctx.send(f"```\n{ascii_text}\n```")
 
     @cog_ext.cog_slash(name="ascii", description="Return text in ASCII art")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def figlet_slash(self, ctx, *, text):
         await self.figlet(ctx, text=text)
 
@@ -527,6 +461,22 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def slots_slash(self, ctx):
         await self.slots(ctx)
+
+    # Mock text command
+    @commands.command(help="Mock text (alternating upper and lower case)")
+    async def mock(self, ctx, *, text):
+        mock_text = "".join(
+            [char.upper() if i % 2 else char.lower() for i, char in enumerate(text)]
+        )
+
+        await ctx.send(mock_text, allowed_mentions=discord.AllowedMentions(users=False))
+
+    @cog_ext.cog_slash(
+        name="mock",
+        description="Mock text (alternating upper and lower case)",
+    )
+    async def mock_slash(self, ctx: SlashContext, *, text):
+        await self.mock(ctx, text=text)
 
 
 # Add cog

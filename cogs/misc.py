@@ -76,7 +76,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
 
         message = await channel.send(embed=embed)
         await ctx.send(
-            "✅ Your suggestion has been submitted to 1Bot's server! A link to the server can be found in my About Me, or the `info command`.",
+            "✅ Your suggestion has been submitted to 1Bot's server! A link to the server can be found in my About Me, or the `info` command.",
         )
         await message.add_reaction("✅")
         await message.add_reaction("❌")
