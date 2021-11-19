@@ -517,9 +517,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
                     await ctx.send("❗ Cancelling the nuke.")
                     return
                 if reaction.emoji == "✅":
-                    await channel.purge(limit=None)
+                    await channel.purge(limit=None, bulk=True)
 
-                await ctx.send(f"✅ Cleared {channel.mention}", delete_after=2)
             except asyncio.TimeoutError:
                 await ctx.send("❌ You didn't react in time, cancelling the nuke.")
 

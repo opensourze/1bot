@@ -375,7 +375,10 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
     @base64.command(help="Decode base64 into text", aliases=["d"])
     async def decode(self, ctx, *, code):
         try:
-            await ctx.send(base64.b64decode(code.encode()).decode())
+            await ctx.send(
+                base64.b64decode(code.encode()).decode(),
+                allowed_mentions=discord.AllowedMentions(users=False),
+            )
         except:
             await ctx.send("❌ Invalid code! Are you sure that's base64?")
 

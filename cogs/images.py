@@ -190,17 +190,19 @@ class Images(commands.Cog, description="Generate fun images!"):
     @commands.command(help="Filter an avatar/image with Discord's blurple colour")
     @commands.cooldown(1, 5, commands.BucketType.guild)
     async def blurple(self, ctx, *, member: commands.MemberConverter = None):
+        embed = discord.Embed(colour=0x5865F2)
+
         try:
             if not ctx.message.attachments:
                 member = member or ctx.author
                 img = member.avatar_url_as(format="png")
+                embed.title = f"Blurple {member.display_name}"
             else:
                 img = ctx.message.attachments[0].url
         except AttributeError:
             member = member or ctx.author
             img = member.avatar_url_as(format="png")
 
-        embed = discord.Embed(title=f"Blurple {member.name}", colour=0x5865F2)
         embed.set_image(url=f"https://some-random-api.ml/canvas/blurple2?avatar={img}")
 
         await ctx.send(embed=embed)
