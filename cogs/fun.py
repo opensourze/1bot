@@ -17,10 +17,23 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         self.client: commands.Bot = client
         self.emoji = "<:fun:907549655934586900>"
 
-    async def discord_together(self, ctx, option):
+    @commands.command(
+        aliases=["dtogether"],
+        help='Play a Discord Together game- choose from `"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`',
+        brief="Play a Discord Together game - run 1help discordtogether for more",
+    )
+    @commands.guild_only()
+    async def discordtogether(self, ctx, option):
         try:
             author_vc = ctx.author.voice.channel.id
-            link = await self.client.dt.create_link(author_vc, option)
+            try:
+                link = await self.client.dt.create_link(
+                    author_vc, option.lower(), max_age=86400
+                )
+            except:
+                return await ctx.send(
+                    '❌ That\'s not a valid Discord Together game, choose from these:\n`"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`'
+                )
 
             await ctx.send(
                 f"Click the **link itself** to start the activity. Your friends can then click the play button to join.\n\n(Expires in 24 hours)\n"
@@ -30,16 +43,43 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         except AttributeError:
             await ctx.send("❌ You need to be in a voice channel to use this command.")
 
+    @cog_ext.cog_slash(
+        name="discord-together",
+        description="Play a Discord Together game in a Voice Channel",
+        options=[
+            create_option(
+                name="game",
+                description="The game you want to play",
+                required=True,
+                option_type=3,
+                choices=[
+                    "YouTube",
+                    "Poker",
+                    "Betrayal",
+                    "Fishing",
+                    "Chess",
+                    "Letter-Tile",
+                    "Word-Snack",
+                    "Doodle-Crew",
+                    "SpellCast",
+                ],
+            )
+        ],
+    )
+    @commands.guild_only()
+    async def discordtogether_slash(self, ctx: SlashContext, *, game):
+        await self.discordtogether(ctx, game)
+
     # xkcd command
     @commands.command(help="Get the latest/random xkcd comic")
-    async def xkcd(self, ctx, *, type="latest"):
+    async def xkcd(self, ctx, *, type="random"):
         if type.lower() == "random":
             comic = xkcd.getRandomComic()
         elif type.lower() == "latest":
             comic = xkcd.getLatestComic()
         else:
             return await ctx.send(
-                "❌ Please use `random` or `latest`! Leaving it blank will give you the latest comic."
+                "❌ Please use `random` or `latest`! Leaving it blank will give you a random comic."
             )
 
         embed = discord.Embed(
@@ -59,14 +99,14 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         options=[
             create_option(
                 name="type",
-                description="Whether to get a random comic or the latest one. Default is latest",
+                description="Whether to get a random comic or the latest one. Default is random",
                 required=False,
                 option_type=3,
                 choices=["Random", "Latest"],
             )
         ],
     )
-    async def xkcd_slash(self, ctx: SlashContext, *, type="Latest"):
+    async def xkcd_slash(self, ctx: SlashContext, *, type="Random"):
         await ctx.defer()
         await self.xkcd(ctx, type=type)
 
@@ -166,57 +206,6 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     @commands.guild_only()
     async def warm_slash(self, ctx: SlashContext, member, *, reason=None):
         await self.warm(ctx, member, reason=reason)
-
-    # YouTube Together
-    @commands.command(
-        brief="Watch YouTube together with friends",
-        help="Connect to a voice channel and run this command to watch YouTube together with other server members without streaming!",
-        aliases=["yt"],
-    )
-    @commands.guild_only()
-    async def youtube(self, ctx):
-        await self.discord_together(ctx, "youtube")
-
-    @cog_ext.cog_slash(
-        name="youtube_together",
-        description="Watch YouTube together in a voice channel",
-    )
-    async def yt_slash(self, ctx: SlashContext):
-        await self.youtube(ctx)
-
-    # Chess
-    @commands.command(
-        brief="Play chess with friends in a voice channel",
-        help="Connect to a voice channel and run this command to play chess together with other server members directly in the channel!",
-        aliases=["chesstogether"],
-    )
-    @commands.guild_only()
-    async def chess(self, ctx):
-        await self.discord_together(ctx, "chess")
-
-    @cog_ext.cog_slash(
-        name="chess_together",
-        description="Play chess with friends in a voice channel",
-    )
-    async def chess_slash(self, ctx: SlashContext):
-        await self.chess(ctx)
-
-    # Betrayal.io
-    @commands.command(
-        brief="Play Betrayal.io with friends in a voice channel",
-        help="Connect to a voice channel and run this command to play Betrayal.io with other server members directly in the channel!",
-        aliases=["betrayalio"],
-    )
-    @commands.guild_only()
-    async def betrayal(self, ctx):
-        await self.discord_together(ctx, "betrayal")
-
-    @cog_ext.cog_slash(
-        name="betrayalio_together",
-        description="Play Betrayal.io with friends in a voice channel",
-    )
-    async def betrayal_slash(self, ctx: SlashContext):
-        await self.betrayal(ctx)
 
     # Dad joke command
     @commands.command(help="Get a random dad joke")

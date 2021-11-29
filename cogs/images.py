@@ -19,6 +19,7 @@ class Images(commands.Cog, description="Generate fun images!"):
     @commands.command(
         help="Amogus, but with a member's profile picture", aliases=["sus", "amongus"]
     )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def amogus(self, ctx, *, member: commands.MemberConverter = None):
         try:
             if not ctx.message.attachments:
@@ -147,7 +148,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         ],
     )
     @commands.cooldown(1, 5, commands.BucketType.guild)
-    async def wasted_slash(self, ctx: SlashContext, member):
+    async def wasted_slash(self, ctx: SlashContext, member=None):
         await self.wasted(ctx, member=member)
 
     # Triggered
@@ -187,8 +188,11 @@ class Images(commands.Cog, description="Generate fun images!"):
         await self.triggered(ctx, member=member)
 
     # Blurple
-    @commands.command(help="Filter an avatar/image with Discord's blurple colour")
-    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @commands.command(
+        help="Filter an avatar/image with Discord's blurple colour",
+        aliases=["blurplify"],
+    )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def blurple(self, ctx, *, member: commands.MemberConverter = None):
         embed = discord.Embed(colour=0x5865F2)
 
@@ -206,21 +210,6 @@ class Images(commands.Cog, description="Generate fun images!"):
         embed.set_image(url=f"https://some-random-api.ml/canvas/blurple2?avatar={img}")
 
         await ctx.send(embed=embed)
-
-    @cog_ext.cog_slash(
-        name="blurple",
-        description="Filter someone's avatar with Discord's blurple",
-        options=[
-            create_option(
-                name="member",
-                description="The member whose avatar to blurplify",
-                required=False,
-                option_type=6,
-            )
-        ],
-    )
-    async def blurple_slash(self, ctx: SlashContext, member):
-        await self.blurple(ctx, member=member)
 
 
 def setup(client):

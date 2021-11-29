@@ -8,7 +8,7 @@ from utils import cluster
 
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.8"
+__version__ = "0.8.1"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -335,13 +335,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             colour=self.client.colour,
-            description="Whoo, 1Bot is growing.\n\n"
-            + "- Added an editsnipe command (aka `esnipe`) due to popular request.\n"
-            + "- Added a duration limit of 6 days to the tmute command **temporarily** - it will be increased soon.\n"
-            + "- Added a `calc` command that can perform a simple math operation with two numbers."
-            + "- Optimised 1Bot to consume slightly lesser resources as it's growing fast now.\n"
-            + "- You might've noticed the tmute command sometimes doesn't unmute automatically, that was because we had a lot of server restarts. I've reorganised everything so that I don't have to restart too many times.\n"
-            + "- Fixed a bunch of errors.",
+            description="Lots of bug fixes and added every available Discord Together game - and there's a lot. Check them out!",
         )
 
         await ctx.send(embed=changelog)

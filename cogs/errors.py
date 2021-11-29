@@ -4,6 +4,7 @@ from contextlib import suppress
 
 import discord
 from discord.ext import commands
+from discord.utils import remove_markdown
 
 
 class Errors(commands.Cog):
@@ -23,7 +24,7 @@ class Errors(commands.Cog):
             await ctx.send(
                 "❌ I don't have enough permissions to complete this command!\n"
                 + "Missing permissions: "
-                + f"`{', '.join([err.capitalize().replace('_', ' ') for err in error.missing_perms])}`\n\n"
+                + f"`{', '.join([e.capitalize().replace('_', ' ') for e in error.missing_perms])}`\n\n"
                 + "Please add these permissions to my role ('1Bot') in your server settings.",
                 components=[self.client.error_btns],
             )
@@ -48,14 +49,20 @@ class Errors(commands.Cog):
                 components=[self.client.error_btns],
             )
         elif isinstance(error, commands.ChannelNotFound):
-            await ctx.send(f'❌ I couldn\'t find the channel "{error.argument}".')
+            await ctx.send(
+                f'❌ I couldn\'t find the channel "{remove_markdown(error.argument)}".'
+            )
         elif isinstance(error, commands.MemberNotFound):
-            await ctx.send(f'❌ I couldn\'t find the member "{error.argument}".')
+            await ctx.send(
+                f'❌ I couldn\'t find the member "{remove_markdown(error.argument)}".'
+            )
         elif isinstance(error, commands.UserNotFound):
-            await ctx.send(f'❌ I couldn\'t find the user "{error.argument}".')
+            await ctx.send(
+                f'❌ I couldn\'t find the user "{remove_markdown(error.argument)}".'
+            )
         elif isinstance(error, commands.RoleNotFound):
             await ctx.send(
-                f'❌ I couldn\'t find the role "{error.argument}". You need to type the exact name of the role or ping it.'
+                f'❌ I couldn\'t find the role "{remove_markdown(error.argument)}". You need to type the exact name of the role or ping it.'
             )
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
@@ -93,7 +100,7 @@ class Errors(commands.Cog):
                 except:
                     pass
 
-        # ERROR REPORTING SYSTEM #
+        # AUTOMATIC ERROR REPORTS #
         else:
 
             error_embed = discord.Embed(

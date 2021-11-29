@@ -291,21 +291,21 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
         except KeyError:
             embed = discord.Embed(
                 title=json["name"],
-                description=json["description"],
                 colour=0xD50000,
                 url="https://www.npmjs.com/package/" + package,
             )
 
             with suppress(KeyError):
+                embed.description = json["description"]
+            with suppress(KeyError):
                 embed.add_field(name="Homepage", value=json["homepage"], inline=False)
-
-            embed.add_field(name="Author", value=json["author"]["name"])
-
+            with suppress(KeyError):
+                embed.add_field(name="Author", value=json["author"]["name"])
             with suppress(KeyError):
                 embed.add_field(
                     name="GitHub repository",
                     # Remove "git+" and ".git" from the url
-                    value=json["repository"]["url"][4:-4],
+                    value=json["repository"]["url"],
                     inline=False,
                 )
             embed.add_field(
@@ -374,11 +374,14 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
 
     @base64.command(help="Decode base64 into text", aliases=["d"])
     async def decode(self, ctx, *, code):
+        embed = discord.Embed(colour=self.client.colour)
+        embed.set_footer(text=f"Decoded by {ctx.author}")
         try:
-            await ctx.send(
-                base64.b64decode(code.encode()).decode(),
-                allowed_mentions=discord.AllowedMentions(users=False),
+            embed.add_field(
+                name="Decoded text",
+                value=base64.b64decode(code.encode()).decode(),
             )
+            await ctx.send(embed=embed)
         except:
             await ctx.send("❌ Invalid code! Are you sure that's base64?")
 
@@ -407,46 +410,40 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
 
         # If code is 404 (not found), send an error message
         if int(json["cod"]) == 404:
-            await ctx.send(
+            return await ctx.send(
                 "❌ City not found. Provide only the city name, **or:**\n"
                 + "The city name with the state code and country code separated by commas.\n"
                 + "E.g.: `los angeles,ca,us` or just `los angeles`."
             )
-        else:
-            weather_description = json["weather"][0]["description"].capitalize()
-            icon_url = (  # icons URL + icon code + @2x.png (for higher resolution icon)
-                "https://openweathermap.org/img/wn/"
-                + json["weather"][0]["icon"]
-                + "@2x.png"
-            )
-            celsius_temp = fahrenheit_to_celsius(json["main"]["temp"])
+        elif int(json["cod"]) == 400:
+            return await ctx.send("❌ Your query is invalid.")
 
-            weather_embed = discord.Embed(
-                title=f"Weather in {json['name']}",  # "Weather in <city name>"
-                description=weather_description,
-                colour=self.client.colour,
-            )
-            weather_embed.set_thumbnail(url=icon_url)
+        weather_description = json["weather"][0]["description"].capitalize()
+        icon_url = (  # icons URL + icon code + @2x.png (for higher resolution icon)
+            "https://openweathermap.org/img/wn/"
+            + json["weather"][0]["icon"]
+            + "@2x.png"
+        )
+        celsius_temp = fahrenheit_to_celsius(json["main"]["temp"])
 
-            weather_embed.add_field(
-                name="Temperature",
-                # "<temp. in fahrenheit>° F / <temp. in celsius>° C"
-                value=f"{json['main']['temp']}° F / {round(celsius_temp, 2)}° C",
-            )
-            weather_embed.add_field(
-                name="Cloudiness", value=f"{json['clouds']['all']}%"
-            )
-            weather_embed.add_field(
-                name="Humidity", value=f"{json['main']['humidity']}%"
-            )
-            weather_embed.add_field(
-                name="Wind speed", value=f"{json['wind']['speed']} m/s"
-            )
-            weather_embed.add_field(
-                name="Wind direction", value=f"{json['wind']['deg']}°"
-            )
+        weather_embed = discord.Embed(
+            title=f"Weather in {json['name']}",  # "Weather in <city name>"
+            description=weather_description,
+            colour=self.client.colour,
+        )
+        weather_embed.set_thumbnail(url=icon_url)
 
-            await ctx.send(embed=weather_embed)
+        weather_embed.add_field(
+            name="Temperature",
+            # "<temp. in fahrenheit>° F / <temp. in celsius>° C"
+            value=f"{json['main']['temp']}° F / {round(celsius_temp, 2)}° C",
+        )
+        weather_embed.add_field(name="Cloudiness", value=f"{json['clouds']['all']}%")
+        weather_embed.add_field(name="Humidity", value=f"{json['main']['humidity']}%")
+        weather_embed.add_field(name="Wind speed", value=f"{json['wind']['speed']} m/s")
+        weather_embed.add_field(name="Wind direction", value=f"{json['wind']['deg']}°")
+
+        await ctx.send(embed=weather_embed)
 
     @cog_ext.cog_slash(
         name="weather",
