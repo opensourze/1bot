@@ -45,7 +45,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
     # Warn command
     @commands.command(help="Warn a member")
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
     async def warn(self, ctx, member: commands.MemberConverter, *, reason=None):
         if not reason:
@@ -118,14 +118,14 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
         ],
     )
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
     async def warn_slash(self, ctx, member, reason):
         await self.warn(ctx, member, reason=reason)
 
     # Warnings command
     @commands.command(help="View the warnings for a member", aliases=["warns"])
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
     async def warnings(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
@@ -170,7 +170,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             )
         ],
     )
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
     async def warns_slash(self, ctx, member):
         await self.warnings(ctx, member=member)
@@ -181,7 +181,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         brief="Delete a warning from a user",
         aliases=["unwarn"],
     )
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_permissions(view_audit_log=True)
     async def delwarn(
         self, ctx, warning_id: str = None, *, member: commands.MemberConverter = None
     ):
@@ -240,14 +240,14 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             ),
         ],
     )
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
     async def unwarn_slash(self, ctx, warning_id, member):
         await self.delwarn(ctx, warning_id=warning_id, member=member)
 
     # Clear warns command
     @commands.command(help="Delete all warnings for a member")
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
     async def clearwarns(self, ctx, *, member: commands.MemberConverter):
         deleted = warns.delete_many({"user": member.id, "guild": ctx.guild.id})
@@ -333,7 +333,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
             colour=self.client.colour,
         )
         embed.add_field(
-            name="PS:",
+            name="Tip:",
             value="You can type the name of the role (the exact name, with capitalisation) to provide it as an option, or just @mention it. If you have developer mode on, you can also use the role's ID.",
         )
         embed.set_footer(text="Don't include the brackets while running commands!")
@@ -345,7 +345,12 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def create(self, ctx, *, name: str):
-        await ctx.guild.create_role(name=name)
+        try:
+            await ctx.guild.create_role(name=name)
+        except discord.HTTPException:
+            return await ctx.send(
+                "❌ Creating the role failed, you might have reached the role limit."
+            )
         await ctx.send(f"✅ Role `{name}` has been created")
 
     @role.command(help="Delete a role", aliases=["d"])

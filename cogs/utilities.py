@@ -8,7 +8,7 @@ import requests
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
-from temperature_converter_py import fahrenheit_to_celsius
+from temperature_converter_py import fahrenheit_to_celsius, celsius_to_fahrenheit
 from utils import Pager
 
 
@@ -16,6 +16,28 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
     def __init__(self, client):
         self.client: commands.Bot = client
         self.emoji = "<:utilities:907550185629040680>"
+
+    # Celsius to Fahrenheit
+    @commands.command(help="Convert Celsius to Fahrenheit", aliases=["c2f", "ctof"])
+    async def celsiustofahrenheit(self, ctx, *, temperature: float):
+        await ctx.send(
+            f"{temperature}°C is {round(celsius_to_fahrenheit(temperature), 2)}°F"
+        )
+
+    @cog_ext.cog_slash(description="Convert Celsius to Fahrenheit")
+    async def c2f_slash(self, ctx: SlashContext, *, temperature: float):
+        await self.celsiustofahrenheit(ctx, temperature=temperature)
+
+    # Fahrenheit to Celsius
+    @commands.command(help="Convert Fahrenheit to Celsius", aliases=["f2c", "ftoc"])
+    async def fahrenheittocelsius(self, ctx, *, temperature: float):
+        await ctx.send(
+            f"{temperature}°F is {round(fahrenheit_to_celsius(temperature), 2)}°C"
+        )
+
+    @cog_ext.cog_slash(description="Convert Fahrenheit to Celsius")
+    async def f2c_slash(self, ctx: SlashContext, *, temperature: float):
+        await self.fahrenheittocelsius(ctx, temperature=temperature)
 
     # Calc command
     @commands.command(
