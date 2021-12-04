@@ -8,7 +8,7 @@ from utils import cluster
 
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.8.1"
+__version__ = "0.8.2"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -37,11 +37,6 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             value="View the bot's source code on [GitHub](https://github.com/opensourze/1bot)",
             inline=False,
         )
-        embed.add_field(
-            name="Developer",
-            value="[OpenSourze](https://opensourze.netlify.app)",
-            inline=False,
-        )
         embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
         embed.add_field(
             name="Users",
@@ -52,6 +47,9 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             name="Python version", value=platform.python_version(), inline=False
         )
         embed.set_thumbnail(url=self.client.user.avatar_url)
+        embed.set_footer(
+            text="Copyright (C) 2021 OpenSourze. 1Bot is free and open source under the GNU Affero General Public License version 3.0."
+        )
         await ctx.send(embed=embed, components=[self.client.info_btns])
 
     @cog_ext.cog_slash(name="info", description="View the bot's information")
