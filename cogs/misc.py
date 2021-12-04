@@ -60,6 +60,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
 
     # Suggest command
     @commands.command(help="Submit a suggestion for the bot")
+    @commands.cooldown(1, 900, commands.BucketType.guild)
     async def suggest(self, ctx, *, suggestion):
         result = banned.find_one({"_id": ctx.author.id})
 
@@ -82,6 +83,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         await message.add_reaction("❌")
 
     @cog_ext.cog_slash(name="suggest", description="Submit a suggestion for the bot")
+    @commands.cooldown(1, 900, commands.BucketType.guild)
     async def suggest_slash(self, ctx: SlashContext, suggestion):
         await self.suggest(ctx, suggestion=suggestion)
 
@@ -335,7 +337,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             colour=self.client.colour,
-            description="Lots of bug fixes and added every available Discord Together game - and there's a lot. Check them out!",
+            description="Discord Together games disabled TEMPORARILY. A cooldown has been added to the suggest command too, to prevent spam.",
         )
 
         await ctx.send(embed=changelog)

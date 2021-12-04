@@ -16,7 +16,9 @@ bans = cluster["1bot"]["bans"]
 dotenv.load_dotenv()
 
 client = Client()
-slash = SlashCommand(client, sync_commands=True, delete_from_unused_guilds=True)
+slash = SlashCommand(
+    client, sync_commands=True, delete_from_unused_guilds=True, sync_on_cog_reload=True
+)
 client.topggpy = topgg.DBLClient(client, os.environ["TOPGG_TOKEN"])
 
 # Command to message a user from 1Bot
@@ -48,6 +50,9 @@ async def messageuser(ctx, id: int, *, message):
 async def block(ctx, id: int, *, reason):
     if id in client.owner_ids:
         return await ctx.send("You can't block an owner.")
+
+    bans.insert_one({"_id": id})
+
     try:
         user: discord.User = client.get_user(id)
 
@@ -58,13 +63,13 @@ async def block(ctx, id: int, *, reason):
         )
         embed.add_field(name="Reason", value=reason, inline=False)
 
-        bans.insert_one({"_id": id})
-
         await user.send(embed=embed)
         await ctx.send(f"✅ Blocked user `{user.name}` with this embed:", embed=embed)
 
     except Exception as e:
         await ctx.send(f"❌ **Error:**\n\n{e}")
+    except discord.Forbidden:
+        await ctx.send(f"{user.name} has DMs disabled, but they have been blocked.")
 
 
 # Update Top.gg stats every 30 minutes
