@@ -150,7 +150,48 @@ class Images(commands.Cog, description="Generate fun images!"):
     @commands.cooldown(1, 5, commands.BucketType.guild)
     async def wasted_slash(self, ctx: SlashContext, member=None):
         await self.wasted(ctx, member=member)
+        
+    # Mission Passed
+    @commands.command(
+        help="Add a Mission Passed overlay to an avatar or an attached image",
+        brief="Add a Mission Passed overlay to avatars or images",
+        aliases=["passed"],
+    )
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    async def missionpassed(
+        self, ctx: SlashContext, *, member: commands.MemberConverter = None
+    ):
+        try:
+            if not ctx.message.attachments:
+                member = member or ctx.author
+                img = member.avatar_url_as(format="png")
+            else:
+                img = ctx.message.attachments[0].url
+        except AttributeError:
+            member = member or ctx.author
+            img = member.avatar_url_as(format="png")
 
+        embed = discord.Embed(title="mission passed.", colour=self.client.colour)
+        embed.set_image(url=f"https://some-random-api.ml/canvas/passed?avatar={img}")
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="missionpassed",
+        description="Add a Mission Passed overlay to someone's avatar",
+        options=[
+            create_option(
+                name="member",
+                description="The member whose avatar to add the overlay on",
+                required=False,
+                option_type=6,
+            )
+        ],
+    )
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    async def missionpassed_slash(self, ctx: SlashContext, member=None):
+        await self.missionpassed(ctx, member=member)
+        
     # Triggered
     @commands.command(help="Create a triggered gif with someone's avatar")
     @commands.cooldown(1, 5, commands.BucketType.channel)
