@@ -13,9 +13,14 @@
 - [Support and Updates Server](https://discord.gg/JGcnKxEPsW)
 - [Top.gg page (upvote 1Bot!)](https://top.gg/bot/884080176416309288)
 
-### 1Bot is not meant to be a self-hosted bot. The code is not optimised for customisation/self-hosting.
+### Self-hosting?
 
-1Bot is under the [GNU Affero General Public License 3.0](https://github.com/opensourze/1bot/blob/main/LICENSE).  
-That means you are free to modify 1Bot, as long as you are **complying with the terms of the license.**
+1Bot is a public bot, so it's best to just add it to your server.
+
+The code is open-source only so that people can contribute to the bot and also in case anyone needs to refer to some code for help with discordpy development.  
+The code is not at all optimised for customisation or self-hosting.
+
+Remember: 1Bot is under the [GNU AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.en.html), which means cloning the bot and claiming it as your own is a license violation. This also includes modified clones, by the definition of "modified version" according to the license.  
+(I'm looking at you, [President Om](https://imgur.com/a/0UBHLDA))
 
 ###### Copyright (C) 2021 OpenSourze

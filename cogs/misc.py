@@ -40,7 +40,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
         embed.add_field(
             name="Users",
-            value=f"{sum([len(guild.members)for guild in self.client.guilds])} users",
+            value=f"{len(self.client.users)} users",
         )
         embed.add_field(name="Pycord version", value=discord.__version__, inline=False)
         embed.add_field(
@@ -48,7 +48,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         )
         embed.set_thumbnail(url=self.client.user.avatar_url)
         embed.set_footer(
-            text="Copyright (C) 2021 OpenSourze. 1Bot is free and open source under the GNU Affero General Public License version 3.0."
+            text="Copyright (C) 2021 OpenSourze. 1Bot is open source under the GNU AGPL-3.0 License."
         )
         await ctx.send(embed=embed, components=[self.client.info_btns])
 

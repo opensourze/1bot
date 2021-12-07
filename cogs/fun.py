@@ -19,7 +19,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
     @commands.command(
         aliases=["dtogether"],
-        help='Play a Discord Together game- choose from `"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`',
+        help='Play a Discord Together game; choose from `"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`',
         brief="Play a Discord Together game - run 1help discordtogether for more",
     )
     @commands.guild_only()
@@ -364,13 +364,13 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         random_response = random.choice(responses)
 
         message = await ctx.send(
-            f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*',
+            f":8ball: *The magic 8-ball says...*",
             allowed_mentions=discord.AllowedMentions(users=False),
         )
         await sleep(2)
         # Edit message and add response after two seconds
         await message.edit(
-            content=f'Your question was: "{question}"\n\n:8ball: *The magic 8-ball says...*\n**{random_response}**',
+            content=f":8ball: *The magic 8-ball says...*\n**{random_response}**",
             allowed_mentions=discord.AllowedMentions(users=False),
         )
 
