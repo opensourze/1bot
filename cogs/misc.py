@@ -8,7 +8,7 @@ from utils import cluster
 
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.8.2"
+__version__ = "0.8.3"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -138,10 +138,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         embed.add_field(
             name="Server created",
             value=f"<t:{round(ctx.guild.created_at.timestamp())}:R>",
-        )
-        embed.add_field(
-            name="Region",
-            value=str(ctx.guild.region).capitalize(),
+            inline=False,
         )
         embed.add_field(
             name="Total member count",
@@ -335,7 +332,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             colour=self.client.colour,
-            description="Discord Together games disabled TEMPORARILY. A cooldown has been added to the suggest command too, to prevent spam.",
+            description="Added commands: `oogway, woosh, greyscale`. /blurple was fixed too. And, as usual, some small improvements were made to ensure all commands work as expected.",
         )
 
         await ctx.send(embed=changelog)

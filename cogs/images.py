@@ -150,7 +150,7 @@ class Images(commands.Cog, description="Generate fun images!"):
     @commands.cooldown(1, 5, commands.BucketType.guild)
     async def wasted_slash(self, ctx: SlashContext, member=None):
         await self.wasted(ctx, member=member)
-        
+
     # Mission Passed
     @commands.command(
         help="Add a Mission Passed overlay to an avatar or an attached image",
@@ -191,7 +191,7 @@ class Images(commands.Cog, description="Generate fun images!"):
     @commands.cooldown(1, 5, commands.BucketType.guild)
     async def missionpassed_slash(self, ctx: SlashContext, member=None):
         await self.missionpassed(ctx, member=member)
-        
+
     # Triggered
     @commands.command(help="Create a triggered gif with someone's avatar")
     @commands.cooldown(1, 5, commands.BucketType.channel)
@@ -235,13 +235,12 @@ class Images(commands.Cog, description="Generate fun images!"):
     )
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def blurple(self, ctx, *, member: commands.MemberConverter = None):
-        embed = discord.Embed(colour=0x5865F2)
+        embed = discord.Embed(title="Your blurple filtered image", colour=0x5865F2)
 
         try:
             if not ctx.message.attachments:
                 member = member or ctx.author
                 img = member.avatar_url_as(format="png")
-                embed.title = f"Blurple {member.display_name}"
             else:
                 img = ctx.message.attachments[0].url
         except AttributeError:
@@ -251,6 +250,100 @@ class Images(commands.Cog, description="Generate fun images!"):
         embed.set_image(url=f"https://some-random-api.ml/canvas/blurple2?avatar={img}")
 
         await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="blurple",
+        description="Filter an avatar with Discord's blurple colour",
+        options=[
+            create_option(
+                name="member",
+                description="The member whose avatar to filter",
+                required=False,
+                option_type=6,
+            )
+        ],
+    )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def blurple_slash(self, ctx: SlashContext, member=None):
+        await self.blurple(ctx, member=member)
+
+    # Woosh / joke over head
+    @commands.command(
+        help="Create an image of a joke going over someone's head",
+        aliases=["whoosh", "jokeoverhead"],
+    )
+    async def woosh(self, ctx, *, member: commands.MemberConverter = None):
+        member = member or ctx.author
+        avatar = str(member.avatar_url_as(format="png"))[:-10]
+
+        embed = discord.Embed(
+            description="Woosh...\nthat's the sound of a joke going over your head.",
+            colour=self.client.colour,
+        )
+        embed.set_image(url=f"https://api.popcat.xyz/jokeoverhead?image={avatar}")
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="woosh",
+        description="Create an image of a joke going over someone's head",
+        options=[
+            create_option(
+                name="member",
+                description="The member to woosh",
+                required=False,
+                option_type=6,
+            )
+        ],
+    )
+    async def woosh_slash(self, ctx: SlashContext, member=None):
+        await self.woosh(ctx, member=member)
+
+    # Oogway quote
+    @commands.command(
+        help="Create an image of a quote from Oogway",
+        aliases=["oogway"],
+    )
+    async def oogwayquote(self, ctx, *, member: str):
+        embed = discord.Embed(
+            title="A quote by Master Oogway", colour=self.client.colour
+        )
+        embed.set_image(url=f"https://api.popcat.xyz/oogway?text={quote(member)}")
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="oogwayquote",
+        description="Create an image of a quote from Oogway",
+    )
+    async def oogwayquote_slash(self, ctx: SlashContext, *, text: str):
+        await self.oogwayquote(ctx, member=text)
+
+    # Greyscale
+    @commands.command(
+        help="Filter an avatar with black and white",
+        aliases=["blackandwhite", "grayscale"],
+    )
+    async def greyscale(self, ctx, *, member: commands.MemberConverter = None):
+        member = member or ctx.author
+        avatar = str(member.avatar_url_as(format="png"))[:-10]
+
+        embed = discord.Embed(
+            description=" ",
+            colour=self.client.colour,
+        )
+        embed.set_image(url=f"https://api.popcat.xyz/greyscale?image={avatar}")
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(
+        name="greyscale",
+        description="Filter someone's avatar black and white",
+    )
+    async def greyscale_slash(
+        self, ctx: SlashContext, *, member: discord.Member = None
+    ):
+        await self.greyscale(ctx, member=member)
 
 
 def setup(client):

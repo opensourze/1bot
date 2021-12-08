@@ -471,7 +471,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
     async def clear(self, ctx, amount: int):
-        await ctx.channel.purge(limit=amount + 1)
+        await ctx.channel.purge(limit=amount + 1, bulk=True)
 
     @cog_ext.cog_slash(
         name="clear",

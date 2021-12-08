@@ -1,11 +1,11 @@
 import asyncio
 import base64
-import os
 from contextlib import suppress
 
 import discord
 import requests
 from discord.ext import commands
+from discord.utils import escape_markdown
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 from temperature_converter_py import fahrenheit_to_celsius, celsius_to_fahrenheit
@@ -24,7 +24,9 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
             f"{temperature}°C is {round(celsius_to_fahrenheit(temperature), 2)}°F"
         )
 
-    @cog_ext.cog_slash(name="celsius-to-fahrenheit",description="Convert Celsius to Fahrenheit")
+    @cog_ext.cog_slash(
+        name="celsius-to-fahrenheit", description="Convert Celsius to Fahrenheit"
+    )
     async def c2f_slash(self, ctx: SlashContext, *, temperature: float):
         await self.celsiustofahrenheit(ctx, temperature=temperature)
 
@@ -378,7 +380,7 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
     async def lyrics_slash(self, ctx: SlashContext, *, song):
         await self.lyrics(ctx, song=song)
 
-    # Base64
+    # Base64 commands
     @commands.group(
         invoke_without_command=True, help="Encode/decode base64", aliases=["b64"]
     )
@@ -394,17 +396,24 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
 
     @base64.command(help="Encode text into base64", aliases=["e"])
     async def encode(self, ctx, *, text):
-        await ctx.send(base64.b64encode(text.encode()).decode())
+        embed = discord.Embed(
+            title="Encoded Base64 code",
+            description=escape_markdown(base64.b64encode(text.encode()).decode()),
+            colour=self.client.colour,
+        )
+        embed.set_footer(text=f"Encoded by {ctx.author}")
+
+        await ctx.send(embed=embed)
 
     @base64.command(help="Decode base64 into text", aliases=["d"])
     async def decode(self, ctx, *, code):
-        embed = discord.Embed(colour=self.client.colour)
-        embed.set_footer(text=f"Decoded by {ctx.author}")
         try:
-            embed.add_field(
-                name="Decoded text",
-                value=base64.b64decode(code.encode()).decode(),
+            embed = discord.Embed(
+                title="Decoded Base64 text",
+                description=escape_markdown(base64.b64decode(code).decode()),
+                colour=self.client.colour,
             )
+            embed.set_footer(text=f"Decoded by {ctx.author}")
             await ctx.send(embed=embed)
         except:
             await ctx.send("❌ Invalid code! Are you sure that's base64?")
@@ -423,51 +432,53 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
 
     # Weather command
     @commands.command(
-        help="Get weather info for a city. The city name is required. Optionally add state and country codes separated by commas. Example: `1 weather washington,wa,us`, or `1 weather washington`",
-        brief="Get weather info for a city",
+        help="Get weather info for a city",
     )
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def weather(self, ctx, *, query):
-        json = requests.get(
-            f"https://api.openweathermap.org/data/2.5/weather?q={query}&appid={os.environ['OWM_KEY']}&units=imperial"
-        ).json()
+        req = requests.get(f"https://api.popcat.xyz/weather?q={query}")
+        json = req.json()
 
-        # If code is 404 (not found), send an error message
-        if int(json["cod"]) == 404:
+        # If json is an empty array (occurs when query is invalid), send an error message
+        if json == []:
             return await ctx.send(
-                "❌ City not found. Provide only the city name, **or:**\n"
-                + "The city name with the state code and country code separated by commas.\n"
-                + "E.g.: `los angeles,ca,us` or just `los angeles`."
+                "❌ Couldn't find the city you specified. Please check for typos."
             )
-        elif int(json["cod"]) == 400:
-            return await ctx.send("❌ Your query is invalid.")
 
-        weather_description = json["weather"][0]["description"].capitalize()
-        icon_url = (  # icons URL + icon code + @2x.png (for higher resolution icon)
-            "https://openweathermap.org/img/wn/"
-            + json["weather"][0]["icon"]
-            + "@2x.png"
+        data = json[0]
+
+        embed = discord.Embed(
+            colour=self.client.colour, description=data["current"]["skytext"]
         )
-        celsius_temp = fahrenheit_to_celsius(json["main"]["temp"])
-
-        weather_embed = discord.Embed(
-            title=f"Weather in {json['name']}",  # "Weather in <city name>"
-            description=weather_description,
-            colour=self.client.colour,
+        embed.set_author(
+            icon_url=data["current"]["imageUrl"],
+            name=f"Weather in {data['location']['name']}",
         )
-        weather_embed.set_thumbnail(url=icon_url)
 
-        weather_embed.add_field(
+        embed.add_field(
             name="Temperature",
-            # "<temp. in fahrenheit>° F / <temp. in celsius>° C"
-            value=f"{json['main']['temp']}° F / {round(celsius_temp, 2)}° C",
+            value=f'{data["current"]["temperature"]}°{data["location"]["degreetype"]}',
         )
-        weather_embed.add_field(name="Cloudiness", value=f"{json['clouds']['all']}%")
-        weather_embed.add_field(name="Humidity", value=f"{json['main']['humidity']}%")
-        weather_embed.add_field(name="Wind speed", value=f"{json['wind']['speed']} m/s")
-        weather_embed.add_field(name="Wind direction", value=f"{json['wind']['deg']}°")
+        embed.add_field(
+            name="Feels like",
+            value=f"{data['current']['feelslike']}°{data['location']['degreetype']}",
+        )
+        embed.add_field(
+            name="Wind",
+            value=data["current"]["winddisplay"],
+            inline=False,
+        )
+        embed.add_field(
+            name="Humidity",
+            value=f"{data['current']['humidity']}%",
+        )
+        embed.add_field(
+            name="Alerts",
+            value=data["location"]["alert"] or "No alerts for this area",
+            inline=False,
+        )
 
-        await ctx.send(embed=weather_embed)
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="weather",
