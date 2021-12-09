@@ -292,7 +292,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             await ctx.send(f"❗ Warning: NSFW post!\n\n<{json['postLink']}>")
 
     @cog_ext.cog_slash(
-        name="reddit",
+        name="meme",
         description="Get a random post from meme subreddits, optionally provide a custom subreddit",
         options=[
             create_option(
@@ -305,7 +305,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     )
     @commands.bot_has_permissions(embed_links=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def reddit_slash(self, ctx: SlashContext, subreddit: str = None):
+    async def meme_slash(self, ctx: SlashContext, subreddit: str = None):
         await self.meme(ctx, subreddit=subreddit)
 
     # GIF command
