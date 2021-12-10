@@ -304,11 +304,11 @@ class Images(commands.Cog, description="Generate fun images!"):
         help="Create an image of a quote from Oogway",
         aliases=["oogway"],
     )
-    async def oogwayquote(self, ctx, *, member: str):
+    async def oogwayquote(self, ctx, *, text: str):
         embed = discord.Embed(
             title="A quote by Master Oogway", colour=self.client.colour
         )
-        embed.set_image(url=f"https://api.popcat.xyz/oogway?text={quote(member)}")
+        embed.set_image(url=f"https://api.popcat.xyz/oogway?text={quote(text)}")
 
         await ctx.send(embed=embed)
 
@@ -317,7 +317,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         description="Create an image of a quote from Oogway",
     )
     async def oogwayquote_slash(self, ctx: SlashContext, *, text: str):
-        await self.oogwayquote(ctx, member=text)
+        await self.oogwayquote(ctx, text=text)
 
     # Greyscale
     @commands.command(

@@ -17,58 +17,58 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         self.client: commands.Bot = client
         self.emoji = "<:fun:907549655934586900>"
 
-    @commands.command(
-        aliases=["dtogether"],
-        help='Play a Discord Together game; choose from `"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`',
-        brief="Play a Discord Together game - run 1help discordtogether for more",
-    )
-    @commands.guild_only()
-    async def discordtogether(self, ctx, option):
-        try:
-            author_vc = ctx.author.voice.channel.id
-            try:
-                link = await self.client.dt.create_link(
-                    author_vc, option.lower(), max_age=86400
-                )
-            except:
-                return await ctx.send(
-                    '❌ That\'s not a valid Discord Together game, choose from these:\n`"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`'
-                )
+    # @commands.command(
+    #     aliases=["dtogether"],
+    #     help='Play a Discord Together game; choose from `"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`',
+    #     brief="Play a Discord Together game - run 1help discordtogether for more",
+    # )
+    # @commands.guild_only()
+    # async def discordtogether(self, ctx, option):
+    #     try:
+    #         author_vc = ctx.author.voice.channel.id
+    #         try:
+    #             link = await self.client.dt.create_link(
+    #                 author_vc, option.lower(), max_age=86400
+    #             )
+    #         except:
+    #             return await ctx.send(
+    #                 '❌ That\'s not a valid Discord Together game, choose from these:\n`"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`'
+    #             )
 
-            await ctx.send(
-                f"Click the **link itself** to start the activity. Your friends can then click the play button to join.\n\n(Expires in 24 hours)\n"
-                + str(link)
-            )
+    #         await ctx.send(
+    #             f"Click the **link itself** to start the activity. Your friends can then click the play button to join.\n\n(Expires in 24 hours)\n"
+    #             + str(link)
+    #         )
 
-        except AttributeError:
-            await ctx.send("❌ You need to be in a voice channel to use this command.")
+    #     except AttributeError:
+    #         await ctx.send("❌ You need to be in a voice channel to use this command.")
 
-    @cog_ext.cog_slash(
-        name="discord-together",
-        description="Play a Discord Together game in a Voice Channel",
-        options=[
-            create_option(
-                name="game",
-                description="The game you want to play",
-                required=True,
-                option_type=3,
-                choices=[
-                    "YouTube",
-                    "Poker",
-                    "Betrayal",
-                    "Fishing",
-                    "Chess",
-                    "Letter-Tile",
-                    "Word-Snack",
-                    "Doodle-Crew",
-                    "SpellCast",
-                ],
-            )
-        ],
-    )
-    @commands.guild_only()
-    async def discordtogether_slash(self, ctx: SlashContext, *, game):
-        await self.discordtogether(ctx, game)
+    # @cog_ext.cog_slash(
+    #     name="discord-together",
+    #     description="Play a Discord Together game in a Voice Channel",
+    #     options=[
+    #         create_option(
+    #             name="game",
+    #             description="The game you want to play",
+    #             required=True,
+    #             option_type=3,
+    #             choices=[
+    #                 "YouTube",
+    #                 "Poker",
+    #                 "Betrayal",
+    #                 "Fishing",
+    #                 "Chess",
+    #                 "Letter-Tile",
+    #                 "Word-Snack",
+    #                 "Doodle-Crew",
+    #                 "SpellCast",
+    #             ],
+    #         )
+    #     ],
+    # )
+    # @commands.guild_only()
+    # async def discordtogether_slash(self, ctx: SlashContext, *, game):
+    #     await self.discordtogether(ctx, game)
 
     # xkcd command
     @commands.command(help="Get the latest/random xkcd comic")
