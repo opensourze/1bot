@@ -47,28 +47,18 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.command(help="Warn a member")
     @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
-    async def warn(self, ctx, member: commands.MemberConverter, *, reason=None):
-        if not reason:
-            await ctx.send(
-                "❌ You need to provide the reason for the warning.\n"
-                + "Run the command again with the reason to warn the member."
-            )
-            return
-
-        if len(reason) > 970:
-            await ctx.send(
+    async def warn(self, ctx, member: commands.MemberConverter, *, reason):
+        if len(reason) > 900:
+            return await ctx.send(
                 "❌ The reason is too long. Please run the command again with a shorter reason."
             )
 
         if member == ctx.author:
-            await ctx.send("❌ You can't warn yourself!")
-            return
-        elif member.id == self.client.user.id:
-            await ctx.send("❌ I can't warn myself!")
-            return
-        elif member.guild_permissions.administrator:
-            await ctx.send("❌ I can't warn an administrator.")
-            return
+            return await ctx.send("❌ You can't warn yourself!")
+        if member.id == self.client.user.id:
+            return await ctx.send("❌ I can't warn myself!")
+        if member.guild_permissions.administrator:
+            return await ctx.send("❌ I can't warn an administrator.")
 
         inserted_warn = warns.insert_one(
             {
@@ -556,10 +546,8 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         seconds = await time2seconds(ctx.send, time.lower())
         if seconds is False:
             return
-
         if seconds < 0:
             await ctx.send("❌ Slowmode must be a positive number")
-            return
         elif seconds > 21600:
             await ctx.send("❌ Slowmode must be less than 6 hours")
         else:
@@ -746,19 +734,16 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
         if muted_role not in member.roles and not deleted:
-            await ctx.send("❌ That member isn't muted!")
-            return
-        elif ctx.guild.me.top_role <= muted_role:
-            await ctx.send(
+            return await ctx.send("❌ That member isn't muted!")
+        if ctx.guild.me.top_role <= muted_role:
+            return await ctx.send(
                 "❌ My role is too low. I can only mute users if my role is higher than the Muted role!"
             )
-            return
-        elif ctx.guild.me.top_role <= member.top_role:
-            await ctx.send(
+        if ctx.guild.me.top_role <= member.top_role:
+            return await ctx.send(
                 "❌ The user has a higher role or the same top role as mine.\n"
                 + "Please move my role higher!"
             )
-            return
 
         await member.remove_roles(muted_role, reason=f"Unmuted by {ctx.author}.")
 
@@ -797,24 +782,19 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.bot_has_permissions(kick_members=True)
     async def kick(self, ctx, member: commands.MemberConverter, *, reason=None):
         if member == ctx.author:
-            await ctx.send("❌ You can't kick yourself!")
-            return
-        elif member.id == self.client.user.id:
-            await ctx.send("❌ I can't kick myself!")
-            return
-        elif ctx.guild.me.top_role <= member.top_role:
-            await ctx.send(
+            return await ctx.send("❌ You can't kick yourself!")
+        if member.id == self.client.user.id:
+            return await ctx.send("❌ I can't kick myself!")
+        if ctx.guild.me.top_role <= member.top_role:
+            return await ctx.send(
                 "❌ The user has a higher role or the same top role as mine.\n"
                 + "Please move my role higher!"
             )
-            return
 
-        try:
+        with suppress(discord.HTTPException):
             await member.send(
                 f"❗ You were kicked from {ctx.guild.name}. Reason: {reason}"
             )
-        except:
-            pass
         await ctx.guild.kick(member, reason=f"Kicked by {ctx.author}. Reason: {reason}")
 
         embed = discord.Embed(
@@ -874,12 +854,10 @@ class Moderation(commands.Cog, description="All the moderation commands you need
                 )
                 return
 
-        try:
+        with suppress(discord.HTTPException):
             await user.send(
                 f"❗ You were banned from {ctx.guild.name}! Reason: {reason}"
             )
-        except:
-            pass
 
         await ctx.guild.ban(user, reason=f"Banned by {ctx.author}. Reason: {reason}")
 
@@ -1059,7 +1037,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         try:
             sniped_msg = self.client.sniped_messages[ctx.guild.id][snipe_channel.id]
-        except:
+        except KeyError:
             await ctx.send(
                 "❌ I couldn't find a deleted message in this channel in my logs."
             )
@@ -1110,7 +1088,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
 
         try:
             esniped_msg = self.client.esniped_messages[ctx.guild.id][snipe_channel.id]
-        except:
+        except KeyError:
             await ctx.send(
                 "❌ I couldn't find an edited message in this channel in my logs."
             )

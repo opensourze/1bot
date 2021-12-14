@@ -8,7 +8,7 @@ from utils import cluster
 
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.8.3"
+__version__ = "0.8.4"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -93,11 +93,26 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     )
     async def avatar(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author  # Set to author if user is None
+        url_as = member.avatar_url_as
 
         embed = discord.Embed(
             colour=self.client.colour, title=f"{member.name}'s avatar"
         )
         embed.set_image(url=f"{member.avatar_url}")
+
+        av_links = [
+            {"name": "JPG", "url": url_as(format="jpg")},
+            {"name": "128px", "url": url_as(format="png", size=128)},
+            {"name": "256px", "url": url_as(format="png", size=256)},
+            {"name": "512px", "url": url_as(format="png", size=512)},
+            {"name": "1024px", "url": url_as(format="png", size=1024)},
+        ]
+        embed.set_footer(text="All links ending with px are PNGs, in each size.")
+
+        embed.description = " | ".join(
+            f"[{link['name']}]({link['url']})" for link in av_links
+        )
+
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
@@ -332,7 +347,10 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             colour=self.client.colour,
-            description="Added commands: `oogway, woosh, greyscale`. /blurple was fixed too. And, as usual, some small improvements were made to ensure all commands work as expected.",
+            description="- Made the `raw` command an embed and escaped all markdown to avoid messed up output (usually seen if the message has \`\`\` in it)\n"
+            + "- Fixed /raw\n"
+            + "- Emoji command now gives a proper error when the URL provided is not an image\n"
+            + "- Re-enabled Discord Together command",
         )
 
         await ctx.send(embed=changelog)

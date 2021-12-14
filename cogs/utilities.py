@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import binascii
 from contextlib import suppress
 
 import discord
@@ -8,7 +9,7 @@ from discord.ext import commands
 from discord.utils import escape_markdown
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
-from temperature_converter_py import fahrenheit_to_celsius, celsius_to_fahrenheit
+from temperature_converter_py import celsius_to_fahrenheit, fahrenheit_to_celsius
 from utils import Pager
 
 
@@ -123,6 +124,8 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
                 name=emoji_name, image=image
             )
 
+            await ctx.send(f"✅ Emoji created! {created_emoji}")
+
         # errors
         except discord.HTTPException as e:
             if "File cannot be larger than 256" in str(e):
@@ -131,7 +134,7 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
                 )
             elif "String value did not match validation regex" in str(e):
                 await ctx.send(
-                    "❌ Invalid emoji name; you have unsupported characters and/or spaces in the name."
+                    "❌ Invalid emoji name; you have unsupported characters in the emoji name."
                 )
             elif "Must be between 2 and 32 in length" in str(e):
                 await ctx.send("❌ The emoji name must be 2 to 32 characters long.")
@@ -143,21 +146,20 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
 
             return
         except Exception as e:
-            errs = requests.exceptions
+            request_errs = requests.exceptions
+
             if isinstance(
                 e,
                 (
-                    errs.MissingSchema,
-                    errs.InvalidSchema,
-                    errs.ConnectionError,
-                    UnboundLocalError,
+                    request_errs.MissingSchema,
+                    request_errs.InvalidSchema,
+                    request_errs.ConnectionError,
+                    discord.InvalidArgument,
                 ),
             ):
-                return await ctx.send(
-                    "❌ Invalid URL provided. Make sure the URL only contains the image you want!"
+                await ctx.send(
+                    "❌ Invalid image. Please provide a valid image attachment or URL."
                 )
-
-        await ctx.send(f"✅ Emoji created! {created_emoji}")
 
     @cog_ext.cog_slash(
         name="emoji",
@@ -199,23 +201,25 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
                 )
         except (discord.NotFound, AttributeError):  # if the message is not a reply
             if not message_id:
-                await ctx.send(
+                return await ctx.send(
                     "❌ You need to either reply to a message with this command or provide a message ID!"
                 )
-                return
-            else:
-                try:
-                    message = await ctx.fetch_message(message_id)
-                except:
-                    return await ctx.send(
-                        "❌ The message you provided was not found in this channel!"
-                    )
+
+            try:
+                message = await ctx.channel.fetch_message(message_id)
+            except discord.NotFound:
+                return await ctx.send(
+                    "❌ The message you provided was not found in this channel!"
+                )
 
         if not message.content:
             await ctx.send("❌ This message has no content.")
             return
 
-        await ctx.send(f"```{message.content}```")
+        embed = discord.Embed(
+            description=escape_markdown(message.content), colour=self.client.colour
+        )
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="raw",
@@ -415,7 +419,7 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
             )
             embed.set_footer(text=f"Decoded by {ctx.author}")
             await ctx.send(embed=embed)
-        except:
+        except binascii.Error:
             await ctx.send("❌ Invalid code! Are you sure that's base64?")
 
     @cog_ext.cog_subcommand(
@@ -612,13 +616,11 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
         option_list = options.split("/")
 
         if len(option_list) > 10:
-            await ctx.send("❌ You cannot have more than 10 choices.")
-            return
-        elif len(option_list) < 2:
-            await ctx.send(
+            return await ctx.send("❌ You cannot have more than 10 choices.")
+        if len(option_list) < 2:
+            return await ctx.send(
                 "❌ You need to provide multiple options separated by slashes!"
             )
-            return
 
         embed = discord.Embed(
             title=question,

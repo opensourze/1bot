@@ -1,5 +1,6 @@
 <div align=right>
 <img src="https://img.shields.io/discord/884078410010333235?label=Server&logo=discord&logoColor=white&style=for-the-badge">
+<a href="https://www.codefactor.io/repository/github/opensourze/1bot"><img src="https://www.codefactor.io/repository/github/opensourze/1bot/badge" alt="CodeFactor" /></a>
 </div>
 
 ## 1Bot - One bot, several uses.

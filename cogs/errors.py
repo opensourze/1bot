@@ -91,18 +91,9 @@ class Errors(commands.Cog):
             error
         ) or "Unsupported image type" in str(error):
             await ctx.send("❌ I don't think that's a valid image!")
-        elif isinstance(error, commands.CheckFailure):
-            if "The global check functions for command " in str(error):
-                try:
-                    await ctx.author.send(
-                        "❌ You cannot use 1Bot's commands as you are globally banned."
-                    )
-                except:
-                    pass
 
         # AUTOMATIC ERROR REPORTS #
         else:
-
             error_embed = discord.Embed(
                 title="❌ Unhandled error",
                 description="Oops, looks like that command returned an unknown error. The error has been automatically reported to the developers in our server and will be fixed soon.\n"
