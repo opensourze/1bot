@@ -70,7 +70,7 @@ class Client(commands.AutoShardedBot):
                     label="Command list",
                     style=ButtonStyle.URL,
                     emoji=self.get_emoji(907549965444849675),
-                    url="https://1bot.netlify.app/commands",
+                    url="https://1bot.opensourze.gq/commands",
                 ),
                 support_btn,
                 create_button(
@@ -95,7 +95,7 @@ class Client(commands.AutoShardedBot):
                     style=ButtonStyle.URL,
                     label="Website",
                     emoji=self.get_emoji(907550015063461898),
-                    url="https://1bot.netlify.app/",
+                    url="https://1bot.opensourze.gq/",
                 ),
                 support_btn,
                 create_button(
@@ -111,7 +111,7 @@ class Client(commands.AutoShardedBot):
             *[
                 create_button(
                     style=ButtonStyle.URL,
-                    url=f"https://1bot.netlify.app/commands",
+                    url=f"https://1bot.opensourze.gq/commands",
                     label="Command list",
                     emoji=self.get_emoji(907549965444849675),
                 ),
@@ -140,7 +140,7 @@ class Client(commands.AutoShardedBot):
         statuses = cycle(
             [
                 "1help | You can run my commands in DMs too!",
-                "1help | 1bot.netlify.app",
+                "1help | 1bot.opensourze.gq",
                 '1help | Join the official server, "Planet 1Bot" - link in my About Me!',
             ]
         )

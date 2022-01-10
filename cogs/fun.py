@@ -216,7 +216,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             url="https://icanhazdadjoke.com/",
             headers={
                 "Accept": "application/json",
-                "User-Agent": "1Bot (a Discord Bot) - https://1bot.netlify.app | email: opensourze@protonmail.com",
+                "User-Agent": "1Bot (a Discord Bot) - https://1bot.opensourze.gq | email: opensourze@protonmail.com",
             },
         )
 

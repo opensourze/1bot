@@ -568,6 +568,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.command(
         help="Remove the permission for a member to send messages or speaking on voice",
         brief="Mute a member",
+        aliases=["shut"],
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
@@ -575,13 +576,15 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
         muted_role = discord.utils.get(ctx.guild.roles[::-1], name="Muted")
 
-        if (
-            await mute_check(
-                self.client.user.id, ctx, ctx.guild.me.top_role, member, muted_role
-            )
-            == False
-        ):
+        mute_check_status = await mute_check(
+            self.client.user.id, ctx, ctx.guild.me.top_role, member, muted_role
+        )
+
+        if mute_check_status == False:
             return
+        if isinstance(mute_check_status, discord.Role):
+            # In case a new Muted role was just created, assign it to the muted_role variable
+            muted_role = mute_check_status
 
         await member.add_roles(
             muted_role, reason=f"Muted by {ctx.author}. Reason: {reason}"
@@ -646,20 +649,22 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         sleep_duration = await time2seconds(ctx.send, duration.lower())
         if sleep_duration is False:
             return
-        if sleep_duration > 5184000:
+        if sleep_duration > 7257600:
             return await ctx.send(
-                "❌ Sorry, you currently can't T-mute for longer than 6 days. You can use the `mute` command and perform a manual unmute."
+                "❌ You cannot temp-mute a member for more than 12 weeks. You can use the `mute` command and then manually unmute the member instead."
             )
 
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-        if (
-            await mute_check(
-                self.client.user.id, ctx, ctx.guild.me.top_role, member, muted_role
-            )
-            == False
-        ):
+        mute_check_status = await mute_check(
+            self.client.user.id, ctx, ctx.guild.me.top_role, member, muted_role
+        )
+
+        if mute_check_status == False:
             return
+        if isinstance(mute_check_status, discord.Role):
+            # In case a new Muted role was just created, assign it to the muted_role variable
+            muted_role = mute_check_status
 
         await member.add_roles(
             muted_role, reason=f"Muted by {ctx.author}. Reason: {reason}"
@@ -732,6 +737,12 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         )
 
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+
+        if not muted_role:
+            mute_db.find_one_and_delete({"user": member.id, "guild": ctx.guild.id})
+            return await ctx.send(
+                "❌ The Muted role does not exist. Make sure it is named exactly `Muted` if you have one!\nThe member may not be muted if the role doesn't exist."
+            )
 
         if muted_role not in member.roles and not deleted:
             return await ctx.send("❌ That member isn't muted!")
@@ -951,14 +962,16 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
     async def lockdown(self, ctx, channel: discord.TextChannel = None):
-        # If channel is None, fall back to the channel where the command is being invoked
         channel = channel or ctx.channel
+        overwrite = channel.overwrites_for(ctx.guild.default_role)
+        overwrite.send_messages = False
+        await channel.set_permissions(ctx.guild.me, send_messages=True)
+
         await channel.set_permissions(
             ctx.guild.default_role,
-            send_messages=False,
+            overwrite=overwrite,
             reason=f"Channel locked down by {ctx.author}",
         )
-        await channel.set_permissions(ctx.guild.me, send_messages=True)
 
         embed = discord.Embed(
             title="✅ Channel locked down",
@@ -995,9 +1008,12 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.bot_has_permissions(manage_channels=True)
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
+        overwrite = channel.overwrites_for(ctx.guild.default_role)
+        overwrite.send_messages = None
+
         await channel.set_permissions(
             ctx.guild.default_role,
-            send_messages=None,
+            overwrite=overwrite,
             reason=f"Channel unlocked by {ctx.author}",
         )
 

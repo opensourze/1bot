@@ -5,7 +5,7 @@
 
 ## 1Bot - One bot, several uses.
 
-[![Banner](https://1bot.netlify.app/banner.png)](https://1bot.netlify.app/)
+[![Banner](https://1bot.opensourze.gq/banner.png)](https://1bot.opensourze.gq/)
 
 1Bot is a multipurpose bot that has all the moderation tools you need, lots of useful utility commands, and a bunch of fun commands that we all need once in a while.
 

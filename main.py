@@ -66,10 +66,12 @@ async def block(ctx, id: int, *, reason):
         await user.send(embed=embed)
         await ctx.send(f"✅ Blocked user `{user.name}` with this embed:", embed=embed)
 
+    except discord.Forbidden:
+        await ctx.send(
+            f"{user.name} has DMs disabled, but they have been blocked from suggestions."
+        )
     except Exception as e:
         await ctx.send(f"❌ **Error:**\n\n{e}")
-    except discord.Forbidden:
-        await ctx.send(f"{user.name} has DMs disabled, but they have been blocked.")
 
 
 # Update Top.gg stats every 30 minutes

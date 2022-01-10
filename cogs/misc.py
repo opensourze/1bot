@@ -8,7 +8,7 @@ from utils import cluster
 
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.8.4"
+__version__ = "0.8.5"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -48,7 +48,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         )
         embed.set_thumbnail(url=self.client.user.avatar_url)
         embed.set_footer(
-            text="Copyright (C) 2021 OpenSourze. 1Bot is open source under the GNU AGPL-3.0 License."
+            text="Copyright (C) 2021 OpenSourze. 1Bot is under the AGPLv3 License."
         )
         await ctx.send(embed=embed, components=[self.client.info_btns])
 
@@ -347,10 +347,13 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             colour=self.client.colour,
-            description="- Made the `raw` command an embed and escaped all markdown to avoid messed up output (usually seen if the message has \`\`\` in it)\n"
-            + "- Fixed /raw\n"
-            + "- Emoji command now gives a proper error when the URL provided is not an image\n"
-            + "- Re-enabled Discord Together command",
+            description="The great update of the fixes of the commands of the moderation category.\n\n"
+            + "- Fixed the mute and tempmute commands not working when there is no Muted role in the server.\n"
+            + "- Fixed the `lock` and `unlock` commands resetting channel permissions automatically, for whatever reason.\n"
+            + "- Increased tempmute limit from 6 days to 12 weeks <:BigScream:929297280903811104>\n"
+            + "- Added `shut` as an alias for `mute`\n"
+            + "- Added an error to the `unmute` command that is triggered when there is no Muted role. This also removes the mute log from the database now, if it is logged.\n"
+            + "- Finished moving domains from 1bot.netlify.app to 1bot.opensourze.gq",
         )
 
         await ctx.send(embed=changelog)
