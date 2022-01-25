@@ -1,4 +1,4 @@
-import platform
+from datetime import datetime
 
 import discord
 from discord.ext import commands
@@ -8,7 +8,7 @@ from utils import cluster
 
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.8.5"
+__version__ = "0.8.6"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -34,7 +34,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         )
         embed.add_field(
             name="Source code",
-            value="View the bot's source code on [GitHub](https://github.com/opensourze/1bot)",
+            value="View the bot's source code on [GitHub](https://github.com/opensourze/1bot).\nIf you want to use the code, remember to check the license terms!",
             inline=False,
         )
         embed.add_field(name="Servers", value=f"{len(self.client.guilds)} servers")
@@ -42,14 +42,8 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             name="Users",
             value=f"{len(self.client.users)} users",
         )
-        embed.add_field(name="Pycord version", value=discord.__version__, inline=False)
-        embed.add_field(
-            name="Python version", value=platform.python_version(), inline=False
-        )
         embed.set_thumbnail(url=self.client.user.avatar_url)
-        embed.set_footer(
-            text="Copyright (C) 2021 OpenSourze. 1Bot is under the AGPLv3 License."
-        )
+        embed.set_footer(text=f"Copyright (C) {datetime.now().date().year} OpenSourze")
         await ctx.send(embed=embed, components=[self.client.info_btns])
 
     @cog_ext.cog_slash(name="info", description="View the bot's information")
@@ -134,7 +128,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
     @commands.command(
         help="View information about the current server",
         brief="View server info",
-        aliases=["server"],
+        aliases=["server", "si"],
     )
     @commands.guild_only()
     async def serverinfo(self, ctx):
@@ -237,7 +231,9 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         await self.membercount(ctx)
 
     # User Info command
-    @commands.command(help="View a member's information", aliases=["whois", "user"])
+    @commands.command(
+        help="View a member's information", aliases=["whois", "user", "ui"]
+    )
     @commands.guild_only()
     async def userinfo(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
@@ -347,13 +343,10 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             colour=self.client.colour,
-            description="The great update of the fixes of the commands of the moderation category.\n\n"
-            + "- Fixed the mute and tempmute commands not working when there is no Muted role in the server.\n"
-            + "- Fixed the `lock` and `unlock` commands resetting channel permissions automatically, for whatever reason.\n"
-            + "- Increased tempmute limit from 6 days to 12 weeks <:BigScream:929297280903811104>\n"
-            + "- Added `shut` as an alias for `mute`\n"
-            + "- Added an error to the `unmute` command that is triggered when there is no Muted role. This also removes the mute log from the database now, if it is logged.\n"
-            + "- Finished moving domains from 1bot.netlify.app to 1bot.opensourze.gq",
+            description="- Now, if you don't provide options to the `poll` command, it will give you a yes/no poll.\n"
+            + "- Added panda command that returns a random panda image\n"
+            + "- Added `ui` as an alias for `userinfo`\n"
+            + "- Added `si` as an alias for `serverinfo`",
         )
 
         await ctx.send(embed=changelog)

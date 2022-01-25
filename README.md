@@ -24,4 +24,4 @@ The code is not at all optimised for customisation or self-hosting.
 Remember: 1Bot is under the [GNU AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.en.html), which means cloning the bot and claiming it as your own is a license violation. This also includes modified clones, by the definition of "modified version" according to the license.  
 (I'm looking at you, [President Om](https://imgur.com/a/0UBHLDA))
 
-###### Copyright (C) 2021 OpenSourze
+###### Copyright (C) 2022 OpenSourze

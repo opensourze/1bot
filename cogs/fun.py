@@ -140,8 +140,22 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     async def cat_slash(self, ctx: SlashContext):
         await self.cat(ctx)
 
+    # cat command
+    @commands.command(help="Get a random panda image")
+    async def panda(self, ctx):
+        json = requests.get("https://some-random-api.ml/img/panda").json()
+
+        embed = discord.Embed(title="Here's a panda", colour=self.client.colour)
+        embed.set_image(url=json["link"])
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_slash(name="panda", description="Get a random panda image")
+    async def panda_slash(self, ctx: SlashContext):
+        await self.panda(ctx)
+
     # Bean
-    @commands.command(help="A fake ban command")
+    @commands.command(help="A fake ban command, for fun.")
     @commands.guild_only()
     async def bean(self, ctx, member: commands.MemberConverter, *, reason=None):
         embed = discord.Embed(
@@ -175,7 +189,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await self.bean(ctx, member, reason=reason)
 
     # Warm
-    @commands.command(help="A fake warn command")
+    @commands.command(help="A fake warn command, for fun.")
     @commands.guild_only()
     async def warm(self, ctx, member: commands.MemberConverter, *, reason: str):
         embed = discord.Embed(
@@ -216,7 +230,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             url="https://icanhazdadjoke.com/",
             headers={
                 "Accept": "application/json",
-                "User-Agent": "1Bot (a Discord Bot) - https://1bot.opensourze.gq | email: opensourze@protonmail.com",
+                "User-Agent": "1Bot (a Discord Bot) - https://1bot.opensourze.gq",
             },
         )
 

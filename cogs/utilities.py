@@ -605,40 +605,63 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
     # Poll command
     @commands.command(help="Create a poll")
     @commands.guild_only()
-    async def poll(self, ctx, question, *, options):
+    async def poll(self, ctx, question, *, options=None):
         if len(question) > 256:
             return await ctx.send(
                 "❌ Your question is too long. Try again with a question shorter than 256 characters!"
             )
 
-        numbers = ("1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟")
-
-        option_list = options.split("/")
-
-        if len(option_list) > 10:
-            return await ctx.send("❌ You cannot have more than 10 choices.")
-        if len(option_list) < 2:
-            return await ctx.send(
-                "❌ You need to provide multiple options separated by slashes!"
+        if options:
+            numbers = (
+                "1️⃣",
+                "2️⃣",
+                "3️⃣",
+                "4️⃣",
+                "5️⃣",
+                "6️⃣",
+                "7️⃣",
+                "8️⃣",
+                "9️⃣",
+                "🔟",
             )
 
-        embed = discord.Embed(
-            title=question,
-            colour=self.client.colour,
-            description="\n\n".join(
-                [
-                    f"{numbers[i]} {option_list[i]}"  # number emoji + option
-                    for i in range(len(option_list))
-                ]
-            ),
-        )
-        embed.set_footer(text=f"Poll created by {str(ctx.author.name)}")
+            option_list = options.split("/")
 
-        poll_msg = await ctx.send(embed=embed)
+            if len(option_list) > 10:
+                return await ctx.send("❌ You cannot have more than 10 choices.")
+            if len(option_list) < 2:
+                return await ctx.send(
+                    '❌ Usage: `poll "Question in quotes" options/separated/by slashes`.\nLeave the options blank for a yes/no poll.'
+                )
 
-        # loop through emojis until the end of the option list is reached
-        for emoji in numbers[: len(option_list)]:
-            await poll_msg.add_reaction(emoji)  # react with the number emoji
+            embed = discord.Embed(
+                title=question,
+                colour=self.client.colour,
+                description="\n\n".join(
+                    [
+                        f"{numbers[i]} {option_list[i]}"  # number emoji + option
+                        for i in range(len(option_list))
+                    ]
+                ),
+            )
+            embed.set_footer(text=f"Poll created by {str(ctx.author.name)}")
+
+            poll_msg = await ctx.send(embed=embed)
+
+            # loop through emojis until the end of the option list is reached
+            for emoji in numbers[: len(option_list)]:
+                await poll_msg.add_reaction(emoji)  # react with the number emoji
+
+        else:
+            embed = discord.Embed(
+                title=question,
+                colour=self.client.colour,
+                description="👍 Yes\n\n👎 No",
+            ).set_footer(text=f"Poll created by {str(ctx.author.name)}")
+
+            poll_msg = await ctx.send(embed=embed)
+            await poll_msg.add_reaction("👍")
+            await poll_msg.add_reaction("👎")
 
     @cog_ext.cog_slash(
         name="poll",
@@ -652,13 +675,13 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
             ),
             create_option(
                 name="options",
-                description="The choices you want for the poll separated by slashes",
-                required=True,
+                description="The choices you want for the poll separated by slashes (skip this for a yes/no poll)",
+                required=False,
                 option_type=3,
             ),
         ],
     )
-    async def poll_slash(self, ctx, question, options):
+    async def poll_slash(self, ctx, question, options=None):
         await self.poll(ctx, question, options=options)
 
 

@@ -50,7 +50,7 @@ class Client(commands.AutoShardedBot):
         """
         self._BotBase__cogs = commands.core._CaseInsensitiveDict()
 
-    colour = 0xFF7000
+    colour = 0x4BBD4B
 
     async def on_ready(self):
         self.starting.stop()
@@ -100,7 +100,7 @@ class Client(commands.AutoShardedBot):
                 support_btn,
                 create_button(
                     style=ButtonStyle.URL,
-                    label="Upvote me",
+                    label="Upvote",
                     emoji=self.get_emoji(907550047959412736),
                     url="https://top.gg/bot/884080176416309288/vote",
                 ),
