@@ -19,11 +19,11 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
     @commands.command(
         aliases=["dtogether"],
-        help='Play a Discord Together game; choose from `"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`',
-        brief="Play a Discord Together game - run 1help discordtogether for more",
+        help="Play a Discord Together game in a voice channel",
     )
     @commands.guild_only()
     @commands.bot_has_guild_permissions(create_instant_invite=True)
+    @commands.cooldown(1, 5, commands.BucketType.guild)
     async def discordtogether(self, ctx, option):
         try:
             author_vc = ctx.author.voice.channel.id
@@ -33,7 +33,8 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
                 )
             except:
                 return await ctx.send(
-                    '❌ That\'s not a valid Discord Together game, choose from these:\n`"youtube", "poker", "betrayal", "fishing", "chess", "letter-tile", "word-snack", "doodle-crew", "spellcast"`'
+                    "❌ That's not a valid/supported Discord Together game, choose from these:\n"
+                    + f"`{', '.join(self.client.dt.default_choices)}`"
                 )
 
             await ctx.send(
@@ -69,11 +70,13 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     )
     @commands.guild_only()
     @commands.bot_has_guild_permissions(create_instant_invite=True)
+    @commands.cooldown(1, 5, commands.BucketType.guild)
     async def discordtogether_slash(self, ctx: SlashContext, *, game):
         await self.discordtogether(ctx, game)
 
     # xkcd command
     @commands.command(help="Get the latest/random xkcd comic")
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def xkcd(self, ctx, *, type="random"):
         if type.lower() == "random":
             comic = xkcd.getRandomComic()
@@ -108,12 +111,14 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             )
         ],
     )
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def xkcd_slash(self, ctx: SlashContext, *, type="Random"):
         await ctx.defer()
         await self.xkcd(ctx, type=type)
 
     # dog command
     @commands.command(help="Get a random dog image", aliases=["doggo"])
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def dog(self, ctx):
         json = requests.get("https://some-random-api.ml/img/dog").json()
 
@@ -123,11 +128,13 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(name="dog", description="Get a random dog image")
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def dog_slash(self, ctx: SlashContext):
         await self.dog(ctx)
 
     # cat command
     @commands.command(help="Get a random cat image", aliases=["kitty"])
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def cat(self, ctx):
         json = requests.get("https://some-random-api.ml/img/cat").json()
 
@@ -137,11 +144,13 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(name="cat", description="Get a random cat image")
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def cat_slash(self, ctx: SlashContext):
         await self.cat(ctx)
 
-    # cat command
+    # panda command
     @commands.command(help="Get a random panda image")
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def panda(self, ctx):
         json = requests.get("https://some-random-api.ml/img/panda").json()
 
@@ -151,6 +160,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(name="panda", description="Get a random panda image")
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def panda_slash(self, ctx: SlashContext):
         await self.panda(ctx)
 
@@ -225,6 +235,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
     # Dad joke command
     @commands.command(help="Get a random dad joke")
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def dadjoke(self, ctx):
         r = requests.get(
             url="https://icanhazdadjoke.com/",
@@ -244,11 +255,13 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await ctx.send(json["joke"])
 
     @cog_ext.cog_slash(name="dadjoke", description="Get a random dad joke")
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def dadjoke_slash(self, ctx: SlashContext):
         await self.dadjoke(ctx)
 
     # Bored command
     @commands.command(help="Gives you something to do if you're bored")
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def bored(self, ctx):
         r = requests.get("https://www.boredapi.com/api/activity?participants=1&price=0")
 
@@ -262,6 +275,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await ctx.send(json["activity"])
 
     @cog_ext.cog_slash(name="bored", description="Get something to do if you're bored")
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def bored_slash(self, ctx: SlashContext):
         await ctx.defer()
         await self.bored(ctx)
@@ -273,7 +287,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         aliases=["reddit"],
     )
     @commands.bot_has_permissions(embed_links=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def meme(self, ctx, subreddit=None):
         if subreddit:
             json = requests.get(
@@ -320,7 +334,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         ],
     )
     @commands.bot_has_permissions(embed_links=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def meme_slash(self, ctx: SlashContext, subreddit: str = None):
         await self.meme(ctx, subreddit=subreddit)
 
@@ -330,6 +344,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         brief="Search for GIFs on Tenor",
         aliases=["tenor"],
     )
+    @commands.cooldown(3, 10, commands.BucketType.user)
     async def gif(self, ctx, *, query):
         json = requests.get(
             f"https://g.tenor.com/v1/search?q={quote(query)}&contentfilter=medium&key={os.environ['TENORKEY']}"
@@ -342,6 +357,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             await ctx.send("❌ Couldn't find any matching GIFs.")
 
     @cog_ext.cog_slash(name="gif", description="Search for GIFs (filtered) on Tenor")
+    @commands.cooldown(3, 10, commands.BucketType.user)
     async def gif_slash(self, ctx: SlashContext, *, query):
         await self.gif(ctx, query=query)
 
@@ -420,7 +436,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
     # Figlet/ASCII command
     @commands.command(help="Return text in ASCII art", aliases=["ascii"])
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.channel)
     async def figlet(self, ctx, *, text):
         if len(text) >= 16:
             return await ctx.send(
@@ -432,7 +448,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         await ctx.send(f"```\n{ascii_text}\n```")
 
     @cog_ext.cog_slash(name="ascii", description="Return text in ASCII art")
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.channel)
     async def figlet_slash(self, ctx, *, text):
         await self.figlet(ctx, text=text)
 

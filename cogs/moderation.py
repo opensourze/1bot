@@ -47,6 +47,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.command(help="Warn a member")
     @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
+    @commands.cooldown(3, 10, commands.BucketType.user)
     async def warn(self, ctx, member: commands.MemberConverter, *, reason):
         if len(reason) > 900:
             return await ctx.send(
@@ -110,6 +111,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
+    @commands.cooldown(3, 10, commands.BucketType.user)
     async def warn_slash(self, ctx, member, reason):
         await self.warn(ctx, member, reason=reason)
 
@@ -172,6 +174,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         aliases=["unwarn"],
     )
     @commands.has_permissions(view_audit_log=True)
+    @commands.cooldown(3, 10, commands.BucketType.user)
     async def delwarn(
         self, ctx, warning_id: str = None, *, member: commands.MemberConverter = None
     ):
@@ -232,13 +235,15 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
-    async def unwarn_slash(self, ctx, warning_id, member):
+    @commands.cooldown(3, 10, commands.BucketType.user)
+    async def delwarn_slash(self, ctx, warning_id, member):
         await self.delwarn(ctx, warning_id=warning_id, member=member)
 
     # Clear warns command
     @commands.command(help="Delete all warnings for a member")
     @commands.has_permissions(view_audit_log=True)
     @commands.guild_only()
+    @commands.cooldown(3, 10, commands.BucketType.user)
     async def clearwarns(self, ctx, *, member: commands.MemberConverter):
         deleted = warns.delete_many({"user": member.id, "guild": ctx.guild.id})
 
@@ -258,6 +263,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     )
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
+    @commands.cooldown(3, 10, commands.BucketType.user)
     async def clearwarns_slash(self, ctx, member):
         await self.clearwarns(ctx, member=member)
 
@@ -266,6 +272,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(manage_nicknames=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def nickname(
         self, ctx, member: commands.MemberConverter, *, nickname: str = None
     ):
@@ -305,6 +312,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(manage_nicknames=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def nickname_slash(self, ctx: SlashContext, member, nickname: str = None):
         await self.nickname(ctx, member, nickname=nickname)
 
@@ -313,6 +321,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def role(self, ctx):
         embed = discord.Embed(
             title="Role commands",
@@ -334,6 +343,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def create(self, ctx, *, name: str):
         try:
             await ctx.guild.create_role(name=name)
@@ -347,6 +357,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def delete(self, ctx, *, role: commands.RoleConverter):
         await role.delete()
         await ctx.send(f"✅ Role `{role.name}` has been deleted")
@@ -355,6 +366,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def add(
         self, ctx, member: commands.MemberConverter, *, role: commands.RoleConverter
     ):
@@ -365,6 +377,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def remove(
         self, ctx, member: commands.MemberConverter, *, role: commands.RoleConverter
     ):
@@ -379,6 +392,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def role_create_slash(self, ctx: SlashContext, name):
         await self.create(ctx, name=name)
 
@@ -398,6 +412,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def role_delete_slash(self, ctx: SlashContext, role):
         await self.delete(ctx, role=role)
 
@@ -423,6 +438,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def role_add_slash(self, ctx: SlashContext, member, role):
         await self.add(ctx, member, role=role)
 
@@ -448,6 +464,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def role_remove_slash(self, ctx: SlashContext, member, role):
         await self.remove(ctx, member, role=role)
 
@@ -460,6 +477,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def clear(self, ctx, amount: int):
         await ctx.channel.purge(limit=amount + 1, bulk=True)
 
@@ -478,6 +496,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def clear_slash(self, ctx: SlashContext, amount: int):
         await self.clear(ctx, amount=amount - 1)
         await ctx.send(f"✅ I have cleared {amount} messages", delete_after=2)
@@ -487,6 +506,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True, add_reactions=True)
+    @commands.cooldown(1, 10, commands.BucketType.channel)
     async def nuke(self, ctx, *, channel: discord.TextChannel = None):
         with suppress(discord.NotFound):
             channel = channel or ctx.channel
@@ -532,6 +552,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.cooldown(1, 10, commands.BucketType.channel)
     async def nuke_slash(self, ctx: SlashContext, channel: discord.TextChannel):
         await self.nuke(ctx, channel=channel)
 
@@ -573,6 +594,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def mute(self, ctx, member: commands.MemberConverter, *, reason=None):
         muted_role = discord.utils.get(ctx.guild.roles[::-1], name="Muted")
 
@@ -622,6 +644,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def mute_slash(self, ctx: SlashContext, member, reason=None):
         await self.mute(ctx, member, reason=reason)
 
@@ -638,6 +661,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def tempmute(
         self,
         ctx,
@@ -723,6 +747,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def tempmute_slash(self, ctx: SlashContext, member, duration, reason=None):
         await self.tempmute(ctx, member, duration, reason=reason)
 
@@ -904,11 +929,11 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         await self.ban(ctx, member, reason=reason)
 
     # Unban command
-    @commands.command(
-        help="Unban someone",
-    )
+    @commands.command(help="Unban someone")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
+    @commands.bot_has_permissions(ban_members=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def unban(self, ctx, *, user: str):
         banned_users = await ctx.guild.bans()
 
@@ -949,6 +974,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def unban_slash(self, ctx: SlashContext, user: str):
         await self.unban(ctx, user=user)
 
@@ -961,6 +987,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def lockdown(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
         overwrite = channel.overwrites_for(ctx.guild.default_role)
@@ -996,6 +1023,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def lockdown_slash(
         self, ctx: SlashContext, channel: discord.TextChannel = None
     ):
@@ -1006,6 +1034,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
         overwrite = channel.overwrites_for(ctx.guild.default_role)
@@ -1039,6 +1068,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def unlock_slash(
         self, ctx: SlashContext, channel: discord.TextChannel = None
     ):
@@ -1099,6 +1129,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         help="Get the last edited message in any channel", aliases=["esnipe"]
     )
     @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def editsnipe(self, ctx, snipe_channel: commands.TextChannelConverter = None):
         snipe_channel = snipe_channel or ctx.channel
 
@@ -1141,6 +1172,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         ],
     )
     @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def editsnipe_slash(self, ctx: SlashContext, channel=None):
         await self.editsnipe(ctx, channel)
 

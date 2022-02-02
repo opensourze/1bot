@@ -35,7 +35,7 @@ class Errors(commands.Cog):
                 + f"`{', '.join([err.capitalize().replace('_', ' ') for err in error.missing_perms])}`"
             )
         elif isinstance(error, commands.NotOwner):
-            await ctx.send("❌ Only the owner of the bot can use this command.")
+            return
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
                 "❌ You haven't provided enough options.\n"

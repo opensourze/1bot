@@ -54,11 +54,13 @@ class Images(commands.Cog, description="Generate fun images!"):
             )
         ],
     )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def amogus_slash(self, ctx: SlashContext, member):
         await self.amogus(ctx, member=member)
 
     # Tweet
     @commands.command(help="Generate an image of you tweeting something")
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def tweet(self, ctx, *, text: str):
         if len(text) >= 1000:
             return await ctx.send(
@@ -79,6 +81,7 @@ class Images(commands.Cog, description="Generate fun images!"):
     @cog_ext.cog_slash(
         name="tweet", description="Generate an image of you tweeting something"
     )
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def tweet_slash(self, ctx: SlashContext, *, text):
         await self.tweet(ctx, text=text)
 
@@ -87,6 +90,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         help="Generate an image of a YouTube comment by you",
         aliases=["ytcomment", "comment"],
     )
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def youtubecomment(self, ctx, *, comment: str):
         if len(comment) >= 1000:
             return await ctx.send(
@@ -108,6 +112,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         name="youtubecomment",
         description="Generate an image of a YouTube comment by you",
     )
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def ytcomment_slash(self, ctx: SlashContext, *, comment: str):
         await self.youtubecomment(ctx, comment=comment)
 
@@ -116,7 +121,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         help="Add a Wasted overlay to an avatar or an attached image",
         brief="Add a Wasted overlay to an avatar or image",
     )
-    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def wasted(
         self, ctx: SlashContext, *, member: commands.MemberConverter = None
     ):
@@ -147,7 +152,7 @@ class Images(commands.Cog, description="Generate fun images!"):
             )
         ],
     )
-    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def wasted_slash(self, ctx: SlashContext, member=None):
         await self.wasted(ctx, member=member)
 
@@ -157,7 +162,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         brief="Add a Mission Passed overlay to avatars or images",
         aliases=["passed"],
     )
-    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def missionpassed(
         self, ctx: SlashContext, *, member: commands.MemberConverter = None
     ):
@@ -188,13 +193,13 @@ class Images(commands.Cog, description="Generate fun images!"):
             )
         ],
     )
-    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def missionpassed_slash(self, ctx: SlashContext, member=None):
         await self.missionpassed(ctx, member=member)
 
     # Triggered
     @commands.command(help="Create a triggered gif with someone's avatar")
-    @commands.cooldown(1, 5, commands.BucketType.channel)
+    @commands.cooldown(1, 10, commands.BucketType.channel)
     async def triggered(self, ctx, *, member: commands.MemberConverter = None):
         with suppress(AttributeError):
             await ctx.trigger_typing()
@@ -272,6 +277,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         help="Create an image of a joke going over someone's head",
         aliases=["whoosh", "jokeoverhead"],
     )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def woosh(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
         avatar = str(member.avatar_url_as(format="png"))[:-10]
@@ -296,6 +302,7 @@ class Images(commands.Cog, description="Generate fun images!"):
             )
         ],
     )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def woosh_slash(self, ctx: SlashContext, member=None):
         await self.woosh(ctx, member=member)
 
@@ -304,6 +311,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         help="Create an image of a quote from Oogway",
         aliases=["oogway"],
     )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def oogwayquote(self, ctx, *, text: str):
         embed = discord.Embed(
             title="A quote by Master Oogway", colour=self.client.colour
@@ -316,6 +324,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         name="oogwayquote",
         description="Create an image of a quote from Oogway",
     )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def oogwayquote_slash(self, ctx: SlashContext, *, text: str):
         await self.oogwayquote(ctx, text=text)
 
@@ -324,6 +333,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         help="Filter an avatar with black and white",
         aliases=["blackandwhite", "grayscale"],
     )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def greyscale(self, ctx, *, member: commands.MemberConverter = None):
         member = member or ctx.author
         avatar = str(member.avatar_url_as(format="png"))[:-10]
@@ -340,6 +350,7 @@ class Images(commands.Cog, description="Generate fun images!"):
         name="greyscale",
         description="Filter someone's avatar black and white",
     )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def greyscale_slash(
         self, ctx: SlashContext, *, member: discord.Member = None
     ):

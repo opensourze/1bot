@@ -8,7 +8,7 @@ from utils import cluster
 
 banned = cluster["1bot"]["bans"]
 
-__version__ = "0.8.6"
+__version__ = "0.8.7"
 
 
 class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
@@ -170,7 +170,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             value=f"{len(ctx.guild.roles)} roles",
         )
         embed.add_field(
-            name="Boost level",
+            name="Boost tier",
             value=f"Level {ctx.guild.premium_tier}",
         )
         embed.add_field(name="Categories", value=f"{len(ctx.guild.categories)}")
@@ -293,7 +293,12 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         ],
     )
     async def userinfo_slash(self, ctx: SlashContext, member):
-        await self.userinfo(ctx, member=member)
+        try:
+            await self.userinfo(ctx, member=member)
+        except AttributeError:
+            await ctx.send(
+                "❌ The user you specified is not in the server. Please try again."
+            )
 
     # Upvote command
     @commands.command(help="Upvote me on Top.gg", aliases=["vote"])
@@ -343,10 +348,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
         changelog = discord.Embed(
             title=f"What's new in version {__version__} of 1Bot",
             colour=self.client.colour,
-            description="- Now, if you don't provide options to the `poll` command, it will give you a yes/no poll.\n"
-            + "- Added panda command that returns a random panda image\n"
-            + "- Added `ui` as an alias for `userinfo`\n"
-            + "- Added `si` as an alias for `serverinfo`",
+            description="Just a bunch of improvements and fixes to ensure 1Bot runs reliably. The prefix has been changed to `1` without a space, so commands will not invoke when a sentence starts with 1.",
         )
 
         await ctx.send(embed=changelog)

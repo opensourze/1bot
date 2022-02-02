@@ -38,7 +38,7 @@ class Client(commands.AutoShardedBot):
 
         # Initialise AutoShardedBot
         super().__init__(
-            command_prefix=["1 ", "1"],
+            command_prefix="1",
             case_insensitive=True,
             intents=intents,
             owner_ids=[748791790798372964, 856609450236313660],
@@ -50,7 +50,7 @@ class Client(commands.AutoShardedBot):
         """
         self._BotBase__cogs = commands.core._CaseInsensitiveDict()
 
-    colour = 0x4BBD4B
+    colour = 0xFF7000
 
     async def on_ready(self):
         self.starting.stop()
@@ -129,9 +129,17 @@ class Client(commands.AutoShardedBot):
             message.content == f"<@!{self.user.id}>"
             or message.content == f"<@{self.user.id}>"
         ):
-            await message.channel.send(
-                "My prefix is `1`. You can add a space after it, but it's optional."
+            embed = discord.Embed(
+                description="Hello! Get started by sending `1help`.", colour=self.colour
             )
+            embed.add_field(
+                name="Support links",
+                value="[Command list](https://1bot.opensourze.gq/commands) | [Support server](https://discord.gg/JGcnKxEPsW)",
+            )
+            embed.set_footer(
+                "The prefix for 1Bot is 1 for all commands. Slash Commands are also fully supported."
+            )
+            await message.channel.send(embed=embed)
         else:
             await self.process_commands(message)
 

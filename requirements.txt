@@ -1,4 +1,4 @@
-py-cord
+discord.py
 jishaku
 pymongo[srv]
 requests
