@@ -137,7 +137,7 @@ class Client(commands.AutoShardedBot):
                 value="[Command list](https://1bot.opensourze.gq/commands) | [Support server](https://discord.gg/JGcnKxEPsW)",
             )
             embed.set_footer(
-                "The prefix for 1Bot is 1 for all commands. Slash Commands are also fully supported."
+                text="The prefix for 1Bot is 1 for all commands. Slash Commands are also fully supported."
             )
             await message.channel.send(embed=embed)
         else:

@@ -127,7 +127,9 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="dog", description="Get a random dog image")
+    @cog_ext.cog_subcommand(
+        base="animal", name="dog", description="Get a random dog image"
+    )
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def dog_slash(self, ctx: SlashContext):
         await self.dog(ctx)
@@ -143,7 +145,9 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="cat", description="Get a random cat image")
+    @cog_ext.cog_subcommand(
+        base="animal", name="cat", description="Get a random cat image"
+    )
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def cat_slash(self, ctx: SlashContext):
         await self.cat(ctx)
@@ -159,10 +163,32 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
 
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="panda", description="Get a random panda image")
+    @cog_ext.cog_subcommand(
+        base="animal", name="panda", description="Get a random panda image"
+    )
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def panda_slash(self, ctx: SlashContext):
         await self.panda(ctx)
+
+    # penguin command
+    @commands.command(help="Get a random penguin image")
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def penguin(self, ctx):
+        image_url = requests.get(
+            "https://rest.givinghawk.repl.co/api-penguin.php"
+        ).json()
+
+        embed = discord.Embed(title="Here's a penguin", colour=self.client.colour)
+        embed.set_image(url=image_url)
+
+        await ctx.send(embed=embed)
+
+    @cog_ext.cog_subcommand(
+        base="animal", name="penguin", description="Get a random penguin image"
+    )
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def penguin_slash(self, ctx: SlashContext):
+        await self.penguin(ctx)
 
     # Bean
     @commands.command(help="A fake ban command, for fun.")

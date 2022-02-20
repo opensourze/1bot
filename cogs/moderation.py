@@ -384,11 +384,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
         await member.remove_roles(role)
         await ctx.send(f"✅ Role `{role}` has been removed from `{member.name}`.")
 
-    @cog_ext.cog_subcommand(
-        base="role",
-        name="create",
-        description="Create a new role",
-    )
+    @cog_ext.cog_subcommand(base="role", name="create", description="Create a new role")
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
@@ -477,7 +473,7 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
-    @commands.cooldown(1, 5, commands.BucketType.channel)
+    @commands.cooldown(1, 1, commands.BucketType.channel)
     async def clear(self, ctx, amount: int):
         await ctx.channel.purge(limit=amount + 1, bulk=True)
 

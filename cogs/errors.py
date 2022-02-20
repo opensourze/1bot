@@ -91,6 +91,14 @@ class Errors(commands.Cog):
             error
         ) or "Unsupported image type" in str(error):
             await ctx.send("❌ I don't think that's a valid image!")
+        elif isinstance(error, discord.HTTPException):
+            if error.status == 429:
+                if error.response.content["global"]:
+                    print(
+                        "GLOBAL RATELIMIT\n"
+                        + f"Retry after:{error.response.content['retry_after']}\n"
+                        + f"Caused by: {str(ctx.author)}"
+                    )
 
         # AUTOMATIC ERROR REPORTS #
         else:

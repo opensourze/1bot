@@ -66,6 +66,7 @@ class Miscellaneous(commands.Cog, description="Other miscellaneous commands."):
             title="Suggestion", description=suggestion, colour=self.client.colour
         )
         embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+        embed.set_footer(text=f"User ID: {ctx.author.id}")
 
         message = await channel.send(embed=embed)
         await ctx.send(
