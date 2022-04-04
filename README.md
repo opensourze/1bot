@@ -19,7 +19,12 @@
 1Bot is a public bot, so it's best to just add it to your server.
 
 The code is open-source only so that people can contribute to the bot and also in case anyone needs to refer to some code for help with discordpy development.  
-The code is not at all optimised for customisation or self-hosting.
+The code is not at all optimised for customisation or self-hosting. However, if you are for some reason self hosting 1Bot (most likley because discord will not verify 1Bot) then you will need to create a `.env` file. Here is an example of how you would do this below:
+```
+TOKEN=YOUR_TOKEN_HERE
+MONGO_URL=YOUR_MONGO_CONNECTION_URI_HERE
+TOPGG_TOKEN=YOUR_TOP.GG_TOKEN
+```
 
 Remember: 1Bot is under the [GNU AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.en.html), which means cloning the bot and claiming it as your own is a license violation. This also includes modified clones, by the definition of "modified version" according to the license.  
 (I'm looking at you, [President Om](https://imgur.com/a/0UBHLDA))
