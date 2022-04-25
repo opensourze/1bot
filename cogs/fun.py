@@ -175,7 +175,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def penguin(self, ctx):
         image_url = requests.get(
-            "https://rest.givinghawk.repl.co/api-penguin.php"
+            f"https://rest.givinghawk.repl.co/api-penguin.php?token={os.environ['GIVINGHAWK']}"
         ).json()
 
         embed = discord.Embed(title="Here's a penguin", colour=self.client.colour)

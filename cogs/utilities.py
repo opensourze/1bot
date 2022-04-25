@@ -256,8 +256,8 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
     @cog_ext.cog_slash(
         name="search_github", description="Search for repositories on GitHub"
     )
-    async def github_slash(self, ctx: SlashContext, *, query):
-        await self.github(ctx, query=query)
+    async def github_slash(self, ctx: SlashContext, *, search_query):
+        await self.github(ctx, search_query=search_query)
 
     # PyPI command
     @commands.command(help="Get info for a PyPI module")
@@ -382,6 +382,7 @@ class Utilities(commands.Cog, description="A set of useful utility commands."):
 
     @cog_ext.cog_slash(name="lyrics", description="Get lyrics for a song")
     async def lyrics_slash(self, ctx: SlashContext, *, song):
+        await ctx.defer()
         await self.lyrics(ctx, song=song)
 
     # Base64 commands

@@ -1,5 +1,6 @@
 import asyncio
 from contextlib import suppress
+from datetime import datetime, timedelta
 
 import discord
 import dotenv
@@ -7,7 +8,7 @@ from bson.objectid import InvalidId, ObjectId
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
-from utils import mute_check, time2seconds, cluster
+from utils import cluster, mute_check, time2seconds
 
 dotenv.load_dotenv()
 
@@ -475,7 +476,19 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.bot_has_permissions(manage_messages=True)
     @commands.cooldown(1, 1, commands.BucketType.channel)
     async def clear(self, ctx, amount: int):
-        await ctx.channel.purge(limit=amount + 1, bulk=True)
+        purged = await ctx.channel.purge(
+            limit=amount + 1,
+            # Only purge messages newer than 2 weeks (14 days)
+            after=datetime.utcnow() - timedelta(14),
+        )
+        if len(purged) < 2:
+            return await ctx.send(
+                "❌ Discord does not allow bots to clear messages older than 2 weeks."
+            )
+        await ctx.send(
+            f"✅ I have cleared {len(purged)} messages. Note that I cannot clear messages older than 2 weeks.",
+            delete_after=4,
+        )
 
     @cog_ext.cog_slash(
         name="clear",
@@ -495,7 +508,6 @@ class Moderation(commands.Cog, description="All the moderation commands you need
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def clear_slash(self, ctx: SlashContext, amount: int):
         await self.clear(ctx, amount=amount - 1)
-        await ctx.send(f"✅ I have cleared {amount} messages", delete_after=2)
 
     # Nuke/clear channel command
     @commands.command(help="Clear a channel", aliases=["clearall", "clearchannel"])

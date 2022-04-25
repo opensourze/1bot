@@ -1,4 +1,4 @@
-"This is the file to run. It contains the commands to warn/ban users from 1Bot and background tasks."
+"This is the file to run. It contains owner-only commands and background tasks."
 
 import os
 
