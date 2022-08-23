@@ -393,6 +393,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     )
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def eightball(self, ctx, *, question: str):
+        icon_url = 'https://i.imgur.com/XhNqADi.png'
         # responses from wikipedia
         responses = [
             # Affirmative
@@ -419,18 +420,12 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
             "Outlook not so good.",
             "Very doubtful.",
         ]
-        random_response = random.choice(responses)
+        fortune = random.choice(responses)
 
-        message = await ctx.send(
-            f":8ball: *The magic 8-ball says...*",
-            allowed_mentions=discord.AllowedMentions(users=False),
-        )
-        await sleep(2)
-        # Edit message and add response after two seconds
-        await message.edit(
-            content=f":8ball: *The magic 8-ball says...*\n**{random_response}**",
-            allowed_mentions=discord.AllowedMentions(users=False),
-        )
+        embed = discord.Embed(colour=16776960) # Yellow colour decimal format
+        embed.set_author(name='Magic 8-ball', icon_url=icon_url)
+        embed.add_field(name=f'*{ctx.author.name}, My ball says:*', value=f'**{fortune}**')
+        await ctx.send(embed=embed)
 
     @cog_ext.cog_slash(
         name="8ball",
