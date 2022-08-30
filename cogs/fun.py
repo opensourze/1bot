@@ -175,8 +175,8 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def penguin(self, ctx):
         image_url = requests.get(
-            f"https://rest.givinghawk.repl.co/api-penguin.php?token={os.environ['GIVINGHAWK']}"
-        ).json()
+            f"https://keyapi.ml/penguin"
+        ).json()["data"	]
 
         embed = discord.Embed(title="Here's a penguin", colour=self.client.colour)
         embed.set_image(url=image_url)
@@ -422,7 +422,7 @@ class Fun(commands.Cog, description="Some fun commands - who doesn't want fun?")
         ]
         fortune = random.choice(responses)
 
-        embed = discord.Embed(colour=16776960) # Yellow colour decimal format
+        embed = discord.Embed(colour=self.client.colour)
         embed.set_author(name='Magic 8-ball', icon_url=icon_url)
         embed.add_field(name=f'*{ctx.author.name}, My ball says:*', value=f'**{fortune}**')
         await ctx.send(embed=embed)
